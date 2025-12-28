@@ -48,17 +48,21 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
     null
   );
   const cancelRef = useRef(null);
-
+  const lastFetchedRef = useRef<{ userId: string; date: string } | null>(null);
   useEffect(() => {
     const fetchActivities = async () => {
-      console.log("user", user);
-      console.log("selectedDate", selectedDate);
-      console.log("toast", toast);
       if (!user) {
-        setLoading(false); // Ensure loading is false if no user
+        setLoading(false);
         return;
       }
-
+      // 値の変更がない場合、再度取得しない
+      if (
+        lastFetchedRef.current?.userId === user.id &&
+        lastFetchedRef.current?.date === selectedDate
+      ) {
+        setLoading(false);
+        return;
+      }
       try {
         setLoading(true);
         const { data, error } = await supabase
@@ -98,7 +102,7 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
     };
 
     fetchActivities();
-  }, [user, selectedDate, toast]); // Add toast to dependency array
+  }, [user, selectedDate, toast]);
 
   const handleClickDelete = (id: string) => {
     setActivityIdToDelete(id);
