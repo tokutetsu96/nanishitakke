@@ -48,21 +48,14 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
     null
   );
   const cancelRef = useRef(null);
-  const lastFetchedRef = useRef<{ userId: string; date: string } | null>(null);
+
   useEffect(() => {
     const fetchActivities = async () => {
       if (!user) {
         setLoading(false);
         return;
       }
-      // 値の変更がない場合、再度取得しない
-      if (
-        lastFetchedRef.current?.userId === user.id &&
-        lastFetchedRef.current?.date === selectedDate
-      ) {
-        setLoading(false);
-        return;
-      }
+
       try {
         setLoading(true);
         const { data, error } = await supabase
@@ -102,7 +95,8 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
     };
 
     fetchActivities();
-  }, [user, selectedDate, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, selectedDate, toast]);
 
   const handleClickDelete = (id: string) => {
     setActivityIdToDelete(id);
