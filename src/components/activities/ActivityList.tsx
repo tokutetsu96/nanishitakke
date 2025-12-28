@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Box,
   Flex,
@@ -10,6 +10,14 @@ import {
   AlertIcon,
   Center,
   useToast,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+  Button,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { supabase } from '@/lib/supabase';
@@ -35,6 +43,10 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [activityIdToDelete, setActivityIdToDelete] = useState<string | null>(null);
+  const cancelRef = useRef(null);
+
   useEffect(() => {
     const fetchActivities = async () => {
       console.log('user', user);
@@ -59,11 +71,17 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
         }
 
         setActivities(data || []);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        let errorMessage = '活動の読み込みに失敗しました。';
+        if (err instanceof Error) {
+          errorMessage = `活動の読み込みに失敗しました: ${err.message}`;
+        } else if (typeof err === 'object' && err !== null && 'message' in err) {
+            errorMessage = `活動の読み込みに失敗しました: ${(err as any).message}`;
+        }
+        setError(errorMessage);
         toast({
           title: 'エラー',
-          description: `活動の読み込みに失敗しました: ${err.message}`,
+          description: errorMessage,
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -76,13 +94,20 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
     fetchActivities();
   }, [user, selectedDate, toast]); // Add toast to dependency array
 
-  const handleDelete = async (id: string) => {
+  const handleClickDelete = (id: string) => {
+    setActivityIdToDelete(id);
+    onOpen();
+  };
+
+  const confirmDelete = async () => {
+    if (!activityIdToDelete) return;
+
     try {
-      const { error } = await supabase.from('activities').delete().eq('id', id);
+      const { error } = await supabase.from('activities').delete().eq('id', activityIdToDelete);
       if (error) {
         throw error;
       }
-      setActivities(activities.filter((act) => act.id !== id));
+      setActivities(activities.filter((act) => act.id !== activityIdToDelete));
       toast({
         title: '成功',
         description: '活動を削除しました。',
@@ -90,15 +115,24 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
         duration: 3000,
         isClosable: true,
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      let errorMessage = '活動の削除に失敗しました。';
+      if (err instanceof Error) {
+        errorMessage = `活動の削除に失敗しました: ${err.message}`;
+      } else if (typeof err === 'object' && err !== null && 'message' in err) {
+        errorMessage = `活動の削除に失敗しました: ${(err as any).message}`;
+      }
+      setError(errorMessage);
       toast({
         title: 'エラー',
-        description: `活動の削除に失敗しました: ${err.message}`,
+        description: errorMessage,
         status: 'error',
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      onClose();
+      setActivityIdToDelete(null);
     }
   };
 
@@ -148,11 +182,37 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
               icon={<DeleteIcon />}
               variant="ghost"
               colorScheme="red"
-              onClick={() => handleDelete(activity.id)}
+              onClick={() => handleClickDelete(activity.id)}
             />
           </Flex>
         </CuteBox>
       ))}
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              活動を削除
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              この活動を本当に削除しますか？この操作は取り消せません。
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                キャンセル
+              </Button>
+              <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+                削除
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </VStack>
   );
 });

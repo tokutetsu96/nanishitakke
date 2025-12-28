@@ -19,6 +19,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import "./MainPage.module.scss";
 
 registerLocale("ja", ja);
 
@@ -104,12 +105,6 @@ const MainPage = () => {
         onActivityAdded={handleActivityAdded}
       />
 
-      {/* CSSの微調整：DatePickerを親要素の幅いっぱいに広げる */}
-      <style>{`
-        .datepicker-full-width {
-          width: 100%;
-        }
-      `}</style>
     </>
   );
 };
