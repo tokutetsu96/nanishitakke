@@ -22,7 +22,6 @@ const AppHeader = ({ onLogout }: AppHeaderProps) => {
           <Heading as="h1" size="md" color="gray.700">
             なにしたっけ
           </Heading>
-          <Spacer />
           <Image src={NanishitakkeLogo} alt="なにしたっけ Logo" h="40px" />
           <Spacer />
           <IconButton
