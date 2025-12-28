@@ -19,7 +19,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import "./MainPage.module.scss";
+import "./MainPage.scss";
 
 registerLocale("ja", ja);
 
@@ -105,7 +105,6 @@ const MainPage = () => {
         onClose={onClose}
         onActivityAdded={handleActivityAdded}
       />
-
     </>
   );
 };
