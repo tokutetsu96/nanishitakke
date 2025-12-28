@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -7,24 +7,35 @@ import {
   VStack,
   useDisclosure,
   Input,
-  Text, // Import Text component
-} from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
-import { supabase } from '@/lib/supabase';
-import ActivityList from '@/components/activities/ActivityList';
-import AddActivityModal from '@/components/activities/AddActivityModal';
-import AppHeader from '@/components/layout/AppHeader';
-import { formatDateWithDay } from '@/utils/dateUtils'; // Import the utility function
+  InputGroup,
+  InputRightElement,
+} from "@chakra-ui/react";
+import { AddIcon, CalendarIcon } from "@chakra-ui/icons";
+import { supabase } from "@/lib/supabase";
+import ActivityList from "@/components/activities/ActivityList";
+import AddActivityModal from "@/components/activities/AddActivityModal";
+import AppHeader from "@/components/layout/AppHeader";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { ja } from "date-fns/locale/ja";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
+
+registerLocale("ja", ja);
 
 const MainPage = () => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [refreshKey, setRefreshKey] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10)); // Default to today
+
+  // Date型で管理すると操作しやすいため変更
+  const [startDate, setStartDate] = useState(new Date());
+
+  // ActivityListに渡す用の文字列 (YYYY-MM-DD)
+  const selectedDateString = format(startDate, "yyyy-MM-dd");
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
   };
 
   const handleActivityAdded = () => {
@@ -36,29 +47,42 @@ const MainPage = () => {
       <Box bg="gray.50" minH="100vh">
         <AppHeader onLogout={handleLogout} />
 
-        {/* Main Content */}
         <Container maxW="container.md" py={8}>
           <VStack spacing={8} align="stretch">
             {/* Date Selector */}
-            <Box w="full" textAlign="center">
-              <Text fontSize="xl" fontWeight="bold" mb={2}>
-                {formatDateWithDay(selectedDate)}
-              </Text>
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                size="lg"
-                variant="filled"
-              />
+            <Box w="full">
+              <InputGroup size="lg">
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date: Date | null) =>
+                    setStartDate(date || new Date())
+                  }
+                  locale="ja"
+                  dateFormat="yyyy/MM/dd (eee)"
+                  customInput={
+                    <Input
+                      variant="filled"
+                      textAlign="center"
+                      fontWeight="bold"
+                      cursor="pointer"
+                    />
+                  }
+                  wrapperClassName="datepicker-full-width"
+                />
+                <InputRightElement pointerEvents="none">
+                  <CalendarIcon color="gray.500" />
+                </InputRightElement>
+              </InputGroup>
             </Box>
 
             {/* Activity List */}
             <Box w="full">
-              <ActivityList key={refreshKey} selectedDate={selectedDate} />
+              <ActivityList
+                key={refreshKey}
+                selectedDate={selectedDateString}
+              />
             </Box>
 
-            {/* Add Activity Button */}
             <Button
               onClick={onOpen}
               leftIcon={<AddIcon />}
@@ -79,6 +103,13 @@ const MainPage = () => {
         onClose={onClose}
         onActivityAdded={handleActivityAdded}
       />
+
+      {/* CSSの微調整：DatePickerを親要素の幅いっぱいに広げる */}
+      <style>{`
+        .datepicker-full-width {
+          width: 100%;
+        }
+      `}</style>
     </>
   );
 };
