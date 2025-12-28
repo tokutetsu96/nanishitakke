@@ -4,19 +4,16 @@ import {
   Box,
   Button,
   Container,
-  Flex,
-  Heading,
-  IconButton,
-  Spacer,
   VStack,
   useDisclosure,
   Input,
+  Text,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
-import { FaSignOutAlt } from 'react-icons/fa';
 import { supabase } from '@/lib/supabase';
 import ActivityList from '@/components/activities/ActivityList';
 import AddActivityModal from '@/components/activities/AddActivityModal';
+import AppHeader from '@/components/layout/AppHeader'; // Import AppHeader
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -36,24 +33,7 @@ const MainPage = () => {
   return (
     <>
       <Box bg="gray.50" minH="100vh">
-        {/* Header */}
-        <Box as="header" bg="white" shadow="sm">
-          <Container maxW="container.md" py={4}>
-            <Flex align="center">
-              <Heading as="h1" size="md" color="gray.700">
-                なにしたっけ
-              </Heading>
-              <Spacer />
-              <IconButton
-                aria-label="Logout"
-                icon={<FaSignOutAlt />}
-                variant="ghost"
-                colorScheme="pink"
-                onClick={handleLogout}
-              />
-            </Flex>
-          </Container>
-        </Box>
+        <AppHeader onLogout={handleLogout} /> {/* Use AppHeader component */}
 
         {/* Main Content */}
         <Container maxW="container.md" py={8}>
