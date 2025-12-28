@@ -13,30 +13,31 @@ import {
   Input,
   Textarea,
   VStack,
-  useToast, // Use Chakra UI's useToast
+  useToast,
 } from '@chakra-ui/react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../context/AuthContext';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 interface AddActivityModalProps {
-  isOpen: boolean; // Revert to isOpen
+  isOpen: boolean;
   onClose: () => void;
   onActivityAdded: () => void;
 }
 
 const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModalProps) => {
   const { user } = useAuth();
-  const toast = useToast(); // Use Chakra UI's useToast
+  const toast = useToast();
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10)); // New state for date
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [content, setContent] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Revert to isLoading
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!user || !content || !startTime) {
+    if (!user || !content || !startTime || !date) { // Add date to validation
       toast({
         title: '入力エラー',
-        description: '開始時刻と内容は必須です。',
+        description: '日付、開始時刻、内容は必須です。',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -44,11 +45,11 @@ const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModal
       return;
     }
 
-    setIsLoading(true); // Revert to setIsLoading
+    setIsLoading(true);
     try {
       const { error } = await supabase.from('activities').insert({
         user_id: user.id,
-        date: new Date().toISOString().slice(0, 10), // Today's date
+        date: date, // Use date state
         start_time: startTime,
         end_time: endTime || null,
         content: content,
@@ -66,10 +67,11 @@ const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModal
       onActivityAdded();
       onClose();
       // Reset form
+      setDate(new Date().toISOString().slice(0, 10)); // Reset date to today
       setStartTime('');
       setEndTime('');
       setContent('');
-    } catch (err: any) { // Use 'any' for simpler error handling if no specific type is known
+    } catch (err: any) {
       toast({
         title: 'エラー',
         description: `記録に失敗しました: ${err.message}`,
@@ -78,22 +80,31 @@ const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModal
         isClosable: true,
       });
     } finally {
-      setIsLoading(false); // Revert to setIsLoading
+      setIsLoading(false);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered> {/* Revert to isOpen and onClose */}
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent> {/* Remove borderRadius */}
+      <ModalContent>
         <ModalHeader>新しい活動を記録</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <VStack gap={4}>
-            <FormControl isRequired> {/* Revert to FormControl isRequired */}
+            <FormControl isRequired>
+              <FormLabel>日付</FormLabel>
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </FormControl>
+            <FormControl isRequired>
               <FormLabel>開始時刻</FormLabel>
               <Input
                 type="time"
+                step="300"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
@@ -102,11 +113,12 @@ const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModal
               <FormLabel>終了時刻</FormLabel>
               <Input
                 type="time"
+                step="300"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </FormControl>
-            <FormControl isRequired> {/* Revert to FormControl isRequired */}
+            <FormControl isRequired>
               <FormLabel>内容</FormLabel>
               <Textarea
                 value={content}
@@ -121,9 +133,9 @@ const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModal
             キャンセル
           </Button>
           <Button
-            colorScheme="pink" // Revert to colorScheme
+            colorScheme="pink"
             onClick={handleSubmit}
-            isLoading={isLoading} // Revert to isLoading
+            isLoading={isLoading}
           >
             記録する
           </Button>

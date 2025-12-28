@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
@@ -12,16 +12,23 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../context/AuthContext';
-import type { Activity } from '../types';
-import CuteBox from './CuteBox';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
+import type { Activity } from '@/types';
+import CuteBox from '@/components/common/CuteBox';
 
 interface ActivityListProps {
   selectedDate: string;
 }
 
-const ActivityList = ({ selectedDate }: ActivityListProps) => {
+// Helper function to format time from HH:mm:ss to HH:mm
+const formatTime = (timeString: string | null | undefined): string => {
+  if (!timeString) return '';
+  // Assuming timeString is in "HH:mm:ss" format
+  return timeString.slice(0, 5);
+};
+
+const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
   const { user } = useAuth();
   const toast = useToast();
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -30,7 +37,13 @@ const ActivityList = ({ selectedDate }: ActivityListProps) => {
 
   useEffect(() => {
     const fetchActivities = async () => {
-      if (!user) return;
+      console.log('user', user);
+      console.log('selectedDate', selectedDate);
+      console.log('toast', toast);
+      if (!user) {
+        setLoading(false); // Ensure loading is false if no user
+        return;
+      }
 
       try {
         setLoading(true);
@@ -61,7 +74,7 @@ const ActivityList = ({ selectedDate }: ActivityListProps) => {
     };
 
     fetchActivities();
-  }, [user, selectedDate]); // Add selectedDate to dependency array
+  }, [user, selectedDate, toast]); // Add toast to dependency array
 
   const handleDelete = async (id: string) => {
     try {
@@ -109,7 +122,7 @@ const ActivityList = ({ selectedDate }: ActivityListProps) => {
   if (activities.length === 0) {
     return (
       <Text color="gray.500" textAlign="center" p={10}>
-        まだ今日の記録はありません。
+        指定した日付の記録はありません。
       </Text>
     );
   }
@@ -126,7 +139,7 @@ const ActivityList = ({ selectedDate }: ActivityListProps) => {
           <Flex align="center">
             <Box flex="1">
               <Text fontWeight="bold" color="gray.700">
-                {activity.start_time} - {activity.end_time || ''}
+                {formatTime(activity.start_time)} - {formatTime(activity.end_time)}
               </Text>
               <Text color="gray.600">{activity.content}</Text>
             </Box>
@@ -142,6 +155,6 @@ const ActivityList = ({ selectedDate }: ActivityListProps) => {
       ))}
     </VStack>
   );
-};
+});
 
 export default ActivityList;

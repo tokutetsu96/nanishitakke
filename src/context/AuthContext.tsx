@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState} from 'react';
 import type { ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/lib/supabase';
 import type { Session, User } from '@supabase/supabase-js'; // 'type' を追加
 
 interface AuthContextType {

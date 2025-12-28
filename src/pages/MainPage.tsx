@@ -10,13 +10,13 @@ import {
   Spacer,
   VStack,
   useDisclosure,
-  Input, // Add Input component
+  Input,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { FaSignOutAlt } from 'react-icons/fa';
-import { supabase } from '../lib/supabase';
-import ActivityList from '../components/ActivityList';
-import AddActivityModal from '../components/AddActivityModal';
+import { supabase } from '@/lib/supabase';
+import ActivityList from '@/components/activities/ActivityList';
+import AddActivityModal from '@/components/activities/AddActivityModal';
 
 const MainPage = () => {
   const navigate = useNavigate();
