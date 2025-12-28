@@ -69,6 +69,7 @@ const MainPage = () => {
                     />
                   }
                   wrapperClassName="datepicker-full-width"
+                  portalId="react-datepicker-portal"
                 />
                 <InputRightElement pointerEvents="none">
                   <CalendarIcon color="gray.500" />
