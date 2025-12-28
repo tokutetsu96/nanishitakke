@@ -7,12 +7,14 @@ import {
   VStack,
   useDisclosure,
   Input,
+  Text, // Import Text component
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { supabase } from '@/lib/supabase';
 import ActivityList from '@/components/activities/ActivityList';
 import AddActivityModal from '@/components/activities/AddActivityModal';
-import AppHeader from '@/components/layout/AppHeader'; // Import AppHeader
+import AppHeader from '@/components/layout/AppHeader';
+import { formatDateWithDay } from '@/utils/dateUtils'; // Import the utility function
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -32,13 +34,16 @@ const MainPage = () => {
   return (
     <>
       <Box bg="gray.50" minH="100vh">
-        <AppHeader onLogout={handleLogout} /> {/* Use AppHeader component */}
+        <AppHeader onLogout={handleLogout} />
 
         {/* Main Content */}
         <Container maxW="container.md" py={8}>
           <VStack spacing={8} align="stretch">
             {/* Date Selector */}
-            <Box w="full">
+            <Box w="full" textAlign="center">
+              <Text fontSize="xl" fontWeight="bold" mb={2}>
+                {formatDateWithDay(selectedDate)}
+              </Text>
               <Input
                 type="date"
                 value={selectedDate}
