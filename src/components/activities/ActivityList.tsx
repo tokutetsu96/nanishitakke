@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Flex,
@@ -18,12 +18,12 @@ import {
   AlertDialogFooter,
   Button,
   useDisclosure,
-} from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/context/AuthContext';
-import type { Activity } from '@/types';
-import CuteBox from '@/components/common/CuteBox';
+} from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
+import type { Activity } from "@/types";
+import CuteBox from "@/components/common/CuteBox";
 
 interface ActivityListProps {
   selectedDate: string;
@@ -31,7 +31,7 @@ interface ActivityListProps {
 
 // Helper function to format time from HH:mm:ss to HH:mm
 const formatTime = (timeString: string | null | undefined): string => {
-  if (!timeString) return '';
+  if (!timeString) return "";
   // Assuming timeString is in "HH:mm:ss" format
   return timeString.slice(0, 5);
 };
@@ -44,14 +44,16 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [activityIdToDelete, setActivityIdToDelete] = useState<string | null>(null);
+  const [activityIdToDelete, setActivityIdToDelete] = useState<string | null>(
+    null
+  );
   const cancelRef = useRef(null);
 
   useEffect(() => {
     const fetchActivities = async () => {
-      console.log('user', user);
-      console.log('selectedDate', selectedDate);
-      console.log('toast', toast);
+      console.log("user", user);
+      console.log("selectedDate", selectedDate);
+      console.log("toast", toast);
       if (!user) {
         setLoading(false); // Ensure loading is false if no user
         return;
@@ -60,11 +62,11 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
       try {
         setLoading(true);
         const { data, error } = await supabase
-          .from('activities')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('date', selectedDate) // Filter by selectedDate
-          .order('start_time', { ascending: true });
+          .from("activities")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("date", selectedDate) // Filter by selectedDate
+          .order("start_time", { ascending: true });
 
         if (error) {
           throw error;
@@ -72,17 +74,21 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
 
         setActivities(data || []);
       } catch (err: unknown) {
-        let errorMessage = '活動の読み込みに失敗しました。';
+        let errorMessage = "活動の読み込みに失敗しました。";
         if (err instanceof Error) {
           errorMessage = `活動の読み込みに失敗しました: ${err.message}`;
-        } else if (typeof err === 'object' && err !== null && 'message' in err) {
-            errorMessage = `活動の読み込みに失敗しました: ${(err as any).message}`;
+        } else if (
+          typeof err === "object" &&
+          err !== null &&
+          "message" in err
+        ) {
+          errorMessage = `活動の読み込みに失敗しました: ${(err as Error).message}`;
         }
         setError(errorMessage);
         toast({
-          title: 'エラー',
+          title: "エラー",
           description: errorMessage,
-          status: 'error',
+          status: "error",
           duration: 5000,
           isClosable: true,
         });
@@ -103,30 +109,33 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
     if (!activityIdToDelete) return;
 
     try {
-      const { error } = await supabase.from('activities').delete().eq('id', activityIdToDelete);
+      const { error } = await supabase
+        .from("activities")
+        .delete()
+        .eq("id", activityIdToDelete);
       if (error) {
         throw error;
       }
       setActivities(activities.filter((act) => act.id !== activityIdToDelete));
       toast({
-        title: '成功',
-        description: '活動を削除しました。',
-        status: 'success',
+        title: "成功",
+        description: "活動を削除しました。",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
     } catch (err: unknown) {
-      let errorMessage = '活動の削除に失敗しました。';
+      let errorMessage = "活動の削除に失敗しました。";
       if (err instanceof Error) {
         errorMessage = `活動の削除に失敗しました: ${err.message}`;
-      } else if (typeof err === 'object' && err !== null && 'message' in err) {
-        errorMessage = `活動の削除に失敗しました: ${(err as any).message}`;
+      } else if (typeof err === "object" && err !== null && "message" in err) {
+        errorMessage = `活動の削除に失敗しました: ${(err as Error).message}`;
       }
       setError(errorMessage);
       toast({
-        title: 'エラー',
+        title: "エラー",
         description: errorMessage,
-        status: 'error',
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
@@ -164,16 +173,12 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
   return (
     <VStack spacing={4} align="stretch">
       {activities.map((activity) => (
-        <CuteBox
-          key={activity.id}
-          p={4}
-          bg="white"
-          borderRadius="xl"
-        >
+        <CuteBox key={activity.id} p={4} bg="white" borderRadius="xl">
           <Flex align="center">
             <Box flex="1">
               <Text fontWeight="bold" color="gray.700">
-                {formatTime(activity.start_time)} - {formatTime(activity.end_time)}
+                {formatTime(activity.start_time)} -{" "}
+                {formatTime(activity.end_time)}
               </Text>
               <Text color="gray.600">{activity.content}</Text>
             </Box>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -14,9 +14,9 @@ import {
   Textarea,
   VStack,
   useToast,
-} from '@chakra-ui/react';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/context/AuthContext';
+} from "@chakra-ui/react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/context/AuthContext";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -24,21 +24,26 @@ interface AddActivityModalProps {
   onActivityAdded: () => void;
 }
 
-const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModalProps) => {
+const AddActivityModal = ({
+  isOpen,
+  onClose,
+  onActivityAdded,
+}: AddActivityModalProps) => {
   const { user } = useAuth();
   const toast = useToast();
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10)); // New state for date
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [content, setContent] = useState('');
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!user || !content || !startTime || !date) { // Add date to validation
+    if (!user || !content || !startTime || !date) {
+      // Add date to validation
       toast({
-        title: '入力エラー',
-        description: '日付、開始時刻、内容は必須です。',
-        status: 'error',
+        title: "入力エラー",
+        description: "日付、開始時刻、内容は必須です。",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
@@ -47,7 +52,7 @@ const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModal
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.from('activities').insert({
+      const { error } = await supabase.from("activities").insert({
         user_id: user.id,
         date: date, // Use date state
         start_time: startTime,
@@ -58,9 +63,9 @@ const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModal
       if (error) throw error;
 
       toast({
-        title: '成功',
-        description: '新しい活動を記録しました。',
-        status: 'success',
+        title: "成功",
+        description: "新しい活動を記録しました。",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
@@ -68,14 +73,14 @@ const AddActivityModal = ({ isOpen, onClose, onActivityAdded }: AddActivityModal
       onClose();
       // Reset form
       setDate(new Date().toISOString().slice(0, 10)); // Reset date to today
-      setStartTime('');
-      setEndTime('');
-      setContent('');
-    } catch (err: any) {
+      setStartTime("");
+      setEndTime("");
+      setContent("");
+    } catch (err: unknown) {
       toast({
-        title: 'エラー',
-        description: `記録に失敗しました: ${err.message}`,
-        status: 'error',
+        title: "エラー",
+        description: `記録に失敗しました: ${(err as Error).message}`,
+        status: "error",
         duration: 5000,
         isClosable: true,
       });
