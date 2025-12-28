@@ -7,7 +7,6 @@ import {
   VStack,
   useDisclosure,
   Input,
-  Text,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { supabase } from '@/lib/supabase';
