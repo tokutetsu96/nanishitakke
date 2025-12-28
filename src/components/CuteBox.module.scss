@@ -1,0 +1,15 @@
+// src/components/CuteBox.module.scss
+
+.cuteBorder {
+  border: 2px solid #000;
+  border-radius: 20px / 18px; // A bit irregular
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.75);
+}
+
+.puffyHover {
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 4px 4px 0px 0px rgba(246, 173, 198, 0.8); // A pinkish shadow
+  }
+}
