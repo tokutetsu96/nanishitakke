@@ -3,11 +3,16 @@ import {
   Container,
   Flex,
   Heading,
-  IconButton,
   Spacer,
   Image,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar,
 } from '@chakra-ui/react';
-import { FaSignOutAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import NanishitakkeLogo from '@/assets/nanishitakke.png';
 
 interface AppHeaderProps {
@@ -15,6 +20,8 @@ interface AppHeaderProps {
 }
 
 const AppHeader = ({ onLogout }: AppHeaderProps) => {
+  const { user } = useAuth();
+
   return (
     <Box as="header" bg="white" shadow="sm">
       <Container maxW="container.md" py={4}>
@@ -24,13 +31,23 @@ const AppHeader = ({ onLogout }: AppHeaderProps) => {
           </Heading>
           <Image src={NanishitakkeLogo} alt="なにしたっけ Logo" h="40px" />
           <Spacer />
-          <IconButton
-            aria-label="Logout"
-            icon={<FaSignOutAlt />}
-            variant="ghost"
-            colorScheme="pink"
-            onClick={onLogout}
-          />
+          {user && (
+            <Menu>
+              <MenuButton>
+                <Avatar
+                  size="sm"
+                  src={user.user_metadata?.avatar_url}
+                  name={user.user_metadata?.full_name}
+                />
+              </MenuButton>
+              <MenuList>
+                <MenuItem as={Link} to="/profile">
+                  プロフィール
+                </MenuItem>
+                <MenuItem onClick={onLogout}>ログアウト</MenuItem>
+              </MenuList>
+            </Menu>
+          )}
         </Flex>
       </Container>
     </Box>
