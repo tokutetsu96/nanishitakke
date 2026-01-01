@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/context/AuthContext";
-import LoginPage from "@/pages/login/LoginPage";
-import MainPage from "@/pages/main/MainPage";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from '@/context/AuthContext';
+import LoginPage from '@/pages/login/LoginPage';
+import MainPage from '@/pages/main/MainPage';
+import ProfilePage from '@/pages/profile/ProfilePage';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 function App() {
   return (
@@ -15,6 +16,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <MainPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />
