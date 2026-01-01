@@ -35,8 +35,16 @@ const MainPage = () => {
   const selectedDateString = format(startDate, "yyyy-MM-dd");
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/login", { replace: true });
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.warn("ログアウト発生:", error);
+      }
+    } catch (error) {
+      console.error("ログアウトエラー:", error);
+    } finally {
+      navigate("/login", { replace: true });
+    }
   };
 
   const handleActivityAdded = () => {
