@@ -35,10 +35,19 @@ const MainPage = () => {
   const selectedDateString = format(startDate, "yyyy-MM-dd");
 
   const handleLogout = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.warn("ログアウト発生:", error);
+        console.warn("ログアウト警告:", error);
       }
     } catch (error) {
       console.error("ログアウトエラー:", error);
