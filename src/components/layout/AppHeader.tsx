@@ -44,7 +44,9 @@ const AppHeader = ({ onLogout }: AppHeaderProps) => {
                 <MenuItem as={Link} to="/profile">
                   プロフィール
                 </MenuItem>
-                <MenuItem onClick={onLogout}>ログアウト</MenuItem>
+                <MenuItem onClick={onLogout} as="button">
+                  ログアウト
+                </MenuItem>
               </MenuList>
             </Menu>
           )}
