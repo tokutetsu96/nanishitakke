@@ -10,10 +10,11 @@ import {
   MenuList,
   MenuItem,
   Avatar,
-} from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import NanishitakkeLogo from '@/assets/nanishitakke.png';
+  Text,
+} from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import NanishitakkeLogo from "@/assets/nanishitakke.png";
 
 interface AppHeaderProps {
   onLogout: () => void;
@@ -33,7 +34,10 @@ const AppHeader = ({ onLogout }: AppHeaderProps) => {
           <Spacer />
           {user && (
             <Menu>
-              <MenuButton>
+              <MenuButton as={Flex} alignItems="center" gap={2}>
+                <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                  {user.user_metadata?.full_name}
+                </Text>
                 <Avatar
                   size="sm"
                   src={user.user_metadata?.avatar_url}
