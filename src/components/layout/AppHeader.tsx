@@ -14,6 +14,8 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
+import { useState, useEffect } from "react";
 import NanishitakkeLogo from "@/assets/nanishitakke.png";
 
 interface AppHeaderProps {
@@ -22,6 +24,30 @@ interface AppHeaderProps {
 
 const AppHeader = ({ onLogout }: AppHeaderProps) => {
   const { user } = useAuth();
+  const [profile, setProfile] = useState<{
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("プロフィール取得エラー:", error);
+      } else if (data) {
+        setProfile(data);
+      }
+    };
+
+    fetchProfile();
+  }, [user]);
 
   return (
     <Box as="header" bg="white" shadow="sm">
@@ -32,17 +58,17 @@ const AppHeader = ({ onLogout }: AppHeaderProps) => {
           </Heading>
           <Image src={NanishitakkeLogo} alt="なにしたっけ Logo" h="40px" />
           <Spacer />
-          {user && (
+          {user && profile && (
             <Menu>
               <MenuButton>
                 <Flex alignItems="center" gap={2}>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                    {user.user_metadata?.full_name}
+                    {profile.full_name}
                   </Text>
                   <Avatar
                     size="sm"
-                    src={user.user_metadata?.avatar_url}
-                    name={user.user_metadata?.full_name}
+                    src={profile.avatar_url || ""}
+                    name={profile.full_name || ""}
                   />
                 </Flex>
               </MenuButton>

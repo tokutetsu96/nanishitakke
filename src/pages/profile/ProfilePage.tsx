@@ -11,7 +11,7 @@ import {
   useToast,
   Flex,
 } from "@chakra-ui/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
@@ -20,14 +20,35 @@ const ProfilePage = () => {
   const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState(
-    user?.user_metadata?.full_name || ""
-  );
-  const [avatarUrl, setAvatarUrl] = useState(
-    user?.user_metadata?.avatar_url || ""
-  );
+  const [fullName, setFullName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // profilesテーブルからデータを取得
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("プロフィール取得エラー:", error);
+      } else if (data) {
+        setFullName(data.full_name || "");
+        setAvatarUrl(data.avatar_url || "");
+      }
+      setLoading(false);
+    };
+
+    fetchProfile();
+  }, [user]);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -61,21 +82,22 @@ const ProfilePage = () => {
     const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
     const newAvatarUrl = data.publicUrl;
 
-    setAvatarUrl(newAvatarUrl);
+    // profilesテーブルを更新
+    const { error: updateProfileError } = await supabase
+      .from("profiles")
+      .update({ avatar_url: newAvatarUrl })
+      .eq("id", user.id);
 
-    const { error: updateUserError } = await supabase.auth.updateUser({
-      data: { avatar_url: newAvatarUrl },
-    });
-
-    if (updateUserError) {
+    if (updateProfileError) {
       toast({
         title: "アバターの更新に失敗しました。",
-        description: updateUserError.message,
+        description: updateProfileError.message,
         status: "error",
         duration: 5000,
         isClosable: true,
       });
     } else {
+      setAvatarUrl(newAvatarUrl);
       toast({
         title: "アバターが更新されました。",
         status: "success",
@@ -89,9 +111,11 @@ const ProfilePage = () => {
   const handleUpdateProfile = async () => {
     if (!user) return;
 
-    const { error } = await supabase.auth.updateUser({
-      data: { full_name: fullName },
-    });
+    // profilesテーブルを更新
+    const { error } = await supabase
+      .from("profiles")
+      .update({ full_name: fullName })
+      .eq("id", user.id);
 
     if (error) {
       toast({
@@ -108,9 +132,17 @@ const ProfilePage = () => {
         duration: 3000,
         isClosable: true,
       });
+      navigate("/");
     }
-    navigate("/");
   };
+
+  if (loading) {
+    return (
+      <Container maxW="container.md" py={8}>
+        <Heading as="h1">読み込み中...</Heading>
+      </Container>
+    );
+  }
 
   return (
     <Container maxW="container.md" py={8}>
