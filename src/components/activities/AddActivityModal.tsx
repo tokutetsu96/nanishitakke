@@ -15,8 +15,8 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { prisma } from "@/lib/prisma";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -52,15 +52,15 @@ const AddActivityModal = ({
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.from("activities").insert({
-        user_id: user.id,
-        date: date, // Use date state
-        start_time: startTime,
-        end_time: endTime || null,
-        content: content,
+      await prisma.activities.create({
+        data: {
+          user_id: user.id,
+          date: date,
+          start_time: startTime,
+          end_time: endTime || null,
+          content: content,
+        },
       });
-
-      if (error) throw error;
 
       toast({
         title: "成功",
