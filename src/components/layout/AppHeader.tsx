@@ -34,15 +34,17 @@ const AppHeader = ({ onLogout }: AppHeaderProps) => {
           <Spacer />
           {user && (
             <Menu>
-              <MenuButton as={Flex} alignItems="center" gap={2}>
-                <Text fontSize="sm" fontWeight="medium" color="gray.700">
-                  {user.user_metadata?.full_name}
-                </Text>
-                <Avatar
-                  size="sm"
-                  src={user.user_metadata?.avatar_url}
-                  name={user.user_metadata?.full_name}
-                />
+              <MenuButton>
+                <Flex alignItems="center" gap={2}>
+                  <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                    {user.user_metadata?.full_name}
+                  </Text>
+                  <Avatar
+                    size="sm"
+                    src={user.user_metadata?.avatar_url}
+                    name={user.user_metadata?.full_name}
+                  />
+                </Flex>
               </MenuButton>
               <MenuList>
                 <MenuItem as={Link} to="/profile">

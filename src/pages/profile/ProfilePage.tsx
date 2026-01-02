@@ -14,10 +14,12 @@ import {
 import { useState, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const { user } = useAuth();
   const toast = useToast();
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState(
     user?.user_metadata?.full_name || ""
   );
@@ -107,6 +109,7 @@ const ProfilePage = () => {
         isClosable: true,
       });
     }
+    navigate("/");
   };
 
   return (
