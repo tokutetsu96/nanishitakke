@@ -95,8 +95,8 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
     };
 
     fetchActivities();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     // userにした場合、タブ切り替えで再レンダリングされてしまう
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, selectedDate, toast]);
 
   const handleClickDelete = (id: string) => {
