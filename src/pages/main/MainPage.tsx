@@ -28,10 +28,8 @@ const MainPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Date型で管理すると操作しやすいため変更
   const [startDate, setStartDate] = useState(new Date());
 
-  // ActivityListに渡す用の文字列 (YYYY-MM-DD)
   const selectedDateString = format(startDate, "yyyy-MM-dd");
 
   const handleLogout = async () => {

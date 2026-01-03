@@ -1,28 +1,27 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Button, Center, Heading, Text, VStack } from '@chakra-ui/react';
-import { FaGoogle } from 'react-icons/fa';
-import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, Center, Heading, Text, VStack } from "@chakra-ui/react";
+import { FaGoogle } from "react-icons/fa";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 const LoginPage = () => {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // ログイン済みならトップページへ飛ばすだけ
     if (session) {
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     }
   }, [session, navigate]);
 
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
         queryParams: {
-          prompt: 'select_account',
-          access_type: 'offline',
+          prompt: "select_account",
+          access_type: "offline",
         },
       },
     });

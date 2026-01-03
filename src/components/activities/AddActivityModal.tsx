@@ -31,7 +31,7 @@ const AddActivityModal = ({
 }: AddActivityModalProps) => {
   const { user } = useAuth();
   const toast = useToast();
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10)); // New state for date
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [content, setContent] = useState("");
@@ -39,7 +39,6 @@ const AddActivityModal = ({
 
   const handleSubmit = async () => {
     if (!user || !content || !startTime || !date) {
-      // Add date to validation
       toast({
         title: "入力エラー",
         description: "日付、開始時刻、内容は必須です。",
@@ -54,7 +53,7 @@ const AddActivityModal = ({
     try {
       const { error } = await supabase.from("activities").insert({
         user_id: user.id,
-        date: date, // Use date state
+        date: date,
         start_time: startTime,
         end_time: endTime || null,
         content: content,
@@ -71,8 +70,8 @@ const AddActivityModal = ({
       });
       onActivityAdded();
       onClose();
-      // Reset form
-      setDate(new Date().toISOString().slice(0, 10)); // Reset date to today
+
+      setDate(new Date().toISOString().slice(0, 10));
       setStartTime("");
       setEndTime("");
       setContent("");

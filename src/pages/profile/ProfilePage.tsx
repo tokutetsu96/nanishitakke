@@ -26,7 +26,6 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // profilesテーブルからデータを取得
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user) return;
@@ -82,7 +81,6 @@ const ProfilePage = () => {
     const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
     const newAvatarUrl = data.publicUrl;
 
-    // profilesテーブルを更新
     const { error: updateProfileError } = await supabase
       .from("profiles")
       .update({ avatar_url: newAvatarUrl })
@@ -111,7 +109,6 @@ const ProfilePage = () => {
   const handleUpdateProfile = async () => {
     if (!user) return;
 
-    // profilesテーブルを更新
     const { error } = await supabase
       .from("profiles")
       .update({ full_name: fullName })

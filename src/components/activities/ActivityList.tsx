@@ -29,10 +29,9 @@ interface ActivityListProps {
   selectedDate: string;
 }
 
-// Helper function to format time from HH:mm:ss to HH:mm
 const formatTime = (timeString: string | null | undefined): string => {
   if (!timeString) return "";
-  // Assuming timeString is in "HH:mm:ss" format
+
   return timeString.slice(0, 5);
 };
 
@@ -62,7 +61,7 @@ const ActivityList = React.memo(({ selectedDate }: ActivityListProps) => {
           .from("activities")
           .select("*")
           .eq("user_id", user.id)
-          .eq("date", selectedDate) // Filter by selectedDate
+          .eq("date", selectedDate)
           .order("start_time", { ascending: true });
 
         if (error) {
