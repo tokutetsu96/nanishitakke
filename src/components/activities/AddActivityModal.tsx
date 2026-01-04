@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -17,17 +17,20 @@ import {
 } from "@chakra-ui/react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import type { Activity } from "@/types";
 
 interface AddActivityModalProps {
   isOpen: boolean;
   onClose: () => void;
   onActivityAdded: () => void;
+  initialActivity?: Activity | null;
 }
 
 const AddActivityModal = ({
   isOpen,
   onClose,
   onActivityAdded,
+  initialActivity,
 }: AddActivityModalProps) => {
   const { user } = useAuth();
   const toast = useToast();
@@ -36,6 +39,25 @@ const AddActivityModal = ({
   const [endTime, setEndTime] = useState("");
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialActivity) {
+        setDate(initialActivity.date);
+        setStartTime(initialActivity.start_time);
+        setEndTime(initialActivity.end_time || "");
+        setContent(initialActivity.content);
+      } else {
+        // Only reset if opening for new activity, don't reset if just re-rendering
+        // But we want to preserve date usually if adding multiple?
+        // For now, let's reset to defaults if no initialActivity
+        setDate(new Date().toISOString().slice(0, 10));
+        setStartTime("");
+        setEndTime("");
+        setContent("");
+      }
+    }
+  }, [isOpen, initialActivity]);
 
   const handleSubmit = async () => {
     if (!user || !content || !startTime || !date) {
@@ -51,30 +73,59 @@ const AddActivityModal = ({
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.from("activities").insert({
-        user_id: user.id,
-        date: date,
-        start_time: startTime,
-        end_time: endTime || null,
-        content: content,
-      });
+      if (initialActivity) {
+        // Update existing activity
+        const { error } = await supabase
+          .from("activities")
+          .update({
+            date: date,
+            start_time: startTime,
+            end_time: endTime || null,
+            content: content,
+          })
+          .eq("id", initialActivity.id)
+          .eq("user_id", user.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "成功",
-        description: "新しい活動を記録しました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+        toast({
+          title: "成功",
+          description: "活動を更新しました。",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        // Insert new activity
+        const { error } = await supabase.from("activities").insert({
+          user_id: user.id,
+          date: date,
+          start_time: startTime,
+          end_time: endTime || null,
+          content: content,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "成功",
+          description: "新しい活動を記録しました。",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+
       onActivityAdded();
       onClose();
 
-      setDate(new Date().toISOString().slice(0, 10));
-      setStartTime("");
-      setEndTime("");
-      setContent("");
+      // Reset fields if adding new (though useEffect handles this on open)
+      if (!initialActivity) {
+        setDate(new Date().toISOString().slice(0, 10));
+        setStartTime("");
+        setEndTime("");
+        setContent("");
+      }
     } catch (err: unknown) {
       toast({
         title: "エラー",
@@ -92,7 +143,9 @@ const AddActivityModal = ({
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>新しい活動を記録</ModalHeader>
+        <ModalHeader>
+          {initialActivity ? "活動を編集" : "新しい活動を記録"}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <VStack gap={4}>
@@ -141,7 +194,7 @@ const AddActivityModal = ({
             onClick={handleSubmit}
             isLoading={isLoading}
           >
-            記録する
+            {initialActivity ? "更新する" : "記録する"}
           </Button>
         </ModalFooter>
       </ModalContent>
