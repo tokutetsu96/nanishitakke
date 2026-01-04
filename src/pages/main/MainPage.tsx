@@ -19,6 +19,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import type { Activity } from "@/types";
 import "./MainPage.scss";
 
 registerLocale("ja", ja);
@@ -29,6 +30,9 @@ const MainPage = () => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [startDate, setStartDate] = useState(new Date());
+
+  // State to track the activity being edited
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
 
   const selectedDateString = format(startDate, "yyyy-MM-dd");
 
@@ -56,6 +60,16 @@ const MainPage = () => {
 
   const handleActivityAdded = () => {
     setRefreshKey((prevKey) => prevKey + 1);
+  };
+
+  const handleEditActivity = (activity: Activity) => {
+    setEditingActivity(activity);
+    onOpen();
+  };
+
+  const handleCloseModal = () => {
+    setEditingActivity(null);
+    onClose();
   };
 
   return (
@@ -97,6 +111,7 @@ const MainPage = () => {
               <ActivityList
                 key={refreshKey}
                 selectedDate={selectedDateString}
+                onEditActivity={handleEditActivity}
               />
             </Box>
 
@@ -117,8 +132,9 @@ const MainPage = () => {
 
       <AddActivityModal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleCloseModal}
         onActivityAdded={handleActivityAdded}
+        initialActivity={editingActivity}
       />
     </>
   );
