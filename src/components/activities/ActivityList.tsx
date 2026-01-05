@@ -196,7 +196,9 @@ const ActivityList = React.memo(
                   {formatTime(activity.start_time)} -{" "}
                   {formatTime(activity.end_time)}
                 </Text>
-                <Text color="gray.600">{activity.content}</Text>
+                <Text color="gray.600" whiteSpace="pre-wrap">
+                  {activity.content}
+                </Text>
               </Box>
               <IconButton
                 aria-label="Delete activity"
