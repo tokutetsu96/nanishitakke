@@ -26,6 +26,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import type { Activity } from "@/types";
 import CuteBox from "@/components/common/CuteBox";
+import { ACTIVITY_CATEGORIES } from "@/constants";
 
 interface ActivityListProps {
   selectedDate: string;
@@ -209,7 +210,11 @@ const ActivityList = React.memo(
                         size="sm"
                         borderRadius="full"
                         variant="subtle"
-                        colorScheme="teal"
+                        colorScheme={
+                          ACTIVITY_CATEGORIES[
+                            tag as keyof typeof ACTIVITY_CATEGORIES
+                          ] || "gray"
+                        }
                       >
                         {tag}
                       </Tag>

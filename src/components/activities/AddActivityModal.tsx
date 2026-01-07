@@ -14,11 +14,9 @@ import {
   Textarea,
   VStack,
   useToast,
-  HStack,
-  Tag,
-  TagLabel,
-  TagCloseButton,
+  Select,
 } from "@chakra-ui/react";
+import { ACTIVITY_CATEGORIES } from "@/constants";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import type { Activity } from "@/types";
@@ -43,7 +41,7 @@ const AddActivityModal = ({
   const [endTime, setEndTime] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
+  // const [tagInput, setTagInput] = useState(""); // No longer needed
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -63,7 +61,7 @@ const AddActivityModal = ({
         setEndTime("");
         setContent("");
         setTags([]);
-        setTagInput("");
+        // setTagInput("");
       }
     }
   }, [isOpen, initialActivity]);
@@ -150,6 +148,16 @@ const AddActivityModal = ({
     }
   };
 
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategory = e.target.value;
+    if (selectedCategory) {
+      setTags([selectedCategory]);
+    } else {
+      setTags([]);
+    }
+  };
+
+  /*
   const handleAddTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
@@ -160,13 +168,14 @@ const AddActivityModal = ({
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
-
+ 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleAddTag();
     }
   };
+  */
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -214,31 +223,17 @@ const AddActivityModal = ({
             </FormControl>
             <FormControl>
               <FormLabel>タグ</FormLabel>
-              <HStack mb={2}>
-                <Input
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="タグを追加 (Enterで追加)"
-                />
-                <Button onClick={handleAddTag} size="sm">
-                  追加
-                </Button>
-              </HStack>
-              <HStack spacing={2} flexWrap="wrap">
-                {tags.map((tag) => (
-                  <Tag
-                    key={tag}
-                    size="md"
-                    borderRadius="full"
-                    variant="solid"
-                    colorScheme="teal"
-                  >
-                    <TagLabel>{tag}</TagLabel>
-                    <TagCloseButton onClick={() => handleRemoveTag(tag)} />
-                  </Tag>
+              <Select
+                placeholder="カテゴリを選択"
+                value={tags[0] || ""}
+                onChange={handleCategoryChange}
+              >
+                {Object.keys(ACTIVITY_CATEGORIES).map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
-              </HStack>
+              </Select>
             </FormControl>
           </VStack>
         </ModalBody>
