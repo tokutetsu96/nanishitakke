@@ -5,5 +5,6 @@ export interface Activity {
   start_time: string;
   end_time?: string;
   content: string;
+  tags?: string[];
   created_at: string;
 }

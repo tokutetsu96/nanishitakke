@@ -14,6 +14,10 @@ import {
   Textarea,
   VStack,
   useToast,
+  HStack,
+  Tag,
+  TagLabel,
+  TagCloseButton,
 } from "@chakra-ui/react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
@@ -38,6 +42,8 @@ const AddActivityModal = ({
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [content, setContent] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -47,6 +53,7 @@ const AddActivityModal = ({
         setStartTime(initialActivity.start_time);
         setEndTime(initialActivity.end_time || "");
         setContent(initialActivity.content);
+        setTags(initialActivity.tags || []);
       } else {
         // Only reset if opening for new activity, don't reset if just re-rendering
         // But we want to preserve date usually if adding multiple?
@@ -55,6 +62,8 @@ const AddActivityModal = ({
         setStartTime("");
         setEndTime("");
         setContent("");
+        setTags([]);
+        setTagInput("");
       }
     }
   }, [isOpen, initialActivity]);
@@ -82,6 +91,7 @@ const AddActivityModal = ({
             start_time: startTime,
             end_time: endTime || null,
             content: content,
+            tags: tags,
           })
           .eq("id", initialActivity.id)
           .eq("user_id", user.id);
@@ -103,6 +113,7 @@ const AddActivityModal = ({
           start_time: startTime,
           end_time: endTime || null,
           content: content,
+          tags: tags,
         });
 
         if (error) throw error;
@@ -136,6 +147,24 @@ const AddActivityModal = ({
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAddTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput("");
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
     }
   };
 
@@ -182,6 +211,34 @@ const AddActivityModal = ({
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="何をした？"
               />
+            </FormControl>
+            <FormControl>
+              <FormLabel>タグ</FormLabel>
+              <HStack mb={2}>
+                <Input
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="タグを追加 (Enterで追加)"
+                />
+                <Button onClick={handleAddTag} size="sm">
+                  追加
+                </Button>
+              </HStack>
+              <HStack spacing={2} flexWrap="wrap">
+                {tags.map((tag) => (
+                  <Tag
+                    key={tag}
+                    size="md"
+                    borderRadius="full"
+                    variant="solid"
+                    colorScheme="teal"
+                  >
+                    <TagLabel>{tag}</TagLabel>
+                    <TagCloseButton onClick={() => handleRemoveTag(tag)} />
+                  </Tag>
+                ))}
+              </HStack>
             </FormControl>
           </VStack>
         </ModalBody>

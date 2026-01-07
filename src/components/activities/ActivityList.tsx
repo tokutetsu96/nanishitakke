@@ -18,6 +18,8 @@ import {
   AlertDialogFooter,
   Button,
   useDisclosure,
+  HStack,
+  Tag,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { supabase } from "@/lib/supabase";
@@ -199,6 +201,21 @@ const ActivityList = React.memo(
                 <Text color="gray.600" whiteSpace="pre-wrap">
                   {activity.content}
                 </Text>
+                {activity.tags && activity.tags.length > 0 && (
+                  <HStack spacing={2} mt={2}>
+                    {activity.tags.map((tag) => (
+                      <Tag
+                        key={tag}
+                        size="sm"
+                        borderRadius="full"
+                        variant="subtle"
+                        colorScheme="teal"
+                      >
+                        {tag}
+                      </Tag>
+                    ))}
+                  </HStack>
+                )}
               </Box>
               <IconButton
                 aria-label="Delete activity"
