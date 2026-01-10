@@ -72,10 +72,14 @@ export const AppHeader = () => {
     <Box as="header" bg="white" shadow="sm">
       <Container maxW="container.md" py={4}>
         <Flex align="center">
-          <Heading as="h1" size="md" color="gray.700">
-            なにしたっけ
-          </Heading>
-          <Image src={NanishitakkeLogo} alt="なにしたっけ Logo" h="40px" />
+          <Link to="/">
+            <Flex align="center" cursor="pointer">
+              <Heading as="h1" size="md" color="gray.700">
+                なにしたっけ
+              </Heading>
+              <Image src={NanishitakkeLogo} alt="なにしたっけ Logo" h="40px" />
+            </Flex>
+          </Link>
           <Spacer />
           {user && profile && (
             <Menu>
