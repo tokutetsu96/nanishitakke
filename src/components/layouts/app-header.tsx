@@ -72,7 +72,7 @@ export const AppHeader = () => {
     <Box as="header" bg="white" shadow="sm">
       <Container maxW="container.md" py={4}>
         <Flex align="center">
-          <Link to="/activities">
+          <Link to="/">
             <Flex align="center" cursor="pointer">
               <Heading as="h1" size="md" color="gray.700">
                 なにしたっけ
