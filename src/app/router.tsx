@@ -28,10 +28,10 @@ const createRouter = () =>
           },
         },
         {
-          path: "stats",
+          path: "activities",
           lazy: async () => {
-            const { StatsRoute } = await import("./routes/app/stats");
-            return { Component: StatsRoute };
+            const { ActivitiesRoute } = await import("./routes/app/activities");
+            return { Component: ActivitiesRoute };
           },
         },
       ],

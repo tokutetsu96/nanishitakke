@@ -1,111 +1,306 @@
-import { useState } from "react";
 import {
   Box,
-  Button,
   Container,
+  Heading,
   VStack,
-  useDisclosure,
-  Input,
-  InputGroup,
-  InputRightElement,
+  Text,
+  SimpleGrid,
+  Select,
+  Card,
+  CardBody,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  Center,
+  Spinner,
 } from "@chakra-ui/react";
-import { AddIcon, CalendarIcon } from "@chakra-ui/icons";
-import { ActivityList } from "@/features/activities/components/activity-list";
-import { AddActivityModal } from "@/features/activities/components/add-activity-modal";
-import DatePicker, { registerLocale } from "react-datepicker";
-import { ja } from "date-fns/locale/ja";
-import "react-datepicker/dist/react-datepicker.css";
-import { format } from "date-fns";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+} from "chart.js";
+import { Pie, Bar } from "react-chartjs-2";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth";
+import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import type { Activity } from "@/features/activities/types";
-import "./dashboard.scss";
+import {
+  subDays,
+  startOfDay,
+  endOfDay,
+  format,
+  parseISO,
+  differenceInMinutes,
+} from "date-fns";
 
-registerLocale("ja", ja);
+// Chart.jsの登録
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title
+);
 
 export const DashboardRoute = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [refreshKey, setRefreshKey] = useState(0);
+  const { user } = useAuth();
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState("7"); // デフォルトは過去7日間
 
-  const [startDate, setStartDate] = useState(new Date());
+  useEffect(() => {
+    const fetchActivities = async () => {
+      if (!user) return;
 
-  // State to track the activity being edited
-  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+      setLoading(true);
+      try {
+        const endDate = endOfDay(new Date());
+        const startDate = startOfDay(subDays(new Date(), parseInt(period) - 1));
 
-  const selectedDateString = format(startDate, "yyyy-MM-dd");
+        const { data, error } = await supabase
+          .from("activities")
+          .select("*")
+          .eq("user_id", user.id)
+          .gte("date", format(startDate, "yyyy-MM-dd"))
+          .lte("date", format(endDate, "yyyy-MM-dd"));
 
-  const handleActivityAdded = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
-  };
+        if (error) throw error;
+        setActivities(data || []);
+      } catch (error) {
+        console.error("データの取得に失敗しました:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleEditActivity = (activity: Activity) => {
-    setEditingActivity(activity);
-    onOpen();
-  };
+    fetchActivities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, period]);
 
-  const handleCloseModal = () => {
-    setEditingActivity(null);
-    onClose();
-  };
+  const { categoryData, dailyData, summary } = useMemo(() => {
+    const categoryMinutes: Record<string, number> = {};
+    const dailyMinutes: Record<string, number> = {};
+    let totalMinutes = 0;
+
+    // 初期化
+    const days = parseInt(period);
+    for (let i = 0; i < days; i++) {
+      const date = format(subDays(new Date(), i), "MM/dd");
+      dailyMinutes[date] = 0;
+    }
+
+    activities.forEach((activity) => {
+      // 時間計算
+      if (activity.start_time && activity.end_time) {
+        // 日付またぎの考慮は簡易的に無視（同日と仮定）
+        const start = parseISO(`2000-01-01T${activity.start_time}`); // 日付部分はダミー
+        const end = parseISO(`2000-01-01T${activity.end_time}`);
+        let diff = differenceInMinutes(end, start);
+        if (diff < 0) diff += 24 * 60; // 日付またぎ対応(簡易)
+
+        totalMinutes += diff;
+
+        const dateKey = format(parseISO(activity.date), "MM/dd");
+        if (dailyMinutes[dateKey] !== undefined) {
+          dailyMinutes[dateKey] += diff;
+        }
+
+        // カテゴリ集計 (タグベース) - 時間を加算
+        if (activity.tags && activity.tags.length > 0) {
+          // タグが複数ある場合は単純に等分するか、全てに加算するかだが、
+          // ここでは重複計上を許容して全てに加算する方針（または最初のタグのみ等の仕様次第だが、
+          // 総時間と合わなくなるので、各タグに時間を加算する形にする。
+          // ただし円グラフで合計が総時間と合わない可能性が出るため、
+          // シンプルに「タグごとの累積時間」として扱う）
+          activity.tags.forEach((tag) => {
+            categoryMinutes[tag] = (categoryMinutes[tag] || 0) + diff;
+          });
+        } else {
+          categoryMinutes["未分類"] = (categoryMinutes["未分類"] || 0) + diff;
+        }
+      }
+    });
+
+    // 円グラフ用データ
+    const labels = Object.keys(categoryMinutes);
+    const data = Object.values(categoryMinutes).map(
+      (m) => Math.round((m / 60) * 10) / 10
+    ); // 時間単位に変換
+    const bgColors = labels.map((label) => {
+      const colorName =
+        ACTIVITY_CATEGORIES[label as keyof typeof ACTIVITY_CATEGORIES];
+      // Chakra UIの色名から実際の色コードへの簡易マッピング (本来はthemeから取得すべきだが簡易実装)
+      const colorMap: Record<string, string> = {
+        blue: "#3182CE",
+        orange: "#DD6B20",
+        purple: "#805AD5",
+        green: "#38A169",
+        gray: "#718096",
+        teal: "#319795",
+        pink: "#D53F8C",
+        red: "#E53E3E",
+        yellow: "#D69E2E",
+        cyan: "#00B5D8",
+      };
+      return colorMap[colorName] || "#CBD5E0";
+    });
+
+    // 棒グラフ用データ (日付順にソート)
+    // subDaysで作ったキー順序は新しい順なので、逆順（古い順）にする
+    const barLabels = Object.keys(dailyMinutes).reverse();
+    const barData = Object.values(dailyMinutes)
+      .reverse()
+      .map((m) => Math.round((m / 60) * 10) / 10); // 時間単位に変換
+
+    return {
+      categoryData: {
+        labels,
+        datasets: [
+          {
+            data,
+            backgroundColor: bgColors,
+            borderWidth: 1,
+          },
+        ],
+      },
+      dailyData: {
+        labels: barLabels,
+        datasets: [
+          {
+            label: "活動時間 (時間)",
+            data: barData,
+            backgroundColor: "#D53F8C", // pink.500
+          },
+        ],
+      },
+      summary: {
+        totalActivities: activities.length,
+        totalTime: Math.round((totalMinutes / 60) * 10) / 10,
+        averageTime: activities.length
+          ? Math.round(totalMinutes / activities.length)
+          : 0,
+      },
+    };
+  }, [activities, period]);
+
+  if (loading) {
+    return (
+      <Center h="50vh">
+        <Spinner color="pink.500" size="xl" />
+      </Center>
+    );
+  }
 
   return (
-    <>
-      <Container maxW="container.md" py={8}>
-        <VStack spacing={8} align="stretch">
-          {/* Date Selector */}
-          <Box w="full">
-            <InputGroup size="lg">
-              <DatePicker
-                selected={startDate}
-                onChange={(date: Date | null) =>
-                  setStartDate(date || new Date())
-                }
-                locale="ja"
-                dateFormat="yyyy/MM/dd (eee)"
-                customInput={
-                  <Input
-                    variant="filled"
-                    textAlign="center"
-                    fontWeight="bold"
-                    cursor="pointer"
-                  />
-                }
-                wrapperClassName="datepicker-full-width"
-                portalId="react-datepicker-portal"
-              />
-              <InputRightElement pointerEvents="none">
-                <CalendarIcon color="gray.500" />
-              </InputRightElement>
-            </InputGroup>
-          </Box>
+    <Container maxW="container.md" py={8}>
+      <VStack spacing={8} align="stretch">
+        <Box>
+          <Heading size="lg" mb={2}>
+            統計レポート
+          </Heading>
+          <Text color="gray.600">あなたの活動傾向を可視化します</Text>
+        </Box>
 
-          {/* Activity List */}
-          <Box w="full">
-            <ActivityList
-              key={refreshKey}
-              selectedDate={selectedDateString}
-              onEditActivity={handleEditActivity}
-            />
-          </Box>
-
-          <Button
-            onClick={onOpen}
-            leftIcon={<AddIcon />}
-            colorScheme="pink"
-            variant="solid"
-            size="lg"
-            w="full"
-            py={7}
+        <Box display="flex" justifyContent="flex-end">
+          <Select
+            w="200px"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            bg="white"
           >
-            やったことを追加する
-          </Button>
-        </VStack>
-      </Container>
+            <option value="7">過去7日間</option>
+            <option value="30">過去30日間</option>
+            <option value="90">過去3ヶ月</option>
+          </Select>
+        </Box>
 
-      <AddActivityModal
-        isOpen={isOpen}
-        onClose={handleCloseModal}
-        onActivityAdded={handleActivityAdded}
-        initialActivity={editingActivity}
-      />
-    </>
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+          <Card>
+            <CardBody>
+              <Stat>
+                <StatLabel>記録数</StatLabel>
+                <StatNumber>{summary.totalActivities}</StatNumber>
+                <StatHelpText>件</StatHelpText>
+              </Stat>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardBody>
+              <Stat>
+                <StatLabel>総活動時間</StatLabel>
+                <StatNumber>{summary.totalTime}</StatNumber>
+                <StatHelpText>時間</StatHelpText>
+              </Stat>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardBody>
+              <Stat>
+                <StatLabel>平均活動時間</StatLabel>
+                <StatNumber>{summary.averageTime}</StatNumber>
+                <StatHelpText>分/回</StatHelpText>
+              </Stat>
+            </CardBody>
+          </Card>
+        </SimpleGrid>
+
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
+          <Box bg="white" p={6} borderRadius="lg" shadow="sm">
+            <Heading size="md" mb={4} textAlign="center">
+              カテゴリ別割合
+            </Heading>
+            <Box
+              h="300px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              {categoryData.labels.length > 0 ? (
+                <Pie
+                  data={categoryData}
+                  options={{ maintainAspectRatio: false }}
+                />
+              ) : (
+                <Text color="gray.400">データがありません</Text>
+              )}
+            </Box>
+          </Box>
+          <Box bg="white" p={6} borderRadius="lg" shadow="sm">
+            <Heading size="md" mb={4} textAlign="center">
+              日別活動時間
+            </Heading>
+            <Box h="300px">
+              <Bar
+                data={dailyData}
+                options={{
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      title: {
+                        display: true,
+                        text: "時間",
+                      },
+                    },
+                  },
+                }}
+              />
+            </Box>
+          </Box>
+        </SimpleGrid>
+      </VStack>
+    </Container>
   );
 };
