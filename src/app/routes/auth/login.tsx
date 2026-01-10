@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Center, Heading, Text, VStack } from "@chakra-ui/react";
 import { FaGoogle } from "react-icons/fa";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 
-const LoginPage = () => {
+export const LoginRoute = () => {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -68,5 +68,3 @@ const LoginPage = () => {
     </Center>
   );
 };
-
-export default LoginPage;

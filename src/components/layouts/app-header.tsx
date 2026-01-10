@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 import NanishitakkeLogo from "@/assets/nanishitakke.png";
@@ -22,7 +22,7 @@ interface AppHeaderProps {
   onLogout: () => void;
 }
 
-const AppHeader = ({ onLogout }: AppHeaderProps) => {
+export const AppHeader = ({ onLogout }: AppHeaderProps) => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<{
     full_name: string | null;
@@ -87,5 +87,3 @@ const AppHeader = ({ onLogout }: AppHeaderProps) => {
     </Box>
   );
 };
-
-export default AppHeader;

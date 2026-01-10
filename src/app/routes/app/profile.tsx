@@ -12,11 +12,11 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useState, useRef, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 
-const ProfilePage = () => {
+export const ProfileRoute = () => {
   const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
@@ -189,5 +189,3 @@ const ProfilePage = () => {
     </Container>
   );
 };
-
-export default ProfilePage;

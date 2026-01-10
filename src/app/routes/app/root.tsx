@@ -1,9 +1,8 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import type { ReactNode } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
 import { Center, Spinner } from "@chakra-ui/react";
 
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+export const AppRoot = () => {
   const { session, loading, user } = useAuth();
 
   if (loading) {
@@ -18,7 +17,5 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 };
-
-export default ProtectedRoute;

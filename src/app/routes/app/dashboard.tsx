@@ -12,19 +12,19 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, CalendarIcon } from "@chakra-ui/icons";
 import { supabase } from "@/lib/supabase";
-import ActivityList from "@/components/activities/ActivityList";
-import AddActivityModal from "@/components/activities/AddActivityModal";
-import AppHeader from "@/components/layout/AppHeader";
+import { ActivityList } from "@/features/activities/components/activity-list";
+import { AddActivityModal } from "@/features/activities/components/add-activity-modal";
+import { AppHeader } from "@/components/layouts/app-header";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import type { Activity } from "@/types";
-import "./MainPage.scss";
+import type { Activity } from "@/features/activities/types";
+import "./dashboard.scss";
 
 registerLocale("ja", ja);
 
-const MainPage = () => {
+export const DashboardRoute = () => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [refreshKey, setRefreshKey] = useState(0);
@@ -139,5 +139,3 @@ const MainPage = () => {
     </>
   );
 };
-
-export default MainPage;

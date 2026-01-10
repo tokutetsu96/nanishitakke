@@ -1,0 +1,44 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import { AppRoot } from "./routes/app/root";
+import { LoginRoute } from "./routes/auth/login";
+
+const createRouter = () =>
+  createBrowserRouter([
+    {
+      path: "/login",
+      element: <LoginRoute />,
+    },
+    {
+      path: "/",
+      element: <AppRoot />,
+      children: [
+        {
+          index: true,
+          lazy: async () => {
+            const { DashboardRoute } = await import("./routes/app/dashboard");
+            return { Component: DashboardRoute };
+          },
+        },
+        {
+          path: "profile",
+          lazy: async () => {
+            const { ProfileRoute } = await import("./routes/app/profile");
+            return { Component: ProfileRoute };
+          },
+        },
+      ],
+    },
+    {
+      path: "*",
+      lazy: async () => {
+        const { NotFoundRoute } = await import("./routes/not-found");
+        return { Component: NotFoundRoute };
+      },
+    },
+  ]);
+
+export const AppRouter = () => {
+  const router = createRouter();
+  return <RouterProvider router={router} />;
+};

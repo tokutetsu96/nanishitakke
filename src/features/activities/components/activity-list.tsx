@@ -23,10 +23,10 @@ import {
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/context/AuthContext";
-import type { Activity } from "@/types";
-import CuteBox from "@/components/common/CuteBox";
-import { ACTIVITY_CATEGORIES } from "@/constants";
+import { useAuth } from "@/lib/auth";
+import type { Activity } from "@/features/activities/types";
+import { CuteBox } from "@/components/ui/cute-box";
+import { ACTIVITY_CATEGORIES } from "@/config/constants";
 
 interface ActivityListProps {
   selectedDate: string;
@@ -39,7 +39,7 @@ const formatTime = (timeString: string | null | undefined): string => {
   return timeString.slice(0, 5);
 };
 
-const ActivityList = React.memo(
+export const ActivityList = React.memo(
   ({ selectedDate, onEditActivity }: ActivityListProps) => {
     const { user } = useAuth();
     const toast = useToast();
@@ -262,5 +262,3 @@ const ActivityList = React.memo(
     );
   }
 );
-
-export default ActivityList;

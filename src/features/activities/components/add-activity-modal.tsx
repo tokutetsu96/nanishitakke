@@ -16,10 +16,10 @@ import {
   useToast,
   Select,
 } from "@chakra-ui/react";
-import { ACTIVITY_CATEGORIES } from "@/constants";
+import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/context/AuthContext";
-import type { Activity } from "@/types";
+import { useAuth } from "@/lib/auth";
+import type { Activity } from "@/features/activities/types";
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -28,7 +28,7 @@ interface AddActivityModalProps {
   initialActivity?: Activity | null;
 }
 
-const AddActivityModal = ({
+export const AddActivityModal = ({
   isOpen,
   onClose,
   onActivityAdded,
@@ -41,7 +41,6 @@ const AddActivityModal = ({
   const [endTime, setEndTime] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  // const [tagInput, setTagInput] = useState(""); // No longer needed
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -53,15 +52,11 @@ const AddActivityModal = ({
         setContent(initialActivity.content);
         setTags(initialActivity.tags || []);
       } else {
-        // Only reset if opening for new activity, don't reset if just re-rendering
-        // But we want to preserve date usually if adding multiple?
-        // For now, let's reset to defaults if no initialActivity
         setDate(new Date().toISOString().slice(0, 10));
         setStartTime("");
         setEndTime("");
         setContent("");
         setTags([]);
-        // setTagInput("");
       }
     }
   }, [isOpen, initialActivity]);
@@ -128,7 +123,6 @@ const AddActivityModal = ({
       onActivityAdded();
       onClose();
 
-      // Reset fields if adding new (though useEffect handles this on open)
       if (!initialActivity) {
         setDate(new Date().toISOString().slice(0, 10));
         setStartTime("");
@@ -156,26 +150,6 @@ const AddActivityModal = ({
       setTags([]);
     }
   };
-
-  /*
-  const handleAddTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()]);
-      setTagInput("");
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
-  };
- 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddTag();
-    }
-  };
-  */
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -253,5 +227,3 @@ const AddActivityModal = ({
     </Modal>
   );
 };
-
-export default AddActivityModal;
