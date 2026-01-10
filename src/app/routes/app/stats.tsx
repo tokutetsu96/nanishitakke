@@ -83,7 +83,8 @@ export const StatsRoute = () => {
     };
 
     fetchActivities();
-  }, [user, period]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, period]);
 
   const { categoryData, dailyData, summary } = useMemo(() => {
     const categoryMinutes: Record<string, number> = {};
