@@ -55,7 +55,7 @@ export const DashboardRoute = () => {
   const { user } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState("7"); // デフォルトは過去7日間
+  const [period, setPeriod] = useState("1");
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -217,6 +217,7 @@ export const DashboardRoute = () => {
             onChange={(e) => setPeriod(e.target.value)}
             bg="white"
           >
+            <option value="1">今日</option>
             <option value="7">過去7日間</option>
             <option value="30">過去30日間</option>
             <option value="90">過去3ヶ月</option>
