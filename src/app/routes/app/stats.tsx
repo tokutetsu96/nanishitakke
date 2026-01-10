@@ -86,7 +86,7 @@ export const StatsRoute = () => {
   }, [user, period]);
 
   const { categoryData, dailyData, summary } = useMemo(() => {
-    const categoryCount: Record<string, number> = {};
+    const categoryMinutes: Record<string, number> = {};
     const dailyMinutes: Record<string, number> = {};
     let totalMinutes = 0;
 
@@ -98,15 +98,6 @@ export const StatsRoute = () => {
     }
 
     activities.forEach((activity) => {
-      // カテゴリ集計 (タグベース)
-      if (activity.tags && activity.tags.length > 0) {
-        activity.tags.forEach((tag) => {
-          categoryCount[tag] = (categoryCount[tag] || 0) + 1;
-        });
-      } else {
-        categoryCount["未分類"] = (categoryCount["未分類"] || 0) + 1;
-      }
-
       // 時間計算
       if (activity.start_time && activity.end_time) {
         // 日付またぎの考慮は簡易的に無視（同日と仮定）
@@ -121,12 +112,28 @@ export const StatsRoute = () => {
         if (dailyMinutes[dateKey] !== undefined) {
           dailyMinutes[dateKey] += diff;
         }
+
+        // カテゴリ集計 (タグベース) - 時間を加算
+        if (activity.tags && activity.tags.length > 0) {
+          // タグが複数ある場合は単純に等分するか、全てに加算するかだが、
+          // ここでは重複計上を許容して全てに加算する方針（または最初のタグのみ等の仕様次第だが、
+          // 総時間と合わなくなるので、各タグに時間を加算する形にする。
+          // ただし円グラフで合計が総時間と合わない可能性が出るため、
+          // シンプルに「タグごとの累積時間」として扱う）
+          activity.tags.forEach((tag) => {
+            categoryMinutes[tag] = (categoryMinutes[tag] || 0) + diff;
+          });
+        } else {
+          categoryMinutes["未分類"] = (categoryMinutes["未分類"] || 0) + diff;
+        }
       }
     });
 
     // 円グラフ用データ
-    const labels = Object.keys(categoryCount);
-    const data = Object.values(categoryCount);
+    const labels = Object.keys(categoryMinutes);
+    const data = Object.values(categoryMinutes).map(
+      (m) => Math.round((m / 60) * 10) / 10
+    ); // 時間単位に変換
     const bgColors = labels.map((label) => {
       const colorName =
         ACTIVITY_CATEGORIES[label as keyof typeof ACTIVITY_CATEGORIES];
