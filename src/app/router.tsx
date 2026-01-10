@@ -27,6 +27,13 @@ const createRouter = () =>
             return { Component: ProfileRoute };
           },
         },
+        {
+          path: "stats",
+          lazy: async () => {
+            const { StatsRoute } = await import("./routes/app/stats");
+            return { Component: StatsRoute };
+          },
+        },
       ],
     },
     {
