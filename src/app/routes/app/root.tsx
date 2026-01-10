@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { Center, Spinner } from "@chakra-ui/react";
+import { Box, Center, Spinner } from "@chakra-ui/react";
+import { AppHeader } from "@/components/layouts/app-header";
 
 export const AppRoot = () => {
   const { session, loading, user } = useAuth();
@@ -17,5 +18,10 @@ export const AppRoot = () => {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <Box bg="gray.50" minH="100vh">
+      <AppHeader />
+      <Outlet />
+    </Box>
+  );
 };

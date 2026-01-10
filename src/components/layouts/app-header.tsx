@@ -12,18 +12,15 @@ import {
   Avatar,
   Text,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 import NanishitakkeLogo from "@/assets/nanishitakke.png";
 
-interface AppHeaderProps {
-  onLogout: () => void;
-}
-
-export const AppHeader = ({ onLogout }: AppHeaderProps) => {
+export const AppHeader = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<{
     full_name: string | null;
     avatar_url: string | null;
@@ -48,6 +45,28 @@ export const AppHeader = ({ onLogout }: AppHeaderProps) => {
 
     fetchProfile();
   }, [user]);
+
+  const handleLogout = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.warn("ログアウト警告:", error);
+      }
+    } catch (error) {
+      console.error("ログアウトエラー:", error);
+    } finally {
+      navigate("/login", { replace: true });
+    }
+  };
 
   return (
     <Box as="header" bg="white" shadow="sm">
@@ -76,7 +95,7 @@ export const AppHeader = ({ onLogout }: AppHeaderProps) => {
                 <MenuItem as={Link} to="/profile">
                   プロフィール
                 </MenuItem>
-                <MenuItem onClick={onLogout} as="button">
+                <MenuItem onClick={handleLogout} as="button">
                   ログアウト
                 </MenuItem>
               </MenuList>
