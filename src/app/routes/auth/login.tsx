@@ -19,7 +19,7 @@ export const LoginRoute = () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/activities`,
+        redirectTo: `${window.location.origin}/?after_login=true`,
         queryParams: {
           prompt: "select_account",
           access_type: "offline",
