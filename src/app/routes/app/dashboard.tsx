@@ -16,6 +16,7 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Button,
 } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
 import { useState, useEffect, useMemo } from "react";
@@ -215,7 +216,16 @@ export const DashboardRoute = () => {
           <Text color="gray.600">あなたの活動傾向を可視化します</Text>
         </Box>
 
-        <Box display="flex" justifyContent="flex-end">
+        <Box display="flex" justifyContent="flex-end" gap={2}>
+          <Button
+            onClick={() => setDateRange([new Date(), new Date()])}
+            bg="white"
+            border="1px"
+            borderColor="gray.200"
+            _hover={{ bg: "gray.50" }}
+          >
+            今日
+          </Button>
           <Box w="300px">
             <InputGroup>
               <DatePicker
@@ -225,7 +235,6 @@ export const DashboardRoute = () => {
                 onChange={(update) => setDateRange(update)}
                 locale="ja"
                 dateFormat="yyyy/MM/dd"
-                isClearable={true}
                 customInput={
                   <Input bg="white" textAlign="center" cursor="pointer" />
                 }
