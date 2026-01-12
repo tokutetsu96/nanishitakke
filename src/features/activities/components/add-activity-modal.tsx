@@ -20,6 +20,15 @@ import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import type { Activity } from "@/features/activities/types";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { ja } from "date-fns/locale/ja";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
+import "./add-activity-modal.css"; // We might need some css, but dashboard uses global? dashboard.tsx imports ./activities.scss. I'll assume global or default styles for now. Or just inline.
+// dashboard.tsx imported activities.scss. I won't import css file if it doesn't exist.
+// dashboard.tsx imported "react-datepicker/dist/react-datepicker.css"; -> I included this.
+
+registerLocale("ja", ja);
 
 interface AddActivityModalProps {
   isOpen: boolean;
@@ -162,24 +171,26 @@ export const AddActivityModal = ({
         <ModalBody>
           <VStack gap={4}>
             <FormControl isRequired>
-              <FormLabel>
-                日付
-                {date && (
-                  <span style={{ marginLeft: "8px", fontWeight: "normal" }}>
-                    (
-                    {
-                      ["日", "月", "火", "水", "木", "金", "土"][
-                        new Date(date).getUTCDay()
-                      ]
-                    }
-                    )
-                  </span>
-                )}
-              </FormLabel>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+              <FormLabel>日付</FormLabel>
+              <DatePicker
+                selected={
+                  date
+                    ? new Date(
+                        parseInt(date.split("-")[0]),
+                        parseInt(date.split("-")[1]) - 1,
+                        parseInt(date.split("-")[2])
+                      )
+                    : null
+                }
+                onChange={(d: Date | null) => {
+                  if (d) {
+                    setDate(format(d, "yyyy-MM-dd"));
+                  }
+                }}
+                locale="ja"
+                dateFormat="yyyy/MM/dd(eee)"
+                customInput={<Input />}
+                wrapperClassName="datepicker-full-width"
               />
             </FormControl>
             <FormControl isRequired>
