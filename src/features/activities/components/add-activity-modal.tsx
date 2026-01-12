@@ -162,7 +162,20 @@ export const AddActivityModal = ({
         <ModalBody>
           <VStack gap={4}>
             <FormControl isRequired>
-              <FormLabel>日付</FormLabel>
+              <FormLabel>
+                日付
+                {date && (
+                  <span style={{ marginLeft: "8px", fontWeight: "normal" }}>
+                    (
+                    {
+                      ["日", "月", "火", "水", "木", "金", "土"][
+                        new Date(date).getUTCDay()
+                      ]
+                    }
+                    )
+                  </span>
+                )}
+              </FormLabel>
               <Input
                 type="date"
                 value={date}
