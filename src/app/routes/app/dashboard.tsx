@@ -206,6 +206,15 @@ export const DashboardRoute = () => {
     };
   }, [activities, startDate, endDate]);
 
+  const isTodaySelected = useMemo(() => {
+    if (!startDate || !endDate) return false;
+    const today = format(new Date(), "yyyy-MM-dd");
+    return (
+      format(startDate, "yyyy-MM-dd") === today &&
+      format(endDate, "yyyy-MM-dd") === today
+    );
+  }, [startDate, endDate]);
+
   return (
     <Container maxW="container.md" py={8}>
       <VStack spacing={8} align="stretch">
@@ -219,10 +228,11 @@ export const DashboardRoute = () => {
         <Box display="flex" justifyContent="flex-end" gap={2}>
           <Button
             onClick={() => setDateRange([new Date(), new Date()])}
-            bg="white"
-            border="1px"
-            borderColor="gray.200"
-            _hover={{ bg: "gray.50" }}
+            colorScheme={isTodaySelected ? "pink" : "gray"}
+            variant={isTodaySelected ? "solid" : "outline"}
+            bg={isTodaySelected ? undefined : "white"}
+            borderColor={isTodaySelected ? undefined : "gray.200"}
+            _hover={{ bg: isTodaySelected ? "pink.600" : "gray.50" }}
           >
             今日
           </Button>
