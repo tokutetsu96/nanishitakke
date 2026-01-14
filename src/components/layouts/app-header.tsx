@@ -96,6 +96,9 @@ export const AppHeader = () => {
                 </Flex>
               </MenuButton>
               <MenuList>
+                <MenuItem as={Link} to="/work-memos">
+                  仕事メモ
+                </MenuItem>
                 <MenuItem as={Link} to="/dashboard">
                   統計レポート
                 </MenuItem>

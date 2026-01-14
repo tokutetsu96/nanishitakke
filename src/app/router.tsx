@@ -21,6 +21,13 @@ const createRouter = () =>
           },
         },
         {
+          path: "work-memos",
+          lazy: async () => {
+            const { WorkMemosRoute } = await import("./routes/app/work-memos");
+            return { Component: WorkMemosRoute };
+          },
+        },
+        {
           path: "profile",
           lazy: async () => {
             const { ProfileRoute } = await import("./routes/app/profile");
