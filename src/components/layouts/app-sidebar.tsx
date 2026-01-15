@@ -101,6 +101,7 @@ export const AppSidebar = ({ isOpen, onClose }: AppSidebarProps) => {
         bg="white"
         w={{ base: "full", md: 60 }}
         display={{ base: "none", md: "block" }}
+        pt={4}
       >
         <SidebarContent />
       </Box>
