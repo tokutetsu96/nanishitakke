@@ -85,7 +85,7 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
       w="full"
       zIndex="sticky"
     >
-      <Container maxW="container.md" py={4}>
+      <Container maxW="container.lg" py={4}>
         <Flex align="center">
           <IconButton
             display={{ base: "flex", md: "none" }}

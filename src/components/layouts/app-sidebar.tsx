@@ -13,7 +13,6 @@ import {
 } from "@chakra-ui/react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FiHome, FiBarChart2, FiFileText } from "react-icons/fi";
-import React from "react";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -97,18 +96,10 @@ export const AppSidebar = ({ isOpen, onClose }: AppSidebarProps) => {
   return (
     <>
       {/* Desktop Sidebar */}
+      {/* Desktop Sidebar */}
       <Box
         bg="white"
-        borderRight="1px"
-        borderRightColor="gray.200"
         w={{ base: "full", md: 60 }}
-        pos="fixed"
-        top="0"
-        left="0"
-        h="full"
-        pt="20" // Adjust based on header height
-        overflowY="auto"
-        zIndex="docked"
         display={{ base: "none", md: "block" }}
       >
         <SidebarContent />
