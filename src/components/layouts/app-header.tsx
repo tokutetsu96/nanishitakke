@@ -18,7 +18,14 @@ import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 import NanishitakkeLogo from "@/assets/nanishitakke.png";
 
-export const AppHeader = () => {
+import { IconButton } from "@chakra-ui/react";
+import { FiMenu } from "react-icons/fi";
+
+interface AppHeaderProps {
+  onOpen: () => void;
+}
+
+export const AppHeader = ({ onOpen }: AppHeaderProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{
@@ -80,6 +87,14 @@ export const AppHeader = () => {
     >
       <Container maxW="container.md" py={4}>
         <Flex align="center">
+          <IconButton
+            display={{ base: "flex", md: "none" }}
+            onClick={onOpen}
+            variant="outline"
+            aria-label="open menu"
+            icon={<FiMenu />}
+            mr="4"
+          />
           <Link to="/">
             <Flex align="center" cursor="pointer">
               <Heading as="h1" size="md" color="gray.700">

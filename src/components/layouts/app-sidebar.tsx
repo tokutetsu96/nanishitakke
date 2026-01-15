@@ -1,4 +1,16 @@
-import { Box, Flex, Icon, Link, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Icon,
+  Link,
+  Text,
+  VStack,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerOverlay,
+  CloseButton,
+} from "@chakra-ui/react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FiHome, FiBarChart2, FiFileText } from "react-icons/fi";
 import React from "react";
@@ -7,13 +19,15 @@ interface NavItemProps {
   icon: React.ElementType;
   children: string;
   to: string;
+  onClick?: () => void;
 }
 
-const NavItem = ({ icon, children, to }: NavItemProps) => {
+const NavItem = ({ icon, children, to, onClick }: NavItemProps) => {
   return (
     <Link
       as={RouterNavLink}
       to={to}
+      onClick={onClick}
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none" }}
       w="full"
@@ -54,32 +68,79 @@ const NavItem = ({ icon, children, to }: NavItemProps) => {
   );
 };
 
-export const AppSidebar = () => {
+interface SidebarContentProps {
+  onClose?: () => void;
+}
+
+const SidebarContent = ({ onClose }: SidebarContentProps) => {
   return (
-    <Box
-      bg="white"
-      borderRight="1px"
-      borderRightColor="gray.200"
-      w={{ base: "full", md: 60 }}
-      pos="fixed"
-      top="0"
-      left="0"
-      h="full"
-      pt="20" // Adjust based on header height
-      overflowY="auto"
-      zIndex="docked"
-    >
-      <VStack spacing={1} align="stretch" w="full">
-        <NavItem icon={FiHome} to="/">
-          活動履歴
-        </NavItem>
-        <NavItem icon={FiBarChart2} to="/dashboard">
-          統計レポート
-        </NavItem>
-        <NavItem icon={FiFileText} to="/work-memos">
-          仕事メモ
-        </NavItem>
-      </VStack>
-    </Box>
+    <VStack spacing={1} align="stretch" w="full">
+      <NavItem icon={FiHome} to="/" onClick={onClose}>
+        活動履歴
+      </NavItem>
+      <NavItem icon={FiBarChart2} to="/dashboard" onClick={onClose}>
+        統計レポート
+      </NavItem>
+      <NavItem icon={FiFileText} to="/work-memos" onClick={onClose}>
+        仕事メモ
+      </NavItem>
+    </VStack>
+  );
+};
+
+interface AppSidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const AppSidebar = ({ isOpen, onClose }: AppSidebarProps) => {
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <Box
+        bg="white"
+        borderRight="1px"
+        borderRightColor="gray.200"
+        w={{ base: "full", md: 60 }}
+        pos="fixed"
+        top="0"
+        left="0"
+        h="full"
+        pt="20" // Adjust based on header height
+        overflowY="auto"
+        zIndex="docked"
+        display={{ base: "none", md: "block" }}
+      >
+        <SidebarContent />
+      </Box>
+
+      {/* Mobile Sidebar (Drawer) */}
+      <Drawer
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        returnFocusOnClose={false}
+        onOverlayClick={onClose}
+        size="xs"
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <Flex
+            alignItems="center"
+            h="20"
+            px="4"
+            justifyContent="space-between"
+          >
+            <Text fontSize="xl" fontWeight="bold">
+              メニュー
+            </Text>
+            <CloseButton onClick={onClose} />
+          </Flex>
+          <DrawerBody p="0">
+            <SidebarContent onClose={onClose} />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 };
