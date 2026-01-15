@@ -1,9 +1,10 @@
-import { Box, Flex, Icon, Link, Text, VStack, As } from "@chakra-ui/react";
+import { Box, Flex, Icon, Link, Text, VStack } from "@chakra-ui/react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import { FiHome, FiBarChart2, FiFileText } from "react-icons/fi";
+import React from "react";
 
 interface NavItemProps {
-  icon: As;
+  icon: React.ElementType;
   children: string;
   to: string;
 }
