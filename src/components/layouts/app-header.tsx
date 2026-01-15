@@ -69,7 +69,15 @@ export const AppHeader = () => {
   };
 
   return (
-    <Box as="header" bg="white" shadow="sm">
+    <Box
+      as="header"
+      bg="white"
+      shadow="sm"
+      position="fixed"
+      top="0"
+      w="full"
+      zIndex="sticky"
+    >
       <Container maxW="container.md" py={4}>
         <Flex align="center">
           <Link to="/">
@@ -96,12 +104,6 @@ export const AppHeader = () => {
                 </Flex>
               </MenuButton>
               <MenuList>
-                <MenuItem as={Link} to="/work-memos">
-                  仕事メモ
-                </MenuItem>
-                <MenuItem as={Link} to="/dashboard">
-                  統計レポート
-                </MenuItem>
                 <MenuItem as={Link} to="/profile">
                   プロフィール
                 </MenuItem>
