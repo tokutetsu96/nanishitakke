@@ -48,7 +48,7 @@ import {
   differenceInDays,
   addDays,
 } from "date-fns";
-import "./activities.scss";
+import "@/features/activities/components/activities.scss";
 import { useActivities } from "@/features/activities/api/get-activities";
 
 // Chart.jsの登録
