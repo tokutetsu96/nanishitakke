@@ -34,14 +34,11 @@ import { Pie, Bar } from "react-chartjs-2";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
-// import { supabase } from "@/lib/supabase"; // Not needed
-// import { useAuth } from "@/lib/auth"; // useActivities handles auth check but we might need user for other things? No, useActivities handles it.
+
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
-// import type { Activity } from "@/features/activities/types"; // Not needed directly if inferred
+
 import {
   subDays,
-  // startOfDay, // Not needed
-  // endOfDay, // Not needed
   format,
   parseISO,
   differenceInMinutes,
@@ -65,7 +62,6 @@ ChartJS.register(
 registerLocale("ja", ja);
 
 export const DashboardRoute = () => {
-  // const { user } = useAuth(); // Not used directly anymore
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     subDays(new Date(), 6),
     new Date(),
@@ -76,39 +72,6 @@ export const DashboardRoute = () => {
     startDate: startDate ? format(startDate, "yyyy-MM-dd") : undefined,
     endDate: endDate ? format(endDate, "yyyy-MM-dd") : undefined,
   });
-
-  /*
-  useEffect(() => {
-    const fetchActivities = async () => {
-      if (!user) return;
-      // 両方の日付が選択されていない場合はスキップ（またはstartDateのみで取得などの仕様も可だが、範囲指定完了を待つ）
-      if (!startDate || !endDate) return;
-
-      setLoading(true);
-      try {
-        const queryEndDate = endOfDay(endDate);
-        const queryStartDate = startOfDay(startDate);
-
-        const { data, error } = await supabase
-          .from("activities")
-          .select("*")
-          .eq("user_id", user.id)
-          .gte("date", format(queryStartDate, "yyyy-MM-dd"))
-          .lte("date", format(queryEndDate, "yyyy-MM-dd"));
-
-        if (error) throw error;
-        setActivities(data || []);
-      } catch (error) {
-        console.error("データの取得に失敗しました:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchActivities();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, startDate, endDate]);
-  */
 
   const { categoryData, dailyData, summary } = useMemo(() => {
     const categoryMinutes: Record<string, number> = {};

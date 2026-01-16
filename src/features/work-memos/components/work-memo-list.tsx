@@ -33,7 +33,6 @@ import { useDeleteWorkMemo } from "@/features/work-memos/api/delete-work-memo";
 
 interface WorkMemoListProps {
   onEditMemo: (memo: WorkMemo) => void;
-  // refreshKey: number; // Removed as React Query handles invalidation
 }
 
 export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {

@@ -47,7 +47,6 @@ export const AddWorkMemoModal = ({
   const [stuckText, setStuckText] = useState("");
   const [causeText, setCauseText] = useState("");
   const [improvementText, setImprovementText] = useState("");
-  // const [isLoading, setIsLoading] = useState(false); // Removed unused state
 
   useEffect(() => {
     if (isOpen) {
@@ -68,34 +67,6 @@ export const AddWorkMemoModal = ({
     }
   }, [isOpen, initialMemo]);
 
-  /*
-  const checkDuplicateDate = async (checkDate: string) => {
-    // Duplicate checking logic is complex, might need a separate hook or simple query.
-    // For now, keeping manual check is fine, or move to useMutation's logic?
-    // Keep it manual here or use useQuery with `enabled: false`?
-    // Manual check is okay for simple validation.
-    
-    if (!user) return false;
-
-    // If editing and date hasn't changed, no need to check (or check excluding self)
-    if (initialMemo && initialMemo.date === checkDate) return false;
-
-    const { data, error } = await supabase
-      .from("work_memos")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("date", checkDate)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Duplicate check error:", error);
-      return false; // Fail open but db will catch it
-    }
-
-    return !!data;
-  };
-  */
-
   // Mutations
   const createMutation = useCreateWorkMemo();
   const updateMutation = useUpdateWorkMemo();
@@ -112,7 +83,6 @@ export const AddWorkMemoModal = ({
       return;
     }
 
-    // setIsLoading(true); // Handled by mutation status
     const isSubmitting =
       createMutation.status === "pending" ||
       updateMutation.status === "pending";
