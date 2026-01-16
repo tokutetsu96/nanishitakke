@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   Box,
   Flex,
@@ -22,11 +22,11 @@ import {
   Tag,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/lib/auth";
 import type { Activity } from "@/features/activities/types";
 import { CuteBox } from "@/components/ui/cute-box";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
+import { useActivities } from "@/features/activities/api/get-activities";
+import { useDeleteActivity } from "@/features/activities/api/delete-activity";
 
 interface ActivityListProps {
   selectedDate: string;
@@ -41,67 +41,23 @@ const formatTime = (timeString: string | null | undefined): string => {
 
 export const ActivityList = React.memo(
   ({ selectedDate, onEditActivity }: ActivityListProps) => {
-    const { user } = useAuth();
     const toast = useToast();
-    const [activities, setActivities] = useState<Activity[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+
+    // Data Fetching
+    const {
+      data: activities = [],
+      isLoading: loading,
+      error: queryError,
+    } = useActivities({ date: selectedDate });
+
+    // Mutation
+    const deleteMutation = useDeleteActivity();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [activityIdToDelete, setActivityIdToDelete] = useState<string | null>(
       null
     );
     const cancelRef = useRef(null);
-
-    useEffect(() => {
-      const fetchActivities = async () => {
-        if (!user) {
-          setLoading(false);
-          return;
-        }
-
-        try {
-          setLoading(true);
-          const { data, error } = await supabase
-            .from("activities")
-            .select("*")
-            .eq("user_id", user.id)
-            .eq("date", selectedDate)
-            .order("start_time", { ascending: true });
-
-          if (error) {
-            throw error;
-          }
-
-          setActivities(data || []);
-        } catch (err: unknown) {
-          let errorMessage = "活動の読み込みに失敗しました。";
-          if (err instanceof Error) {
-            errorMessage = `活動の読み込みに失敗しました: ${err.message}`;
-          } else if (
-            typeof err === "object" &&
-            err !== null &&
-            "message" in err
-          ) {
-            errorMessage = `活動の読み込みに失敗しました: ${(err as Error).message}`;
-          }
-          setError(errorMessage);
-          toast({
-            title: "エラー",
-            description: errorMessage,
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchActivities();
-      // userにした場合、タブ切り替えで再レンダリングされてしまう
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user?.id, selectedDate, toast]);
 
     const handleClickDelete = (e: React.MouseEvent, id: string) => {
       e.stopPropagation();
@@ -113,16 +69,7 @@ export const ActivityList = React.memo(
       if (!activityIdToDelete) return;
 
       try {
-        const { error } = await supabase
-          .from("activities")
-          .delete()
-          .eq("id", activityIdToDelete);
-        if (error) {
-          throw error;
-        }
-        setActivities(
-          activities.filter((act) => act.id !== activityIdToDelete)
-        );
+        await deleteMutation.mutateAsync(activityIdToDelete);
         toast({
           title: "成功",
           description: "活動を削除しました。",
@@ -134,14 +81,7 @@ export const ActivityList = React.memo(
         let errorMessage = "活動の削除に失敗しました。";
         if (err instanceof Error) {
           errorMessage = `活動の削除に失敗しました: ${err.message}`;
-        } else if (
-          typeof err === "object" &&
-          err !== null &&
-          "message" in err
-        ) {
-          errorMessage = `活動の削除に失敗しました: ${(err as Error).message}`;
         }
-        setError(errorMessage);
         toast({
           title: "エラー",
           description: errorMessage,
@@ -163,11 +103,13 @@ export const ActivityList = React.memo(
       );
     }
 
-    if (error) {
+    if (queryError) {
+      const errorMessage =
+        queryError instanceof Error ? queryError.message : String(queryError);
       return (
         <Alert status="error">
           <AlertIcon />
-          Error: {error}
+          Error: {errorMessage}
         </Alert>
       );
     }
@@ -228,6 +170,10 @@ export const ActivityList = React.memo(
                 variant="ghost"
                 colorScheme="red"
                 onClick={(e) => handleClickDelete(e, activity.id)}
+                isLoading={
+                  deleteMutation.status === "pending" &&
+                  activityIdToDelete === activity.id
+                }
               />
             </Flex>
           </CuteBox>
@@ -251,7 +197,12 @@ export const ActivityList = React.memo(
                 <Button ref={cancelRef} onClick={onClose}>
                   キャンセル
                 </Button>
-                <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+                <Button
+                  colorScheme="red"
+                  onClick={confirmDelete}
+                  ml={3}
+                  isLoading={deleteMutation.status === "pending"}
+                >
                   削除
                 </Button>
               </AlertDialogFooter>

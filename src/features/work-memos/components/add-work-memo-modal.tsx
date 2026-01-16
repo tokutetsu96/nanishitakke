@@ -22,6 +22,8 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useCreateWorkMemo } from "@/features/work-memos/api/create-work-memo";
+import { useUpdateWorkMemo } from "@/features/work-memos/api/update-work-memo";
 
 registerLocale("ja", ja);
 
@@ -45,11 +47,12 @@ export const AddWorkMemoModal = ({
   const [stuckText, setStuckText] = useState("");
   const [causeText, setCauseText] = useState("");
   const [improvementText, setImprovementText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false); // Removed unused state
 
   useEffect(() => {
     if (isOpen) {
       if (initialMemo) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDate(initialMemo.date);
         setDoneText(initialMemo.done_text);
         setStuckText(initialMemo.stuck_text || "");
@@ -65,7 +68,13 @@ export const AddWorkMemoModal = ({
     }
   }, [isOpen, initialMemo]);
 
+  /*
   const checkDuplicateDate = async (checkDate: string) => {
+    // Duplicate checking logic is complex, might need a separate hook or simple query.
+    // For now, keeping manual check is fine, or move to useMutation's logic?
+    // Keep it manual here or use useQuery with `enabled: false`?
+    // Manual check is okay for simple validation.
+    
     if (!user) return false;
 
     // If editing and date hasn't changed, no need to check (or check excluding self)
@@ -85,6 +94,11 @@ export const AddWorkMemoModal = ({
 
     return !!data;
   };
+  */
+
+  // Mutations
+  const createMutation = useCreateWorkMemo();
+  const updateMutation = useUpdateWorkMemo();
 
   const handleSubmit = async () => {
     if (!user || !doneText || !date) {
@@ -98,20 +112,32 @@ export const AddWorkMemoModal = ({
       return;
     }
 
-    setIsLoading(true);
+    // setIsLoading(true); // Handled by mutation status
+    const isSubmitting =
+      createMutation.status === "pending" ||
+      updateMutation.status === "pending";
+    if (isSubmitting) return;
 
     try {
-      const isDuplicate = await checkDuplicateDate(date);
-      if (isDuplicate) {
-        toast({
-          title: "エラー",
-          description: "この日付のメモは既に存在します。",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        setIsLoading(false);
-        return;
+      // Duplicate check (Keeping manual for now as it's validation)
+      if (!initialMemo || initialMemo.date !== date) {
+        const { data } = await supabase
+          .from("work_memos")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("date", date)
+          .maybeSingle();
+
+        if (data) {
+          toast({
+            title: "エラー",
+            description: "この日付のメモは既に存在します。",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          return;
+        }
       }
 
       const memoData = {
@@ -124,34 +150,24 @@ export const AddWorkMemoModal = ({
       };
 
       if (initialMemo) {
-        // Update existing memo
-        const { error } = await supabase
-          .from("work_memos")
-          .update(memoData)
-          .eq("id", initialMemo.id)
-          .eq("user_id", user.id);
-
-        if (error) throw error;
-
+        await updateMutation.mutateAsync({ ...memoData, id: initialMemo.id });
         toast({
           title: "成功",
           description: "メモを更新しました。",
           status: "success",
         });
       } else {
-        // Insert new memo
-        const { error } = await supabase.from("work_memos").insert(memoData);
-
-        if (error) throw error;
-
+        await createMutation.mutateAsync(memoData);
         toast({
           title: "成功",
           description: "メモを記録しました。",
           status: "success",
+          duration: 3000,
+          isClosable: true,
         });
       }
 
-      onMemoAdded();
+      if (onMemoAdded) onMemoAdded();
       onClose();
 
       if (!initialMemo) {
@@ -168,8 +184,6 @@ export const AddWorkMemoModal = ({
         duration: 5000,
         isClosable: true,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -248,7 +262,10 @@ export const AddWorkMemoModal = ({
           <Button
             colorScheme="pink"
             onClick={handleSubmit}
-            isLoading={isLoading}
+            isLoading={
+              createMutation.status === "pending" ||
+              updateMutation.status === "pending"
+            }
           >
             {initialMemo ? "更新する" : "記録する"}
           </Button>

@@ -19,7 +19,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -34,14 +34,14 @@ import { Pie, Bar } from "react-chartjs-2";
 import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/lib/auth";
+// import { supabase } from "@/lib/supabase"; // Not needed
+// import { useAuth } from "@/lib/auth"; // useActivities handles auth check but we might need user for other things? No, useActivities handles it.
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
-import type { Activity } from "@/features/activities/types";
+// import type { Activity } from "@/features/activities/types"; // Not needed directly if inferred
 import {
   subDays,
-  startOfDay,
-  endOfDay,
+  // startOfDay, // Not needed
+  // endOfDay, // Not needed
   format,
   parseISO,
   differenceInMinutes,
@@ -49,6 +49,7 @@ import {
   addDays,
 } from "date-fns";
 import "./activities.scss";
+import { useActivities } from "@/features/activities/api/get-activities";
 
 // Chart.jsの登録
 ChartJS.register(
@@ -64,15 +65,19 @@ ChartJS.register(
 registerLocale("ja", ja);
 
 export const DashboardRoute = () => {
-  const { user } = useAuth();
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
+  // const { user } = useAuth(); // Not used directly anymore
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     subDays(new Date(), 6),
     new Date(),
   ]);
   const [startDate, endDate] = dateRange;
 
+  const { data: activities = [], isLoading: loading } = useActivities({
+    startDate: startDate ? format(startDate, "yyyy-MM-dd") : undefined,
+    endDate: endDate ? format(endDate, "yyyy-MM-dd") : undefined,
+  });
+
+  /*
   useEffect(() => {
     const fetchActivities = async () => {
       if (!user) return;
@@ -103,6 +108,7 @@ export const DashboardRoute = () => {
     fetchActivities();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, startDate, endDate]);
+  */
 
   const { categoryData, dailyData, summary } = useMemo(() => {
     const categoryMinutes: Record<string, number> = {};

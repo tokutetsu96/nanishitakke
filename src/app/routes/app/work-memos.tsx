@@ -14,11 +14,11 @@ import type { WorkMemo } from "@/features/work-memos/types";
 
 export const WorkMemosRoute = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [refreshKey, setRefreshKey] = useState(0);
+  // const [refreshKey, setRefreshKey] = useState(0); // Not needed with React Query
   const [editingMemo, setEditingMemo] = useState<WorkMemo | null>(null);
 
   const handleMemoAdded = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
+    // setRefreshKey((prevKey) => prevKey + 1); // React Query handles invalidation
   };
 
   const handleEditMemo = (memo: WorkMemo) => {
@@ -52,7 +52,7 @@ export const WorkMemosRoute = () => {
           </Button>
 
           <Box w="full">
-            <WorkMemoList refreshKey={refreshKey} onEditMemo={handleEditMemo} />
+            <WorkMemoList onEditMemo={handleEditMemo} />
           </Box>
         </VStack>
       </Container>

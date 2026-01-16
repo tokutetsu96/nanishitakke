@@ -17,7 +17,7 @@ import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import type { Activity } from "@/features/activities/types";
-import "./activities.scss";
+import "@/app/routes/app/activities.css";
 
 registerLocale("ja", ja);
 
