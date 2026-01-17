@@ -17,7 +17,6 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
-import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import type { Activity } from "@/features/activities/types";
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -27,6 +26,9 @@ import { format } from "date-fns";
 import "./add-activity-modal.css"; // We might need some css, but dashboard uses global? dashboard.tsx imports ./activities.scss. I'll assume global or default styles for now. Or just inline.
 // dashboard.tsx imported activities.scss. I won't import css file if it doesn't exist.
 // dashboard.tsx imported "react-datepicker/dist/react-datepicker.css"; -> I included this.
+
+import { useCreateActivity } from "@/features/activities/api/create-activity";
+import { useUpdateActivity } from "@/features/activities/api/update-activity";
 
 registerLocale("ja", ja);
 
@@ -50,11 +52,11 @@ export const AddActivityModal = ({
   const [endTime, setEndTime] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       if (initialActivity) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDate(initialActivity.date);
         setStartTime(initialActivity.start_time);
         setEndTime(initialActivity.end_time || "");
@@ -70,6 +72,9 @@ export const AddActivityModal = ({
     }
   }, [isOpen, initialActivity]);
 
+  const createMutation = useCreateActivity();
+  const updateMutation = useUpdateActivity();
+
   const handleSubmit = async () => {
     if (!user || !content || !startTime || !date) {
       toast({
@@ -82,23 +87,23 @@ export const AddActivityModal = ({
       return;
     }
 
-    setIsLoading(true);
+    const isSubmitting =
+      createMutation.status === "pending" ||
+      updateMutation.status === "pending";
+    if (isSubmitting) return;
+
     try {
       if (initialActivity) {
         // Update existing activity
-        const { error } = await supabase
-          .from("activities")
-          .update({
-            date: date,
-            start_time: startTime,
-            end_time: endTime || null,
-            content: content,
-            tags: tags,
-          })
-          .eq("id", initialActivity.id)
-          .eq("user_id", user.id);
-
-        if (error) throw error;
+        await updateMutation.mutateAsync({
+          id: initialActivity.id,
+          user_id: user.id,
+          date: date,
+          start_time: startTime,
+          end_time: endTime || null,
+          content: content,
+          tags: tags,
+        });
 
         toast({
           title: "成功",
@@ -109,7 +114,7 @@ export const AddActivityModal = ({
         });
       } else {
         // Insert new activity
-        const { error } = await supabase.from("activities").insert({
+        await createMutation.mutateAsync({
           user_id: user.id,
           date: date,
           start_time: startTime,
@@ -117,8 +122,6 @@ export const AddActivityModal = ({
           content: content,
           tags: tags,
         });
-
-        if (error) throw error;
 
         toast({
           title: "成功",
@@ -146,8 +149,6 @@ export const AddActivityModal = ({
         duration: 5000,
         isClosable: true,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -242,7 +243,10 @@ export const AddActivityModal = ({
           <Button
             colorScheme="pink"
             onClick={handleSubmit}
-            isLoading={isLoading}
+            isLoading={
+              createMutation.status === "pending" ||
+              updateMutation.status === "pending"
+            }
           >
             {initialActivity ? "更新する" : "記録する"}
           </Button>

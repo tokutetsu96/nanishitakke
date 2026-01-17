@@ -23,8 +23,7 @@ registerLocale("ja", ja);
 
 export const ActivitiesRoute = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [refreshKey, setRefreshKey] = useState(0);
-
+  // refreshKey removed
   const [startDate, setStartDate] = useState(new Date());
 
   // State to track the activity being edited
@@ -33,7 +32,7 @@ export const ActivitiesRoute = () => {
   const selectedDateString = format(startDate, "yyyy-MM-dd");
 
   const handleActivityAdded = () => {
-    setRefreshKey((prevKey) => prevKey + 1);
+    // No manual refresh needed thanks to React Query invalidation
   };
 
   const handleEditActivity = (activity: Activity) => {
@@ -80,7 +79,6 @@ export const ActivitiesRoute = () => {
           {/* Activity List */}
           <Box w="full">
             <ActivityList
-              key={refreshKey}
               selectedDate={selectedDateString}
               onEditActivity={handleEditActivity}
             />
