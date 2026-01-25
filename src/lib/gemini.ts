@@ -7,7 +7,7 @@ if (!API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+const model = genAI.getGenerativeModel({ model: "Gemini 3 Flash" });
 
 export const generateContent = async (prompt: string) => {
   if (!API_KEY) {
