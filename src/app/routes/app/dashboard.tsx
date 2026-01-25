@@ -54,6 +54,8 @@ import { useWorkMemos } from "@/features/work-memos/api/get-work-memos";
 import { AddActivityModal } from "@/features/activities/components/add-activity-modal";
 import { generateContent } from "@/lib/gemini";
 import { FaRobot, FaCalendarPlus, FaBriefcase } from "react-icons/fa";
+import { useCreateReport } from "@/features/reports/api/create-report";
+import { useAuth } from "@/lib/auth";
 
 // Chart.jsの登録
 ChartJS.register(
@@ -76,6 +78,8 @@ export const DashboardRoute = () => {
     onOpen: onOpenActivity,
     onClose: onCloseActivity,
   } = useDisclosure();
+  const { user } = useAuth();
+  const createReport = useCreateReport();
 
   const [report, setReport] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -278,6 +282,39 @@ ${workMemos
 
       const result = await generateContent(prompt);
       setReport(result);
+
+      // Save report
+      if (user) {
+        try {
+          await createReport.mutateAsync({
+            user_id: user.id,
+            start_date: startDate
+              ? format(startDate, "yyyy-MM-dd")
+              : format(new Date(), "yyyy-MM-dd"),
+            end_date: endDate
+              ? format(endDate, "yyyy-MM-dd")
+              : format(new Date(), "yyyy-MM-dd"),
+            content: result,
+          });
+          toast({
+            title: "保存完了",
+            description: "レポートをアーカイブに保存しました。",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+        } catch (e) {
+          console.error("Failed to save report:", e);
+          // Don't block the user from seeing the report even if save fails
+          toast({
+            title: "保存失敗",
+            description:
+              "レポートの表示は成功しましたが、アーカイブへの保存に失敗しました。",
+            status: "warning",
+            duration: 5000,
+          });
+        }
+      }
     } catch (error: unknown) {
       console.error("Report generation error:", error);
       toast({

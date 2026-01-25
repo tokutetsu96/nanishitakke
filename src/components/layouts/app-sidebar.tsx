@@ -12,7 +12,7 @@ import {
   CloseButton,
 } from "@chakra-ui/react";
 import { NavLink as RouterNavLink } from "react-router-dom";
-import { FiHome, FiBarChart2, FiFileText } from "react-icons/fi";
+import { FiHome, FiBarChart2, FiFileText, FiArchive } from "react-icons/fi";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -82,6 +82,9 @@ const SidebarContent = ({ onClose }: SidebarContentProps) => {
       </NavItem>
       <NavItem icon={FiFileText} to="/work-memos" onClick={onClose}>
         仕事メモ
+      </NavItem>
+      <NavItem icon={FiArchive} to="/reports" onClick={onClose}>
+        レポートアーカイブ
       </NavItem>
     </VStack>
   );

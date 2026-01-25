@@ -41,6 +41,13 @@ const createRouter = () =>
             return { Component: ProfileRoute };
           },
         },
+        {
+          path: "reports",
+          lazy: async () => {
+            const { ReportsRoute } = await import("./routes/app/reports");
+            return { Component: ReportsRoute };
+          },
+        },
       ],
     },
     {
