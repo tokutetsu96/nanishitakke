@@ -8,7 +8,7 @@ if (!API_KEY) {
 
 const genAI = new GoogleGenerativeAI(API_KEY || "");
 const model = genAI.getGenerativeModel(
-  { model: "gemini-3-flash" },
+  { model: "gemini-3-flash-preview" },
   { apiVersion: "v1beta" }
 );
 
