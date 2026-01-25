@@ -74,11 +74,11 @@ interface SidebarContentProps {
 const SidebarContent = ({ onClose }: SidebarContentProps) => {
   return (
     <VStack spacing={1} align="stretch" w="full">
-      <NavItem icon={FiHome} to="/" onClick={onClose}>
-        活動履歴
-      </NavItem>
-      <NavItem icon={FiBarChart2} to="/dashboard" onClick={onClose}>
+      <NavItem icon={FiBarChart2} to="/" onClick={onClose}>
         統計レポート
+      </NavItem>
+      <NavItem icon={FiHome} to="/activities" onClick={onClose}>
+        活動履歴
       </NavItem>
       <NavItem icon={FiFileText} to="/work-memos" onClick={onClose}>
         仕事メモ

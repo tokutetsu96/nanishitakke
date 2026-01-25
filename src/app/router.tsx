@@ -16,6 +16,13 @@ const createRouter = () =>
         {
           index: true,
           lazy: async () => {
+            const { DashboardRoute } = await import("./routes/app/dashboard");
+            return { Component: DashboardRoute };
+          },
+        },
+        {
+          path: "activities",
+          lazy: async () => {
             const { ActivitiesRoute } = await import("./routes/app/activities");
             return { Component: ActivitiesRoute };
           },
@@ -32,13 +39,6 @@ const createRouter = () =>
           lazy: async () => {
             const { ProfileRoute } = await import("./routes/app/profile");
             return { Component: ProfileRoute };
-          },
-        },
-        {
-          path: "dashboard",
-          lazy: async () => {
-            const { DashboardRoute } = await import("./routes/app/dashboard");
-            return { Component: DashboardRoute };
           },
         },
       ],

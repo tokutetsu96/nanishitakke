@@ -11,7 +11,7 @@ export const LoginRoute = () => {
 
   useEffect(() => {
     if (session) {
-      navigate("/activities", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [session, navigate]);
 

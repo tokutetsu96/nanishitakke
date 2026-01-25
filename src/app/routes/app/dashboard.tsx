@@ -41,7 +41,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
 
 import {
-  subDays,
   format,
   parseISO,
   differenceInMinutes,
@@ -82,7 +81,7 @@ export const DashboardRoute = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
-    subDays(new Date(), 6),
+    new Date(),
     new Date(),
   ]);
   const [startDate, endDate] = dateRange;
