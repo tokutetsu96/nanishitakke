@@ -332,7 +332,13 @@ ${workMemos
   return (
     <Container maxW="container.md" py={8}>
       <VStack spacing={8} align="stretch">
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box
+          display="flex"
+          flexDirection={{ base: "column", md: "row" }}
+          justifyContent="space-between"
+          alignItems={{ base: "flex-start", md: "center" }}
+          gap={4}
+        >
           <Box>
             <Heading size="lg" mb={2}>
               ダッシュボード
@@ -341,11 +347,12 @@ ${workMemos
               ショートカット: (A) 活動記録, (W) 作業メモ
             </Text>
           </Box>
-          <Box display="flex" gap={2}>
+          <Box display="flex" gap={2} w={{ base: "full", md: "auto" }}>
             <Button
               leftIcon={<Icon as={FaCalendarPlus} />}
               colorScheme="teal"
               onClick={onOpenActivity}
+              flex={{ base: 1, md: "initial" }}
             >
               活動を記録 (A)
             </Button>
@@ -353,13 +360,19 @@ ${workMemos
               leftIcon={<Icon as={FaBriefcase} />}
               colorScheme="blue"
               onClick={() => navigate("/app/work-memos")}
+              flex={{ base: 1, md: "initial" }}
             >
               作業メモ (W)
             </Button>
           </Box>
         </Box>
 
-        <Box display="flex" justifyContent="flex-end" gap={2}>
+        <Box
+          display="flex"
+          flexDirection={{ base: "column", md: "row" }}
+          justifyContent="flex-end"
+          gap={2}
+        >
           <Button
             onClick={() => setDateRange([new Date(), new Date()])}
             colorScheme={isTodaySelected ? "pink" : "gray"}
@@ -367,10 +380,11 @@ ${workMemos
             bg={isTodaySelected ? undefined : "white"}
             borderColor={isTodaySelected ? undefined : "gray.200"}
             _hover={{ bg: isTodaySelected ? "pink.600" : "gray.50" }}
+            w={{ base: "full", md: "auto" }}
           >
             今日
           </Button>
-          <Box w="300px">
+          <Box w={{ base: "full", md: "300px" }}>
             <InputGroup>
               <DatePicker
                 selectsRange={true}
