@@ -6,8 +6,8 @@ export const NotFoundRoute = () => {
     <Center h="100vh">
       <VStack spacing={4}>
         <Heading>404 - ページが見つかりません</Heading>
-        <Button as={Link} to="/" colorScheme="pink">
-          ホームに戻る
+        <Button as={Link} to="/login" colorScheme="pink">
+          ログインページへ戻る
         </Button>
       </VStack>
     </Center>
