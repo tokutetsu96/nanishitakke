@@ -52,6 +52,7 @@ import { useActivities } from "@/features/activities/api/get-activities";
 import { useNavigate } from "react-router-dom";
 import { useWorkMemos } from "@/features/work-memos/api/get-work-memos";
 import { AddActivityModal } from "@/features/activities/components/add-activity-modal";
+import { AddWorkMemoModal } from "@/features/work-memos/components/add-work-memo-modal";
 import { generateContent } from "@/lib/gemini";
 import { FaRobot, FaCalendarPlus, FaBriefcase } from "react-icons/fa";
 import { useCreateReport } from "@/features/reports/api/create-report";
@@ -77,6 +78,11 @@ export const DashboardRoute = () => {
     isOpen: isActivityOpen,
     onOpen: onOpenActivity,
     onClose: onCloseActivity,
+  } = useDisclosure();
+  const {
+    isOpen: isWorkMemoOpen,
+    onOpen: onOpenWorkMemo,
+    onClose: onCloseWorkMemo,
   } = useDisclosure();
   const { user } = useAuth();
   const createReport = useCreateReport();
@@ -117,13 +123,13 @@ export const DashboardRoute = () => {
       }
       if (e.key === "w" || e.key === "W") {
         e.preventDefault();
-        navigate("/work-memos");
+        onOpenWorkMemo();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate, onOpenActivity]);
+  }, [navigate, onOpenActivity, onOpenWorkMemo]);
 
   const { categoryData, dailyData, summary } = useMemo(() => {
     const categoryMinutes: Record<string, number> = {};
@@ -359,7 +365,7 @@ ${workMemos
             <Button
               leftIcon={<Icon as={FaBriefcase} />}
               colorScheme="blue"
-              onClick={() => navigate("/work-memos")}
+              onClick={onOpenWorkMemo}
               flex={{ base: 1, md: "initial" }}
             >
               仕事メモ (W)
@@ -541,6 +547,13 @@ ${workMemos
           // Refetch if necessary. React Query should handle it if invalidation is set up in useCreateActivity.
         }}
         initialActivity={null}
+      />
+      <AddWorkMemoModal
+        isOpen={isWorkMemoOpen}
+        onClose={onCloseWorkMemo}
+        onMemoAdded={() => {
+          // React Query handles invalidation
+        }}
       />
     </Container>
   );
