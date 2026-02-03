@@ -117,7 +117,7 @@ export const DashboardRoute = () => {
       }
       if (e.key === "w" || e.key === "W") {
         e.preventDefault();
-        navigate("/app/work-memos");
+        navigate("/work-memos");
       }
     };
 
@@ -241,7 +241,7 @@ export const DashboardRoute = () => {
       toast({
         title: "データがありません",
         description:
-          "レポートを作成するための活動記録または作業メモがありません。",
+          "レポートを作成するための活動記録または仕事メモがありません。",
         status: "warning",
       });
       return;
@@ -249,7 +249,7 @@ export const DashboardRoute = () => {
 
     setIsGenerating(true);
     try {
-      const prompt = `以下の期間の活動記録と作業メモをもとに、一週間の活動レポートを作成してください。
+      const prompt = `以下の期間の活動記録と仕事メモをもとに、一週間の活動レポートを作成してください。
 期間: ${startDate ? format(startDate, "yyyy/MM/dd") : ""} - ${endDate ? format(endDate, "yyyy/MM/dd") : ""}
 
 ## 活動記録
@@ -262,7 +262,7 @@ ${activities
   )
   .join("\n")}
 
-## 作業メモ
+## 仕事メモ
 ${workMemos
   .map(
     (w) => `- ${w.date}:
@@ -344,7 +344,7 @@ ${workMemos
               ダッシュボード
             </Heading>
             <Text color="gray.600">
-              ショートカット: (A) 活動記録, (W) 作業メモ
+              ショートカット: (A) 活動記録, (W) 仕事メモ
             </Text>
           </Box>
           <Box display="flex" gap={2} w={{ base: "full", md: "auto" }}>
@@ -359,10 +359,10 @@ ${workMemos
             <Button
               leftIcon={<Icon as={FaBriefcase} />}
               colorScheme="blue"
-              onClick={() => navigate("/app/work-memos")}
+              onClick={() => navigate("/work-memos")}
               flex={{ base: 1, md: "initial" }}
             >
-              作業メモ (W)
+              仕事メモ (W)
             </Button>
           </Box>
         </Box>
