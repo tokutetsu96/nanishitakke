@@ -11,7 +11,10 @@ import {
   MenuItem,
   Avatar,
   Text,
+  useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
@@ -26,12 +29,17 @@ interface AppHeaderProps {
 }
 
 export const AppHeader = ({ onOpen }: AppHeaderProps) => {
+  const { colorMode, toggleColorMode } = useColorMode();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{
     full_name: string | null;
     avatar_url: string | null;
   } | null>(null);
+
+  const headerBg = useColorModeValue("white", "gray.900");
+  const headingColor = useColorModeValue("gray.700", "white");
+  const textColor = useColorModeValue("gray.700", "white");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -78,7 +86,7 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
   return (
     <Box
       as="header"
-      bg="white"
+      bg={headerBg}
       shadow="sm"
       position="fixed"
       top="0"
@@ -97,18 +105,25 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
           />
           <Link to="/">
             <Flex align="center" cursor="pointer">
-              <Heading as="h1" size="md" color="gray.700">
+              <Heading as="h1" size="md" color={headingColor}>
                 なにしたっけ
               </Heading>
               <Image src={NanishitakkeLogo} alt="なにしたっけ Logo" h="40px" />
             </Flex>
           </Link>
           <Spacer />
+          <IconButton
+            aria-label="Toggle color mode"
+            icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+            onClick={toggleColorMode}
+            variant="ghost"
+            mr={4}
+          />
           {user && profile && (
             <Menu>
               <MenuButton>
                 <Flex alignItems="center" gap={2}>
-                  <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                  <Text fontSize="sm" fontWeight="medium" color={textColor}>
                     {profile.full_name}
                   </Text>
                   <Avatar

@@ -20,6 +20,7 @@ import {
   useToast,
   Icon,
   useDisclosure,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
 import { useState, useMemo, useEffect } from "react";
@@ -66,7 +67,7 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  Title
+  Title,
 );
 
 registerLocale("ja", ja);
@@ -175,7 +176,7 @@ export const DashboardRoute = () => {
     // 円グラフ用データ
     const labels = Object.keys(categoryMinutes);
     const data = Object.values(categoryMinutes).map(
-      (m) => Math.round((m / 60) * 10) / 10
+      (m) => Math.round((m / 60) * 10) / 10,
     ); // 時間単位に変換
     const bgColors = labels.map((label) => {
       const colorName =
@@ -199,7 +200,7 @@ export const DashboardRoute = () => {
     // 棒グラフ用データ (日付順)
     const barLabels = Object.keys(dailyMinutes);
     const barData = Object.values(dailyMinutes).map(
-      (m) => Math.round((m / 60) * 10) / 10
+      (m) => Math.round((m / 60) * 10) / 10,
     ); // 時間単位に変換
 
     return {
@@ -242,6 +243,9 @@ export const DashboardRoute = () => {
     );
   }, [startDate, endDate]);
 
+  const bgBox = useColorModeValue("white", "gray.800");
+  const bgReport = useColorModeValue("gray.50", "gray.700");
+
   const handleGenerateReport = async () => {
     if (activities.length === 0 && workMemos.length === 0) {
       toast({
@@ -264,7 +268,7 @@ ${activities
     (a) =>
       `- ${a.date} ${a.start_time}~${a.end_time || ""}: ${a.content} (タグ: ${
         a.tags?.join(", ") || "なし"
-      })`
+      })`,
   )
   .join("\n")}
 
@@ -275,7 +279,7 @@ ${workMemos
   やったこと: ${w.done_text}
   詰まったこと: ${w.stuck_text || "なし"}
   原因: ${w.cause_text || "なし"}
-  対策: ${w.improvement_text || "なし"}`
+  対策: ${w.improvement_text || "なし"}`,
   )
   .join("\n")}
 
@@ -413,7 +417,7 @@ ${workMemos
         </Box>
 
         {/* Report Section */}
-        <Box bg="white" p={6} borderRadius="lg" shadow="sm">
+        <Box bg={bgBox} p={6} borderRadius="lg" shadow="sm">
           <Box
             display="flex"
             justifyContent="space-between"
@@ -436,7 +440,7 @@ ${workMemos
           </Box>
           {report && (
             <Box
-              bg="gray.50"
+              bg={bgReport}
               p={4}
               borderRadius="md"
               whiteSpace="pre-wrap"
@@ -490,7 +494,7 @@ ${workMemos
 
             {/* Charts ... */}
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
-              <Box bg="white" p={6} borderRadius="lg" shadow="sm">
+              <Box bg={bgBox} p={6} borderRadius="lg" shadow="sm">
                 <Heading size="md" mb={4} textAlign="center">
                   カテゴリ別割合
                 </Heading>
@@ -510,7 +514,7 @@ ${workMemos
                   )}
                 </Box>
               </Box>
-              <Box bg="white" p={6} borderRadius="lg" shadow="sm">
+              <Box bg={bgBox} p={6} borderRadius="lg" shadow="sm">
                 <Heading size="md" mb={4} textAlign="center">
                   日別活動時間
                 </Heading>

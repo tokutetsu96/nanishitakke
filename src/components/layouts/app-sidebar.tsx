@@ -10,6 +10,7 @@ import {
   DrawerContent,
   DrawerOverlay,
   CloseButton,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import {
@@ -110,7 +111,7 @@ export const AppSidebar = ({ isOpen, onClose }: AppSidebarProps) => {
       {/* Desktop Sidebar */}
       {/* Desktop Sidebar */}
       <Box
-        bg="white"
+        bg={useColorModeValue("white", "gray.800")}
         w={{ base: "full", md: 60 }}
         display={{ base: "none", md: "block" }}
         pt={4}
