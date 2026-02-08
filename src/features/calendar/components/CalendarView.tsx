@@ -17,6 +17,7 @@ import { ja } from "date-fns/locale/ja";
 import { useActivities } from "@/features/activities/api/get-activities";
 import type { Activity } from "@/features/activities/types";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
+import "react-calendar/dist/Calendar.css";
 import "./calendar.scss";
 
 // Chakra UI colors for categories (matching dashboard)
