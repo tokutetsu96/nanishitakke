@@ -28,6 +28,13 @@ const createRouter = () =>
           },
         },
         {
+          path: "calendar",
+          lazy: async () => {
+            const { CalendarRoute } = await import("./routes/app/calendar");
+            return { Component: CalendarRoute };
+          },
+        },
+        {
           path: "work-memos",
           lazy: async () => {
             const { WorkMemosRoute } = await import("./routes/app/work-memos");
