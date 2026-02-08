@@ -5,6 +5,7 @@ export const ACTIVITY_CATEGORIES = {
   "趣味・娯楽": "green",
   移動: "gray",
   その他: "teal",
+  ジム: "pink",
 } as const;
 
 export type ActivityCategory = keyof typeof ACTIVITY_CATEGORIES;
