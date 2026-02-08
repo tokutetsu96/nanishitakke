@@ -20,6 +20,7 @@ import {
   useDisclosure,
   HStack,
   Tag,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import type { Activity } from "@/features/activities/types";
@@ -42,6 +43,9 @@ const formatTime = (timeString: string | null | undefined): string => {
 export const ActivityList = React.memo(
   ({ selectedDate, onEditActivity }: ActivityListProps) => {
     const toast = useToast();
+    const cardBg = useColorModeValue("white", "gray.800");
+    const textColor = useColorModeValue("gray.700", "white");
+    const subTextColor = useColorModeValue("gray.600", "gray.400");
 
     // Data Fetching
     const {
@@ -55,7 +59,7 @@ export const ActivityList = React.memo(
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [activityIdToDelete, setActivityIdToDelete] = useState<string | null>(
-      null
+      null,
     );
     const cancelRef = useRef(null);
 
@@ -128,7 +132,7 @@ export const ActivityList = React.memo(
           <CuteBox
             key={activity.id}
             p={4}
-            bg="white"
+            bg={cardBg}
             borderRadius="xl"
             onClick={() => onEditActivity(activity)}
             cursor="pointer"
@@ -137,11 +141,11 @@ export const ActivityList = React.memo(
           >
             <Flex align="center">
               <Box flex="1">
-                <Text fontWeight="bold" color="gray.700">
+                <Text fontWeight="bold" color={textColor}>
                   {formatTime(activity.start_time)} -{" "}
                   {formatTime(activity.end_time)}
                 </Text>
-                <Text color="gray.600" whiteSpace="pre-wrap">
+                <Text color={subTextColor} whiteSpace="pre-wrap">
                   {activity.content}
                 </Text>
                 {activity.tags && activity.tags.length > 0 && (
@@ -211,5 +215,5 @@ export const ActivityList = React.memo(
         </AlertDialog>
       </VStack>
     );
-  }
+  },
 );

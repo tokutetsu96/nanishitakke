@@ -11,6 +11,7 @@ import {
   Badge,
   Spinner,
   Center,
+  useColorMode,
 } from "@chakra-ui/react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ja } from "date-fns/locale/ja";
@@ -135,8 +136,10 @@ export const CalendarView = () => {
     return null;
   };
 
+  const { colorMode } = useColorMode();
+
   return (
-    <Box>
+    <Box className={colorMode === "dark" ? "dark-theme" : ""}>
       <Card mb={6}>
         <CardBody>
           <Calendar

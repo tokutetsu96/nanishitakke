@@ -245,6 +245,11 @@ export const DashboardRoute = () => {
 
   const bgBox = useColorModeValue("white", "gray.800");
   const bgReport = useColorModeValue("gray.50", "gray.700");
+  const chartGridColor = useColorModeValue("#E2E8F0", "#4A5568"); // gray.200, gray.600
+  const chartTextColor = useColorModeValue("#718096", "#A0AEC0"); // gray.500, gray.400
+  const inputBg = useColorModeValue("white", "gray.700");
+  const inputColor = useColorModeValue("gray.800", "white");
+  const cardBg = useColorModeValue("white", "gray.800");
 
   const handleGenerateReport = async () => {
     if (activities.length === 0 && workMemos.length === 0) {
@@ -387,9 +392,9 @@ ${workMemos
             onClick={() => setDateRange([new Date(), new Date()])}
             colorScheme={isTodaySelected ? "pink" : "gray"}
             variant={isTodaySelected ? "solid" : "outline"}
-            bg={isTodaySelected ? undefined : "white"}
+            bg={isTodaySelected ? undefined : inputBg}
             borderColor={isTodaySelected ? undefined : "gray.200"}
-            _hover={{ bg: isTodaySelected ? "pink.600" : "gray.50" }}
+            _hover={{ bg: isTodaySelected ? "pink.600" : "gray.500" }}
             w={{ base: "full", md: "auto" }}
           >
             今日
@@ -404,7 +409,12 @@ ${workMemos
                 locale="ja"
                 dateFormat="yyyy/MM/dd"
                 customInput={
-                  <Input bg="white" textAlign="center" cursor="pointer" />
+                  <Input
+                    bg={inputBg}
+                    color={inputColor}
+                    textAlign="center"
+                    cursor="pointer"
+                  />
                 }
                 wrapperClassName="datepicker-full-width"
                 portalId="react-datepicker-portal"
@@ -463,7 +473,7 @@ ${workMemos
         ) : (
           <>
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-              <Card>
+              <Card bg={cardBg}>
                 <CardBody>
                   <Stat>
                     <StatLabel>記録数</StatLabel>
@@ -472,7 +482,7 @@ ${workMemos
                   </Stat>
                 </CardBody>
               </Card>
-              <Card>
+              <Card bg={cardBg}>
                 <CardBody>
                   <Stat>
                     <StatLabel>総活動時間</StatLabel>
@@ -481,7 +491,7 @@ ${workMemos
                   </Stat>
                 </CardBody>
               </Card>
-              <Card>
+              <Card bg={cardBg}>
                 <CardBody>
                   <Stat>
                     <StatLabel>平均活動時間</StatLabel>
@@ -507,7 +517,14 @@ ${workMemos
                   {categoryData.labels.length > 0 ? (
                     <Pie
                       data={categoryData}
-                      options={{ maintainAspectRatio: false }}
+                      options={{
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: {
+                            labels: { color: chartTextColor },
+                          },
+                        },
+                      }}
                     />
                   ) : (
                     <Text color="gray.400">データがありません</Text>
@@ -532,7 +549,14 @@ ${workMemos
                           title: {
                             display: true,
                             text: "時間",
+                            color: chartTextColor,
                           },
+                          grid: { color: chartGridColor },
+                          ticks: { color: chartTextColor },
+                        },
+                        x: {
+                          grid: { color: chartGridColor },
+                          ticks: { color: chartTextColor },
                         },
                       },
                     }}
