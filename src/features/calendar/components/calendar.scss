@@ -10,6 +10,91 @@
   box-shadow:
     0 1px 3px 0 rgba(0, 0, 0, 0.1),
     0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+  /* Navigation */
+  .react-calendar__navigation {
+    margin-bottom: 0.5rem;
+
+    button {
+      color: #2d3748; /* gray.700 */
+      font-weight: 600;
+      background: none;
+      border-radius: 0.375rem;
+      min-width: 44px;
+      height: 44px;
+
+      &:enabled:hover,
+      &:enabled:focus {
+        background-color: #fed7e2; /* pink.100 */
+      }
+
+      &:disabled {
+        background-color: transparent;
+        color: #a0aec0; /* gray.400 */
+      }
+    }
+  }
+
+  /* Month view - weekdays */
+  .react-calendar__month-view__weekdays {
+    text-transform: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #718096; /* gray.500 */
+
+    abbr {
+      text-decoration: none;
+    }
+  }
+
+  /* Day tiles */
+  .react-calendar__tile {
+    padding: 0.75em 0.5em;
+    background: none;
+    border-radius: 0.375rem;
+    color: #2d3748; /* gray.700 */
+
+    &:enabled:hover,
+    &:enabled:focus {
+      background-color: #fed7e2; /* pink.100 */
+    }
+
+    &--now {
+      background-color: #fff5f7; /* pink.50 */
+      color: #d53f8c; /* pink.500 */
+      font-weight: 600;
+
+      &:enabled:hover,
+      &:enabled:focus {
+        background-color: #fed7e2; /* pink.100 */
+      }
+    }
+
+    &--active {
+      background-color: #d53f8c !important; /* pink.500 */
+      color: white !important;
+
+      &:enabled:hover,
+      &:enabled:focus {
+        background-color: #b83280 !important; /* pink.600 */
+      }
+    }
+
+    &--hasActive {
+      background-color: #d53f8c; /* pink.500 */
+      color: white;
+    }
+  }
+
+  /* Neighboring month days */
+  .react-calendar__month-view__days__day--neighboringMonth {
+    color: #a0aec0; /* gray.400 */
+  }
+
+  /* Weekend days */
+  .react-calendar__month-view__days__day--weekend {
+    color: #d53f8c; /* pink.500 */
+  }
 }
 
 /* Activity Dots */
