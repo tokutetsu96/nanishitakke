@@ -20,7 +20,6 @@ import {
   useToast,
   Icon,
   useDisclosure,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
 import { useState, useMemo, useEffect } from "react";
@@ -243,14 +242,6 @@ export const DashboardRoute = () => {
     );
   }, [startDate, endDate]);
 
-  const bgBox = useColorModeValue("white", "gray.800");
-  const bgReport = useColorModeValue("gray.50", "gray.700");
-  const chartGridColor = useColorModeValue("#E2E8F0", "#4A5568"); // gray.200, gray.600
-  const chartTextColor = useColorModeValue("#718096", "#A0AEC0"); // gray.500, gray.400
-  const inputBg = useColorModeValue("white", "gray.700");
-  const inputColor = useColorModeValue("gray.800", "white");
-  const cardBg = useColorModeValue("white", "gray.800");
-
   const handleGenerateReport = async () => {
     if (activities.length === 0 && workMemos.length === 0) {
       toast({
@@ -392,9 +383,9 @@ ${workMemos
             onClick={() => setDateRange([new Date(), new Date()])}
             colorScheme={isTodaySelected ? "pink" : "gray"}
             variant={isTodaySelected ? "solid" : "outline"}
-            bg={isTodaySelected ? undefined : inputBg}
+            bg={isTodaySelected ? undefined : "white"}
             borderColor={isTodaySelected ? undefined : "gray.200"}
-            _hover={{ bg: isTodaySelected ? "pink.600" : "gray.500" }}
+            _hover={{ bg: isTodaySelected ? "pink.600" : "gray.100" }}
             w={{ base: "full", md: "auto" }}
           >
             今日
@@ -410,8 +401,9 @@ ${workMemos
                 dateFormat="yyyy/MM/dd"
                 customInput={
                   <Input
-                    bg={inputBg}
-                    color={inputColor}
+                    bg="white"
+                    bgColor="white"
+                    borderColor="gray.200"
                     textAlign="center"
                     cursor="pointer"
                   />
@@ -427,7 +419,7 @@ ${workMemos
         </Box>
 
         {/* Report Section */}
-        <Box bg={bgBox} p={6} borderRadius="lg" shadow="sm">
+        <Box bg="white" p={6} borderRadius="lg" shadow="sm">
           <Box
             display="flex"
             justifyContent="space-between"
@@ -450,7 +442,7 @@ ${workMemos
           </Box>
           {report && (
             <Box
-              bg={bgReport}
+              bg="gray.50"
               p={4}
               borderRadius="md"
               whiteSpace="pre-wrap"
@@ -473,7 +465,7 @@ ${workMemos
         ) : (
           <>
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-              <Card bg={cardBg}>
+              <Card bg="white">
                 <CardBody>
                   <Stat>
                     <StatLabel>記録数</StatLabel>
@@ -482,7 +474,7 @@ ${workMemos
                   </Stat>
                 </CardBody>
               </Card>
-              <Card bg={cardBg}>
+              <Card bg="white">
                 <CardBody>
                   <Stat>
                     <StatLabel>総活動時間</StatLabel>
@@ -491,7 +483,7 @@ ${workMemos
                   </Stat>
                 </CardBody>
               </Card>
-              <Card bg={cardBg}>
+              <Card bg="white">
                 <CardBody>
                   <Stat>
                     <StatLabel>平均活動時間</StatLabel>
@@ -504,7 +496,7 @@ ${workMemos
 
             {/* Charts ... */}
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8}>
-              <Box bg={bgBox} p={6} borderRadius="lg" shadow="sm">
+              <Box bg="white" p={6} borderRadius="lg" shadow="sm">
                 <Heading size="md" mb={4} textAlign="center">
                   カテゴリ別割合
                 </Heading>
@@ -521,7 +513,7 @@ ${workMemos
                         maintainAspectRatio: false,
                         plugins: {
                           legend: {
-                            labels: { color: chartTextColor },
+                            labels: { color: "#718096" },
                           },
                         },
                       }}
@@ -531,7 +523,7 @@ ${workMemos
                   )}
                 </Box>
               </Box>
-              <Box bg={bgBox} p={6} borderRadius="lg" shadow="sm">
+              <Box bg="white" p={6} borderRadius="lg" shadow="sm">
                 <Heading size="md" mb={4} textAlign="center">
                   日別活動時間
                 </Heading>
@@ -549,14 +541,14 @@ ${workMemos
                           title: {
                             display: true,
                             text: "時間",
-                            color: chartTextColor,
+                            color: "#718096",
                           },
-                          grid: { color: chartGridColor },
-                          ticks: { color: chartTextColor },
+                          grid: { color: "#E2E8F0" },
+                          ticks: { color: "#718096" },
                         },
                         x: {
-                          grid: { color: chartGridColor },
-                          ticks: { color: chartTextColor },
+                          grid: { color: "#E2E8F0" },
+                          ticks: { color: "#718096" },
                         },
                       },
                     }}

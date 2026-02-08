@@ -22,7 +22,6 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import type { WorkMemo } from "@/features/work-memos/types";
@@ -39,8 +38,6 @@ interface WorkMemoListProps {
 export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {
   // Removed refreshKey
   const toast = useToast();
-  const cardBg = useColorModeValue("white", "gray.800");
-  const subTextColor = useColorModeValue("gray.600", "gray.400");
 
   // Data Fetching
   const {
@@ -122,7 +119,7 @@ export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {
   return (
     <VStack spacing={4} align="stretch">
       {memos.map((memo) => (
-        <CuteBox key={memo.id} p={4} bg={cardBg} borderRadius="xl">
+        <CuteBox key={memo.id} p={4} bg="white" borderRadius="xl">
           <Box
             mb={2}
             display="flex"
@@ -170,18 +167,14 @@ export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {
               <AccordionPanel pb={4} px={0}>
                 <VStack align="stretch" spacing={3}>
                   <Box>
-                    <Text fontWeight="bold" fontSize="sm" color={subTextColor}>
+                    <Text fontWeight="bold" fontSize="sm" color="gray.600">
                       やったこと
                     </Text>
                     <Text whiteSpace="pre-wrap">{memo.done_text}</Text>
                   </Box>
                   {memo.stuck_text && (
                     <Box>
-                      <Text
-                        fontWeight="bold"
-                        fontSize="sm"
-                        color={subTextColor}
-                      >
+                      <Text fontWeight="bold" fontSize="sm" color="gray.600">
                         詰まったこと
                       </Text>
                       <Text whiteSpace="pre-wrap">{memo.stuck_text}</Text>
@@ -189,11 +182,7 @@ export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {
                   )}
                   {memo.cause_text && (
                     <Box>
-                      <Text
-                        fontWeight="bold"
-                        fontSize="sm"
-                        color={subTextColor}
-                      >
+                      <Text fontWeight="bold" fontSize="sm" color="gray.600">
                         原因
                       </Text>
                       <Text whiteSpace="pre-wrap">{memo.cause_text}</Text>
@@ -201,11 +190,7 @@ export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {
                   )}
                   {memo.improvement_text && (
                     <Box>
-                      <Text
-                        fontWeight="bold"
-                        fontSize="sm"
-                        color={subTextColor}
-                      >
+                      <Text fontWeight="bold" fontSize="sm" color="gray.600">
                         改善案
                       </Text>
                       <Text whiteSpace="pre-wrap">{memo.improvement_text}</Text>

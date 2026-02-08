@@ -1,19 +1,14 @@
 import { extendTheme } from "@chakra-ui/react";
-import type { StyleFunctionProps } from "@chakra-ui/theme-tools";
 
 const theme = extendTheme({
-  config: {
-    initialColorMode: "system",
-    useSystemColorMode: true,
-  },
   styles: {
-    global: (props: StyleFunctionProps) => ({
+    global: {
       body: {
         fontFamily: "'M PLUS Rounded 1c', sans-serif",
-        backgroundColor: props.colorMode === "dark" ? "gray.900" : "gray.50",
-        color: props.colorMode === "dark" ? "white" : "gray.800",
+        backgroundColor: "gray.50",
+        color: "gray.800",
       },
-    }),
+    },
   },
 
   colors: {
@@ -50,11 +45,6 @@ const theme = extendTheme({
       baseStyle: {
         borderRadius: "2xl",
       },
-      variants: {
-        solid: (props: StyleFunctionProps) => ({
-          color: props.colorMode === "dark" ? "gray.800" : undefined,
-        }),
-      },
     },
     Box: {
       baseStyle: {
@@ -72,26 +62,6 @@ const theme = extendTheme({
       defaultProps: {
         focusBorderColor: "pink.300",
       },
-    },
-    Card: {
-      baseStyle: (props: StyleFunctionProps) => ({
-        container: {
-          bg: props.colorMode === "dark" ? "gray.800" : "white",
-        },
-      }),
-    },
-    Menu: {
-      baseStyle: (props: StyleFunctionProps) => ({
-        list: {
-          bg: props.colorMode === "dark" ? "gray.800" : "white",
-        },
-        item: {
-          bg: props.colorMode === "dark" ? "gray.800" : "white",
-          _hover: {
-            bg: props.colorMode === "dark" ? "gray.700" : "gray.100",
-          },
-        },
-      }),
     },
   },
 });

@@ -11,10 +11,7 @@ import {
   MenuItem,
   Avatar,
   Text,
-  useColorMode,
-  useColorModeValue,
 } from "@chakra-ui/react";
-import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
@@ -29,7 +26,6 @@ interface AppHeaderProps {
 }
 
 export const AppHeader = ({ onOpen }: AppHeaderProps) => {
-  const { colorMode, toggleColorMode } = useColorMode();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{
@@ -37,9 +33,9 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
     avatar_url: string | null;
   } | null>(null);
 
-  const headerBg = useColorModeValue("white", "gray.900");
-  const headingColor = useColorModeValue("gray.700", "white");
-  const textColor = useColorModeValue("gray.700", "white");
+  const headerBg = "white";
+  const headingColor = "gray.700";
+  const textColor = "gray.700";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -112,13 +108,6 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
             </Flex>
           </Link>
           <Spacer />
-          <IconButton
-            aria-label="Toggle color mode"
-            icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-            onClick={toggleColorMode}
-            variant="ghost"
-            mr={4}
-          />
           {user && profile && (
             <Menu>
               <MenuButton>
