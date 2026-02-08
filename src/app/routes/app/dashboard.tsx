@@ -53,8 +53,14 @@ import { useNavigate } from "react-router-dom";
 import { useWorkMemos } from "@/features/work-memos/api/get-work-memos";
 import { AddActivityModal } from "@/features/activities/components/add-activity-modal";
 import { AddWorkMemoModal } from "@/features/work-memos/components/add-work-memo-modal";
+import { TemplateManagerModal } from "@/features/activity-templates/components/template-manager-modal";
 import { generateContent } from "@/lib/gemini";
-import { FaRobot, FaCalendarPlus, FaBriefcase } from "react-icons/fa";
+import {
+  FaRobot,
+  FaCalendarPlus,
+  FaBriefcase,
+  FaFolderOpen,
+} from "react-icons/fa";
 import { useCreateReport } from "@/features/reports/api/create-report";
 import { useAuth } from "@/lib/auth";
 
@@ -83,6 +89,11 @@ export const DashboardRoute = () => {
     isOpen: isWorkMemoOpen,
     onOpen: onOpenWorkMemo,
     onClose: onCloseWorkMemo,
+  } = useDisclosure();
+  const {
+    isOpen: isTemplateOpen,
+    onOpen: onOpenTemplate,
+    onClose: onCloseTemplate,
   } = useDisclosure();
   const { user } = useAuth();
   const createReport = useCreateReport();
@@ -353,7 +364,12 @@ ${workMemos
               ショートカット: (A) 活動記録, (W) 仕事メモ
             </Text>
           </Box>
-          <Box display="flex" gap={2} w={{ base: "full", md: "auto" }}>
+          <Box
+            display="flex"
+            gap={2}
+            w={{ base: "full", md: "auto" }}
+            flexWrap="wrap"
+          >
             <Button
               leftIcon={<Icon as={FaCalendarPlus} />}
               colorScheme="teal"
@@ -369,6 +385,14 @@ ${workMemos
               flex={{ base: 1, md: "initial" }}
             >
               仕事メモ (W)
+            </Button>
+            <Button
+              leftIcon={<Icon as={FaFolderOpen} />}
+              colorScheme="orange"
+              onClick={onOpenTemplate}
+              flex={{ base: 1, md: "initial" }}
+            >
+              テンプレート
             </Button>
           </Box>
         </Box>
@@ -575,6 +599,7 @@ ${workMemos
           // React Query handles invalidation
         }}
       />
+      <TemplateManagerModal isOpen={isTemplateOpen} onClose={onCloseTemplate} />
     </Container>
   );
 };

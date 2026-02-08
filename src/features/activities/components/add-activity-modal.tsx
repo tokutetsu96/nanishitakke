@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -15,13 +15,6 @@ import {
   VStack,
   useToast,
   Select,
-  useDisclosure,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import { useAuth } from "@/lib/auth";
@@ -37,7 +30,6 @@ import "./add-activity-modal.css"; // We might need some css, but dashboard uses
 import { useCreateActivity } from "@/features/activities/api/create-activity";
 import { useUpdateActivity } from "@/features/activities/api/update-activity";
 import { useActivityTemplates } from "@/features/activity-templates/api/get-activity-templates";
-import { useCreateActivityTemplate } from "@/features/activity-templates/api/create-activity-template";
 
 registerLocale("ja", ja);
 
@@ -61,17 +53,8 @@ export const AddActivityModal = ({
   const [endTime, setEndTime] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [templateName, setTemplateName] = useState("");
 
   const { data: templates = [] } = useActivityTemplates();
-  const createTemplateMutation = useCreateActivityTemplate();
-
-  const {
-    isOpen: isTemplateOpen,
-    onOpen: onTemplateOpen,
-    onClose: onTemplateClose,
-  } = useDisclosure();
-  const cancelRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -183,46 +166,10 @@ export const AddActivityModal = ({
 
   const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedTemplateId = e.target.value;
-    const selectedTemplate = templates.find(
-      (t) => t.id === selectedTemplateId
-    );
+    const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
     if (selectedTemplate) {
       setContent(selectedTemplate.content);
       setTags(selectedTemplate.tags || []);
-    }
-  };
-
-  const handleSaveTemplate = async () => {
-    if (!user || !content || !templateName) {
-      toast({
-        title: "入力エラー",
-        description: "テンプレート名と内容は必須です。",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-    try {
-      await createTemplateMutation.mutateAsync({
-        user_id: user.id,
-        template_name: templateName,
-        content: content,
-        tags: tags,
-      });
-      toast({
-        title: "成功",
-        description: "テンプレートを保存しました。",
-        status: "success",
-      });
-      onTemplateClose();
-      setTemplateName("");
-    } catch (error) {
-      toast({
-        title: "エラー",
-        description: `保存に失敗しました: ${(error as Error).message}`,
-        status: "error",
-      });
     }
   };
 
@@ -258,7 +205,7 @@ export const AddActivityModal = ({
                       ? new Date(
                           parseInt(date.split("-")[0]),
                           parseInt(date.split("-")[1]) - 1,
-                          parseInt(date.split("-")[2])
+                          parseInt(date.split("-")[2]),
                         )
                       : null
                   }
@@ -316,9 +263,6 @@ export const AddActivityModal = ({
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" onClick={onTemplateOpen} mr="auto">
-              この内容をテンプレートとして保存
-            </Button>
             <Button variant="ghost" mr={3} onClick={onClose}>
               キャンセル
             </Button>
@@ -335,42 +279,6 @@ export const AddActivityModal = ({
           </ModalFooter>
         </ModalContent>
       </Modal>
-
-      <AlertDialog
-        isOpen={isTemplateOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onTemplateClose}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              テンプレートとして保存
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              <Input
-                placeholder="テンプレート名を入力"
-                value={templateName}
-                onChange={(e) => setTemplateName(e.target.value)}
-              />
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onTemplateClose}>
-                キャンセル
-              </Button>
-              <Button
-                colorScheme="pink"
-                onClick={handleSaveTemplate}
-                ml={3}
-                isLoading={createTemplateMutation.status === "pending"}
-              >
-                保存
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
     </>
   );
 };
