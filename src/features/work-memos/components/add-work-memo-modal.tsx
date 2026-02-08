@@ -44,6 +44,7 @@ export const AddWorkMemoModal = ({
   const toast = useToast();
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [doneText, setDoneText] = useState("");
+  const [goodText, setGoodText] = useState("");
   const [stuckText, setStuckText] = useState("");
   const [causeText, setCauseText] = useState("");
   const [improvementText, setImprovementText] = useState("");
@@ -54,12 +55,14 @@ export const AddWorkMemoModal = ({
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setDate(initialMemo.date);
         setDoneText(initialMemo.done_text);
+        setGoodText(initialMemo.good_text || "");
         setStuckText(initialMemo.stuck_text || "");
         setCauseText(initialMemo.cause_text || "");
         setImprovementText(initialMemo.improvement_text || "");
       } else {
         setDate(new Date().toISOString().slice(0, 10));
         setDoneText("");
+        setGoodText("");
         setStuckText("");
         setCauseText("");
         setImprovementText("");
@@ -114,6 +117,7 @@ export const AddWorkMemoModal = ({
         user_id: user.id,
         date: date,
         done_text: doneText,
+        good_text: goodText || null,
         stuck_text: stuckText || null,
         cause_text: causeText || null,
         improvement_text: improvementText || null,
@@ -142,6 +146,7 @@ export const AddWorkMemoModal = ({
 
       if (!initialMemo) {
         setDoneText("");
+        setGoodText("");
         setStuckText("");
         setCauseText("");
         setImprovementText("");
@@ -197,6 +202,14 @@ export const AddWorkMemoModal = ({
                 onChange={(e) => setDoneText(e.target.value)}
                 placeholder="今日やったことを記入してください"
                 minH="100px"
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>良かったこと</FormLabel>
+              <Textarea
+                value={goodText}
+                onChange={(e) => setGoodText(e.target.value)}
+                placeholder="今日あった良かったこと"
               />
             </FormControl>
             <FormControl>

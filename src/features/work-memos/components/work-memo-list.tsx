@@ -172,6 +172,14 @@ export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {
                     </Text>
                     <Text whiteSpace="pre-wrap">{memo.done_text}</Text>
                   </Box>
+                  {memo.good_text && (
+                    <Box>
+                      <Text fontWeight="bold" fontSize="sm" color="gray.600">
+                        良かったこと
+                      </Text>
+                      <Text whiteSpace="pre-wrap">{memo.good_text}</Text>
+                    </Box>
+                  )}
                   {memo.stuck_text && (
                     <Box>
                       <Text fontWeight="bold" fontSize="sm" color="gray.600">
