@@ -9,7 +9,7 @@ export const AppLayout = () => {
   return (
     <Box bg="gray.50" minH="100vh">
       <AppHeader onOpen={onOpen} />
-      <Box pt="16">
+      <Box pt="20">
         <Container maxW="container.lg">
           <Flex alignItems="flex-start">
             <Box
