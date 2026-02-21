@@ -8,6 +8,7 @@ import {
   IconButton,
   HStack,
   Text,
+  Input,
 } from "@chakra-ui/react";
 import { AddIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { WorkMemoList } from "@/features/work-memos/components/work-memo-list";
@@ -21,6 +22,10 @@ import {
   subMonths,
 } from "date-fns";
 import { ja } from "date-fns/locale/ja";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+registerLocale("ja", ja);
 
 export const WorkMemosRoute = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -62,9 +67,28 @@ export const WorkMemosRoute = () => {
               size="sm"
               onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
             />
-            <Text fontWeight="bold" fontSize="lg" minW="140px" textAlign="center">
-              {format(currentMonth, "yyyy年M月", { locale: ja })}
-            </Text>
+            <Box>
+              <DatePicker
+                selected={currentMonth}
+                onChange={(date: Date | null) => date && setCurrentMonth(date)}
+                showMonthYearPicker
+                dateFormat="yyyy年M月"
+                locale="ja"
+                customInput={
+                  <Input
+                    as="button"
+                    fontWeight="bold"
+                    fontSize="lg"
+                    minW="140px"
+                    textAlign="center"
+                    variant="unstyled"
+                    cursor="pointer"
+                    _hover={{ color: "pink.500" }}
+                  />
+                }
+                portalId="react-datepicker-portal"
+              />
+            </Box>
             <IconButton
               aria-label="次の月"
               icon={<ChevronRightIcon boxSize={5} />}
