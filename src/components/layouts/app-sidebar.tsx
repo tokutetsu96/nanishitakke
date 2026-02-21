@@ -111,6 +111,8 @@ export const AppSidebar = ({
   onClose,
   mobileOnly,
 }: AppSidebarProps) => {
+  const bg = useColorModeValue("white", "gray.800");
+
   if (mobileOnly) {
     return (
       <Drawer
@@ -141,9 +143,6 @@ export const AppSidebar = ({
       </Drawer>
     );
   }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const bg = useColorModeValue("white", "gray.800");
 
   return (
     <Box bg={bg} w="full" pt={4}>
