@@ -103,23 +103,12 @@ const SidebarContent = ({ onClose }: SidebarContentProps) => {
 interface AppSidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  mobileOnly?: boolean;
 }
 
-export const AppSidebar = ({ isOpen, onClose }: AppSidebarProps) => {
-  return (
-    <>
-      {/* Desktop Sidebar */}
-      {/* Desktop Sidebar */}
-      <Box
-        bg={useColorModeValue("white", "gray.800")}
-        w={{ base: "full", md: 60 }}
-        display={{ base: "none", md: "block" }}
-        pt={4}
-      >
-        <SidebarContent />
-      </Box>
-
-      {/* Mobile Sidebar (Drawer) */}
+export const AppSidebar = ({ isOpen, onClose, mobileOnly }: AppSidebarProps) => {
+  if (mobileOnly) {
+    return (
       <Drawer
         isOpen={isOpen}
         placement="left"
@@ -146,6 +135,16 @@ export const AppSidebar = ({ isOpen, onClose }: AppSidebarProps) => {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-    </>
+    );
+  }
+
+  return (
+    <Box
+      bg={useColorModeValue("white", "gray.800")}
+      w="full"
+      pt={4}
+    >
+      <SidebarContent />
+    </Box>
   );
 };

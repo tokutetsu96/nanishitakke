@@ -11,14 +11,16 @@ export const AppLayout = () => {
       <AppHeader onOpen={onOpen} />
       <Box pt="16">
         <Container maxW="container.lg">
-          <Flex>
+          <Flex alignItems="flex-start">
             <Box
-              w={{ base: "full", md: 60 }}
+              flexShrink={0}
+              w={60}
               display={{ base: "none", md: "block" }}
-              mr={{ md: 8 }}
+              mr={8}
               position="sticky"
               top="20"
               h="calc(100vh - 5rem)"
+              overflowY="auto"
             >
               <AppSidebar isOpen={isOpen} onClose={onClose} />
             </Box>
@@ -27,12 +29,9 @@ export const AppLayout = () => {
               <Outlet />
             </Box>
           </Flex>
-          {/* Mobile Sidebar Triggered by Header, processed here just for Drawer */}
-          <Box display={{ base: "block", md: "none" }}>
-            <AppSidebar isOpen={isOpen} onClose={onClose} />
-          </Box>
         </Container>
       </Box>
+      <AppSidebar isOpen={isOpen} onClose={onClose} mobileOnly />
     </Box>
   );
 };
