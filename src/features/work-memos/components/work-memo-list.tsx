@@ -33,9 +33,11 @@ import { useDeleteWorkMemo } from "@/features/work-memos/api/delete-work-memo";
 
 interface WorkMemoListProps {
   onEditMemo: (memo: WorkMemo) => void;
+  startDate?: string;
+  endDate?: string;
 }
 
-export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {
+export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: WorkMemoListProps) => {
   // Removed refreshKey
   const toast = useToast();
 
@@ -44,7 +46,7 @@ export const WorkMemoList = React.memo(({ onEditMemo }: WorkMemoListProps) => {
     data: memos = [],
     isLoading: loading,
     error: queryError,
-  } = useWorkMemos();
+  } = useWorkMemos({ startDate, endDate });
 
   // Mutation
   const deleteMutation = useDeleteWorkMemo();
