@@ -19,14 +19,55 @@ import {
   ModalCloseButton,
   Center,
   Spinner,
+  HStack,
+  IconButton,
 } from "@chakra-ui/react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { useReports } from "@/features/reports/api/get-reports";
-import { format, parseISO } from "date-fns";
-import { useState } from "react";
+import {
+  format,
+  parseISO,
+  startOfMonth,
+  endOfMonth,
+  addMonths,
+  subMonths,
+} from "date-fns";
+import { ja } from "date-fns/locale/ja";
+import { useState, forwardRef } from "react";
 import type { WeeklyReport } from "@/features/reports/types";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+registerLocale("ja", ja);
+
+const MonthPickerButton = forwardRef<
+  HTMLButtonElement,
+  { value?: string; onClick?: () => void }
+>(({ value, onClick }, ref) => (
+  <button
+    ref={ref}
+    onClick={onClick}
+    style={{
+      fontWeight: "bold",
+      fontSize: "1.125rem",
+      minWidth: "140px",
+      textAlign: "center",
+      cursor: "pointer",
+      background: "none",
+      border: "none",
+      padding: 0,
+    }}
+  >
+    {value}
+  </button>
+));
 
 export const ReportsRoute = () => {
-  const { data: reports = [], isLoading } = useReports();
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const startDate = format(startOfMonth(currentMonth), "yyyy-MM-dd");
+  const endDate = format(endOfMonth(currentMonth), "yyyy-MM-dd");
+
+  const { data: reports = [], isLoading } = useReports({ startDate, endDate });
   const [selectedReport, setSelectedReport] = useState<WeeklyReport | null>(
     null
   );
@@ -54,9 +95,37 @@ export const ReportsRoute = () => {
           <Text color="gray.600">過去の週間レポートを振り返ります</Text>
         </Box>
 
+        <HStack spacing={2}>
+          <IconButton
+            aria-label="前の月"
+            icon={<ChevronLeftIcon boxSize={5} />}
+            variant="ghost"
+            size="sm"
+            onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
+          />
+          <Box>
+            <DatePicker
+              selected={currentMonth}
+              onChange={(date: Date | null) => date && setCurrentMonth(date)}
+              showMonthYearPicker
+              dateFormat="yyyy年M月"
+              locale="ja"
+              customInput={<MonthPickerButton />}
+              portalId="react-datepicker-portal"
+            />
+          </Box>
+          <IconButton
+            aria-label="次の月"
+            icon={<ChevronRightIcon boxSize={5} />}
+            variant="ghost"
+            size="sm"
+            onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
+          />
+        </HStack>
+
         {reports.length === 0 ? (
           <Center p={10} bg="white" borderRadius="lg" shadow="sm">
-            <Text color="gray.500">まだレポートが保存されていません</Text>
+            <Text color="gray.500">この月のレポートはありません</Text>
           </Center>
         ) : (
           <Card>
