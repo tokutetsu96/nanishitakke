@@ -25,7 +25,7 @@ export const AppLayout = () => {
               <AppSidebar isOpen={isOpen} onClose={onClose} />
             </Box>
 
-            <Box flex="1" minW={0} p="4" bg="white" minH="calc(100vh - 5rem)">
+            <Box flex="1" minW={0} p="4" bg="white" minH="calc(100vh - 5rem)" maxW="container.md" mx="auto">
               <Outlet />
             </Box>
           </Flex>

@@ -106,7 +106,11 @@ interface AppSidebarProps {
   mobileOnly?: boolean;
 }
 
-export const AppSidebar = ({ isOpen, onClose, mobileOnly }: AppSidebarProps) => {
+export const AppSidebar = ({
+  isOpen,
+  onClose,
+  mobileOnly,
+}: AppSidebarProps) => {
   if (mobileOnly) {
     return (
       <Drawer
@@ -138,12 +142,11 @@ export const AppSidebar = ({ isOpen, onClose, mobileOnly }: AppSidebarProps) => 
     );
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const bg = useColorModeValue("white", "gray.800");
+
   return (
-    <Box
-      bg={useColorModeValue("white", "gray.800")}
-      w="full"
-      pt={4}
-    >
+    <Box bg={bg} w="full" pt={4}>
       <SidebarContent />
     </Box>
   );
