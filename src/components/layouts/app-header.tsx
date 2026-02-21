@@ -11,11 +11,13 @@ import {
   MenuItem,
   Avatar,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
+import { TemplateManagerModal } from "@/features/activity-templates/components/template-manager-modal";
 import NanishitakkeLogo from "@/assets/nanishitakke.png";
 
 import { IconButton } from "@chakra-ui/react";
@@ -28,6 +30,11 @@ interface AppHeaderProps {
 export const AppHeader = ({ onOpen }: AppHeaderProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const {
+    isOpen: isTemplateOpen,
+    onOpen: onOpenTemplate,
+    onClose: onCloseTemplate,
+  } = useDisclosure();
   const [profile, setProfile] = useState<{
     full_name: string | null;
     avatar_url: string | null;
@@ -126,6 +133,9 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
                 <MenuItem as={Link} to="/profile">
                   プロフィール
                 </MenuItem>
+                <MenuItem onClick={onOpenTemplate}>
+                  テンプレート管理
+                </MenuItem>
                 <MenuItem onClick={handleLogout} as="button">
                   ログアウト
                 </MenuItem>
@@ -134,6 +144,10 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
           )}
         </Flex>
       </Container>
+      <TemplateManagerModal
+        isOpen={isTemplateOpen}
+        onClose={onCloseTemplate}
+      />
     </Box>
   );
 };

@@ -295,6 +295,8 @@ ${workMemos
 2. 日ごとのハイライト
 3. 達成できたこと
 4. 今後の課題と改善点
+
+注意: 通勤時間については言及しないでください。
 `;
 
       const result = await generateContent(prompt);
