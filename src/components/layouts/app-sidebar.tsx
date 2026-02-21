@@ -19,6 +19,7 @@ import {
   FiFileText,
   FiArchive,
   FiCalendar,
+  FiBookOpen,
 } from "react-icons/fi";
 
 interface NavItemProps {
@@ -92,6 +93,9 @@ const SidebarContent = ({ onClose }: SidebarContentProps) => {
       </NavItem>
       <NavItem icon={FiFileText} to="/work-memos" onClick={onClose}>
         仕事メモ
+      </NavItem>
+      <NavItem icon={FiBookOpen} to="/notes" onClick={onClose}>
+        ノート
       </NavItem>
       <NavItem icon={FiArchive} to="/reports" onClick={onClose}>
         レポートアーカイブ

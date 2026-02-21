@@ -63,6 +63,13 @@ const createRouter = () =>
               },
             },
             {
+              path: "notes",
+              lazy: async () => {
+                const { NotesRoute } = await import("./routes/app/notes");
+                return { Component: NotesRoute };
+              },
+            },
+            {
               path: "reports",
               lazy: async () => {
                 const { ReportsRoute } = await import(
