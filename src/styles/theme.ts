@@ -3,6 +3,9 @@ import { extendTheme } from "@chakra-ui/react";
 const theme = extendTheme({
   styles: {
     global: {
+      html: {
+        scrollbarGutter: "stable",
+      },
       body: {
         fontFamily: "'M PLUS Rounded 1c', sans-serif",
         backgroundColor: "gray.50",
