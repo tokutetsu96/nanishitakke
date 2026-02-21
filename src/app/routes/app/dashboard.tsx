@@ -22,7 +22,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -49,7 +49,6 @@ import {
 } from "date-fns";
 import "@/features/activities/components/activities.scss";
 import { useActivities } from "@/features/activities/api/get-activities";
-import { useNavigate } from "react-router-dom";
 import { useWorkMemos } from "@/features/work-memos/api/get-work-memos";
 import { AddActivityModal } from "@/features/activities/components/add-activity-modal";
 import { AddWorkMemoModal } from "@/features/work-memos/components/add-work-memo-modal";
@@ -78,7 +77,6 @@ ChartJS.register(
 registerLocale("ja", ja);
 
 export const DashboardRoute = () => {
-  const navigate = useNavigate();
   const toast = useToast();
   const {
     isOpen: isActivityOpen,
@@ -117,30 +115,6 @@ export const DashboardRoute = () => {
     endDate: endDate ? format(endDate, "yyyy-MM-dd") : undefined,
   });
 
-  // Shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) ||
-        target.isContentEditable
-      ) {
-        return;
-      }
-
-      if (e.key === "a" || e.key === "A") {
-        e.preventDefault();
-        onOpenActivity();
-      }
-      if (e.key === "w" || e.key === "W") {
-        e.preventDefault();
-        onOpenWorkMemo();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigate, onOpenActivity, onOpenWorkMemo]);
 
   const { categoryData, dailyData, summary } = useMemo(() => {
     const categoryMinutes: Record<string, number> = {};
@@ -362,9 +336,6 @@ ${workMemos
             <Heading size="lg" mb={2}>
               ダッシュボード
             </Heading>
-            <Text color="gray.600">
-              ショートカット: (A) 活動記録, (W) 仕事メモ
-            </Text>
           </Box>
           <Box
             display="flex"
@@ -378,7 +349,7 @@ ${workMemos
               onClick={onOpenActivity}
               flex={{ base: 1, md: "initial" }}
             >
-              活動を記録 (A)
+              活動を記録
             </Button>
             <Button
               leftIcon={<Icon as={FaBriefcase} />}
@@ -386,7 +357,7 @@ ${workMemos
               onClick={onOpenWorkMemo}
               flex={{ base: 1, md: "initial" }}
             >
-              仕事メモ (W)
+              仕事メモ
             </Button>
             <Button
               leftIcon={<Icon as={FaFolderOpen} />}
