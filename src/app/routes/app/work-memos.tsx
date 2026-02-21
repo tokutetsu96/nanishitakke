@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import {
   Box,
   Button,
@@ -8,7 +8,6 @@ import {
   IconButton,
   HStack,
   Text,
-  Input,
 } from "@chakra-ui/react";
 import { AddIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { WorkMemoList } from "@/features/work-memos/components/work-memo-list";
@@ -26,6 +25,28 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 registerLocale("ja", ja);
+
+const MonthPickerButton = forwardRef<
+  HTMLButtonElement,
+  { value?: string; onClick?: () => void }
+>(({ value, onClick }, ref) => (
+  <button
+    ref={ref}
+    onClick={onClick}
+    style={{
+      fontWeight: "bold",
+      fontSize: "1.125rem",
+      minWidth: "140px",
+      textAlign: "center",
+      cursor: "pointer",
+      background: "none",
+      border: "none",
+      padding: 0,
+    }}
+  >
+    {value}
+  </button>
+));
 
 export const WorkMemosRoute = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -74,18 +95,7 @@ export const WorkMemosRoute = () => {
                 showMonthYearPicker
                 dateFormat="yyyy年M月"
                 locale="ja"
-                customInput={
-                  <Input
-                    as="button"
-                    fontWeight="bold"
-                    fontSize="lg"
-                    minW="140px"
-                    textAlign="center"
-                    variant="unstyled"
-                    cursor="pointer"
-                    _hover={{ color: "pink.500" }}
-                  />
-                }
+                customInput={<MonthPickerButton />}
                 portalId="react-datepicker-portal"
               />
             </Box>
