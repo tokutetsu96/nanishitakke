@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Box,
   Button,
-  Container,
   VStack,
   useDisclosure,
   Heading,
@@ -31,8 +30,7 @@ export const WorkMemosRoute = () => {
 
   return (
     <>
-      <Container maxW="container.md" py={8}>
-        <VStack spacing={8} align="stretch">
+      <VStack spacing={8} align="stretch" py={4}>
           <Heading as="h2" size="lg" color="gray.700">
             仕事メモ
           </Heading>
@@ -52,8 +50,7 @@ export const WorkMemosRoute = () => {
           <Box w="full">
             <WorkMemoList onEditMemo={handleEditMemo} />
           </Box>
-        </VStack>
-      </Container>
+      </VStack>
 
       <AddWorkMemoModal
         isOpen={isOpen}

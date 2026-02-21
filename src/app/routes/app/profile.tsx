@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Container,
   FormControl,
   FormLabel,
   Heading,
@@ -136,15 +135,14 @@ export const ProfileRoute = () => {
 
   if (loading) {
     return (
-      <Container maxW="container.md" py={8}>
+      <VStack spacing={8} align="stretch" py={4}>
         <Heading as="h1">読み込み中...</Heading>
-      </Container>
+      </VStack>
     );
   }
 
   return (
-    <Container maxW="container.md" py={8}>
-      <VStack spacing={8} align="stretch">
+    <VStack spacing={8} align="stretch" py={4}>
         <Heading as="h1">プロフィール</Heading>
 
         <Box>
@@ -186,7 +184,6 @@ export const ProfileRoute = () => {
         >
           プロフィールを更新
         </Button>
-      </VStack>
-    </Container>
+    </VStack>
   );
 };

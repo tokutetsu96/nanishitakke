@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Box,
   Button,
-  Container,
   VStack,
   useDisclosure,
   Input,
@@ -47,8 +46,7 @@ export const ActivitiesRoute = () => {
 
   return (
     <>
-      <Container maxW="container.md" py={8}>
-        <VStack spacing={8} align="stretch">
+      <VStack spacing={8} align="stretch" py={4}>
           {/* Date Selector */}
           <Box w="full">
             <InputGroup size="lg">
@@ -95,8 +93,7 @@ export const ActivitiesRoute = () => {
           >
             やったことを追加する
           </Button>
-        </VStack>
-      </Container>
+      </VStack>
 
       <AddActivityModal
         isOpen={isOpen}

@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Heading,
   VStack,
   Text,
@@ -47,8 +46,7 @@ export const ReportsRoute = () => {
   }
 
   return (
-    <Container maxW="container.md" py={8}>
-      <VStack spacing={8} align="stretch">
+    <VStack spacing={8} align="stretch" py={4}>
         <Box>
           <Heading size="lg" mb={2}>
             レポートアーカイブ
@@ -100,8 +98,6 @@ export const ReportsRoute = () => {
             </CardBody>
           </Card>
         )}
-      </VStack>
-
       {/* Detail Modal */}
       <Modal
         isOpen={isOpen}
@@ -128,6 +124,6 @@ export const ReportsRoute = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Container>
+    </VStack>
   );
 };
