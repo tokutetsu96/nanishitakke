@@ -49,8 +49,10 @@ export const NotesPage = () => {
   };
 
   const handleBackToNotes = () => {
-    setMobileView("notes");
     setSelectedNoteId(null);
+    if (isMobile) {
+      setMobileView("notes");
+    }
   };
 
   // Mobile layout
@@ -89,32 +91,27 @@ export const NotesPage = () => {
 
         {mobileView === "editor" && selectedNoteId && (
           <Box h="full">
-            <Flex align="center" p={2} borderBottomWidth="1px">
-              <IconButton
-                aria-label="戻る"
-                icon={<ArrowBackIcon />}
-                size="sm"
-                variant="ghost"
-                onClick={handleBackToNotes}
-              />
-              <Text fontWeight="bold" fontSize="sm" ml={1}>
-                編集
-              </Text>
-            </Flex>
-            <Box h="calc(100% - 48px)">
-              <NoteEditor noteId={selectedNoteId} />
-            </Box>
+            <NoteEditor noteId={selectedNoteId} onBack={handleBackToNotes} />
           </Box>
         )}
       </Box>
     );
   }
 
-  // Desktop layout: 3-column
+  // Desktop: full-screen editor when a note is selected
+  if (selectedNoteId) {
+    return (
+      <Box h="calc(100vh - 80px)" borderWidth="1px" borderRadius="md" overflow="hidden">
+        <NoteEditor noteId={selectedNoteId} onBack={handleBackToNotes} />
+      </Box>
+    );
+  }
+
+  // Desktop: 2-column layout for folder/note browsing
   return (
     <Flex h="calc(100vh - 80px)" borderWidth="1px" borderRadius="md" overflow="hidden">
       {/* Folder column */}
-      <Box w="200px" borderRightWidth="1px" flexShrink={0}>
+      <Box w="250px" borderRightWidth="1px" flexShrink={0}>
         <FolderList
           selectedFolderId={selectedFolderId}
           onSelectFolder={handleSelectFolder}
@@ -122,7 +119,7 @@ export const NotesPage = () => {
       </Box>
 
       {/* Note list column */}
-      <Box w="250px" borderRightWidth="1px" flexShrink={0}>
+      <Box flex={1} minW={0}>
         {selectedFolderId ? (
           <NoteList
             folderId={selectedFolderId}
@@ -134,19 +131,6 @@ export const NotesPage = () => {
           <Flex justify="center" align="center" h="full">
             <Text color="gray.500" fontSize="sm">
               フォルダを選択してください
-            </Text>
-          </Flex>
-        )}
-      </Box>
-
-      {/* Editor column */}
-      <Box flex={1} minW={0}>
-        {selectedNoteId ? (
-          <NoteEditor noteId={selectedNoteId} />
-        ) : (
-          <Flex justify="center" align="center" h="full">
-            <Text color="gray.500" fontSize="sm">
-              ノートを選択してください
             </Text>
           </Flex>
         )}

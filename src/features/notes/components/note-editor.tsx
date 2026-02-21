@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Box, Flex, Input, Spinner, Text } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Input, Spinner, Text } from "@chakra-ui/react";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import MDEditor from "@uiw/react-md-editor";
 import { useAuth } from "@/lib/auth";
 import { useNote } from "../api/get-notes";
@@ -7,9 +8,10 @@ import { useUpdateNote } from "../api/update-note";
 
 interface NoteEditorProps {
   noteId: string;
+  onBack?: () => void;
 }
 
-export const NoteEditor = ({ noteId }: NoteEditorProps) => {
+export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
   const { user } = useAuth();
   const { data: note, isLoading } = useNote(noteId);
   const updateMutation = useUpdateNote();
@@ -101,6 +103,16 @@ export const NoteEditor = ({ noteId }: NoteEditorProps) => {
   return (
     <Flex direction="column" h="full">
       <Flex align="center" p={3} borderBottomWidth="1px" gap={2}>
+        {onBack && (
+          <IconButton
+            aria-label="一覧に戻る"
+            icon={<ArrowBackIcon />}
+            size="sm"
+            variant="ghost"
+            onClick={onBack}
+            flexShrink={0}
+          />
+        )}
         <Input
           value={title}
           onChange={handleTitleChange}
