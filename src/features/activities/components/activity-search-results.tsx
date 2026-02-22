@@ -169,7 +169,7 @@ export const ActivitySearchResults = React.memo(
                       </Text>
                       {activity.tags && activity.tags.length > 0 && (
                         <HStack spacing={2} mt={2}>
-                          {activity.tags.map((tag) => (
+                          {[...new Set(activity.tags)].map((tag) => (
                             <Tag
                               key={tag}
                               size="sm"
