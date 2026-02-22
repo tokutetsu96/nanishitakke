@@ -9,13 +9,15 @@ import {
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { FolderList } from "./folder-list";
 import { NoteList } from "./note-list";
+import { NoteDetailView } from "./note-detail-view";
 import { NoteEditor } from "./note-editor";
 
-type MobileView = "folders" | "notes" | "editor";
+type MobileView = "folders" | "notes" | "detail" | "editor";
 
 export const NotesPage = () => {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [mobileView, setMobileView] = useState<MobileView>("folders");
 
   const isMobile = useBreakpointValue({ base: true, lg: false });
@@ -23,6 +25,7 @@ export const NotesPage = () => {
   const handleSelectFolder = (folderId: string) => {
     setSelectedFolderId(folderId || null);
     setSelectedNoteId(null);
+    setIsEditing(false);
     if (isMobile) {
       setMobileView("notes");
     }
@@ -30,13 +33,15 @@ export const NotesPage = () => {
 
   const handleSelectNote = (noteId: string) => {
     setSelectedNoteId(noteId);
+    setIsEditing(false);
     if (isMobile) {
-      setMobileView("editor");
+      setMobileView("detail");
     }
   };
 
   const handleNoteDeleted = () => {
     setSelectedNoteId(null);
+    setIsEditing(false);
     if (isMobile) {
       setMobileView("notes");
     }
@@ -46,12 +51,28 @@ export const NotesPage = () => {
     setMobileView("folders");
     setSelectedFolderId(null);
     setSelectedNoteId(null);
+    setIsEditing(false);
   };
 
   const handleBackToNotes = () => {
     setSelectedNoteId(null);
+    setIsEditing(false);
     if (isMobile) {
       setMobileView("notes");
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    if (isMobile) {
+      setMobileView("editor");
+    }
+  };
+
+  const handleBackToDetail = () => {
+    setIsEditing(false);
+    if (isMobile) {
+      setMobileView("detail");
     }
   };
 
@@ -89,20 +110,38 @@ export const NotesPage = () => {
           </Box>
         )}
 
+        {mobileView === "detail" && selectedNoteId && (
+          <Box h="full">
+            <NoteDetailView
+              noteId={selectedNoteId}
+              onBack={handleBackToNotes}
+              onEdit={handleEdit}
+            />
+          </Box>
+        )}
+
         {mobileView === "editor" && selectedNoteId && (
           <Box h="full">
-            <NoteEditor noteId={selectedNoteId} onBack={handleBackToNotes} />
+            <NoteEditor noteId={selectedNoteId} onBack={handleBackToDetail} />
           </Box>
         )}
       </Box>
     );
   }
 
-  // Desktop: full-screen editor when a note is selected
+  // Desktop: full-screen view when a note is selected
   if (selectedNoteId) {
     return (
       <Box h="calc(100vh - 80px)" borderWidth="1px" borderRadius="md" overflow="hidden">
-        <NoteEditor noteId={selectedNoteId} onBack={handleBackToNotes} />
+        {isEditing ? (
+          <NoteEditor noteId={selectedNoteId} onBack={handleBackToDetail} />
+        ) : (
+          <NoteDetailView
+            noteId={selectedNoteId}
+            onBack={handleBackToNotes}
+            onEdit={handleEdit}
+          />
+        )}
       </Box>
     );
   }
