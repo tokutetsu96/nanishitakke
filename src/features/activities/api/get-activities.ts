@@ -7,6 +7,8 @@ type GetActivitiesParams = {
   date?: string;
   startDate?: string;
   endDate?: string;
+  keyword?: string;
+  tags?: string[];
 };
 
 export const getActivities = async (
@@ -15,7 +17,17 @@ export const getActivities = async (
 ): Promise<Activity[]> => {
   let query = supabase.from("activities").select("*").eq("user_id", userId);
 
-  if (params.date) {
+  const isSearchMode = params.keyword || (params.tags && params.tags.length > 0);
+
+  if (isSearchMode) {
+    if (params.keyword) {
+      query = query.ilike("content", `%${params.keyword}%`);
+    }
+    if (params.tags && params.tags.length > 0) {
+      query = query.overlaps("tags", params.tags);
+    }
+    query = query.order("date", { ascending: false }).order("start_time", { ascending: true });
+  } else if (params.date) {
     query = query
       .eq("date", params.date)
       .order("start_time", { ascending: true });
@@ -39,5 +51,16 @@ export const useActivities = (params: GetActivitiesParams) => {
     queryKey: ["activities", user?.id, params],
     queryFn: () => getActivities(user!.id, params),
     enabled: !!user,
+  });
+};
+
+export const useSearchActivities = (params: { keyword?: string; tags?: string[] }) => {
+  const { user } = useAuth();
+  const hasSearchParams = !!params.keyword || (params.tags && params.tags.length > 0);
+
+  return useQuery({
+    queryKey: ["activities", "search", user?.id, params],
+    queryFn: () => getActivities(user!.id, params),
+    enabled: !!user && !!hasSearchParams,
   });
 };
