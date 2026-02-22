@@ -105,7 +105,7 @@ export const AddActivityModal = ({
           start_time: startTime,
           end_time: endTime || null,
           content: content,
-          tags: [...new Set(tags)],
+          tags: tags,
         });
 
         toast({
@@ -123,7 +123,7 @@ export const AddActivityModal = ({
           start_time: startTime,
           end_time: endTime || null,
           content: content,
-          tags: [...new Set(tags)],
+          tags: tags,
         });
 
         toast({
@@ -169,7 +169,7 @@ export const AddActivityModal = ({
     const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
     if (selectedTemplate) {
       setContent(selectedTemplate.content);
-      setTags(selectedTemplate.tags?.slice(0, 1) || []);
+      setTags(selectedTemplate.tags || []);
     }
   };
 

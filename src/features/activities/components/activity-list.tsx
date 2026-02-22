@@ -146,7 +146,7 @@ export const ActivityList = React.memo(
                 </Text>
                 {activity.tags && activity.tags.length > 0 && (
                   <HStack spacing={2} mt={2}>
-                    {[...new Set(activity.tags)].map((tag) => (
+                    {activity.tags.map((tag) => (
                       <Tag
                         key={tag}
                         size="sm"
