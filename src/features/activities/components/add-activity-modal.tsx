@@ -187,7 +187,7 @@ export const AddActivityModal = ({
               wrapperClassName="datepicker-full-width"
             />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+          <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
             <div className="space-y-2 min-w-0">
               <Label>
                 開始時刻 <span className="text-red-500">*</span>
