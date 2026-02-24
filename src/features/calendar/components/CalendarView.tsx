@@ -9,7 +9,6 @@ import { useActivities } from "@/features/activities/api/get-activities";
 import type { Activity } from "@/features/activities/types";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import "react-calendar/dist/Calendar.css";
-import "./calendar.scss";
 
 // Category colors for calendar tile dots
 const CATEGORY_COLORS: Record<string, string> = {

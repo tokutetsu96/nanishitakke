@@ -18,7 +18,6 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import "./add-activity-modal.css";
 
 import { useCreateActivity } from "@/features/activities/api/create-activity";
 import { useUpdateActivity } from "@/features/activities/api/update-activity";

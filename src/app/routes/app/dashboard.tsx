@@ -27,7 +27,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
-import "@/features/activities/components/activities.scss";
 import { useActivities } from "@/features/activities/api/get-activities";
 import { useWorkMemos } from "@/features/work-memos/api/get-work-memos";
 import { generateContent } from "@/lib/gemini";
@@ -285,9 +284,7 @@ ${workMemos
             locale="ja"
             dateFormat="yyyy/MM/dd"
             customInput={
-              <Input
-                className="bg-white border-gray-200 text-center cursor-pointer pr-10"
-              />
+              <Input className="bg-white border-gray-200 text-center cursor-pointer pr-10" />
             }
             wrapperClassName="datepicker-full-width"
             portalId="react-datepicker-portal"
@@ -338,7 +335,9 @@ ${workMemos
               <CardContent className="pt-6">
                 <div>
                   <p className="text-sm text-muted-foreground">記録数</p>
-                  <p className="text-2xl font-bold">{summary.totalActivities}</p>
+                  <p className="text-2xl font-bold">
+                    {summary.totalActivities}
+                  </p>
                   <p className="text-xs text-muted-foreground">件</p>
                 </div>
               </CardContent>

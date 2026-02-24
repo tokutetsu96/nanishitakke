@@ -12,11 +12,7 @@ import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import type { Activity } from "@/features/activities/types";
-import {
-  ACTIVITY_CATEGORIES,
-  type ActivityCategory,
-} from "@/config/constants";
-import "@/features/activities/components/activities.scss";
+import { ACTIVITY_CATEGORIES, type ActivityCategory } from "@/config/constants";
 
 registerLocale("ja", ja);
 
@@ -63,7 +59,7 @@ export const ActivitiesRoute = () => {
 
   const toggleTag = useCallback((tag: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   }, []);
 
@@ -101,7 +97,11 @@ export const ActivitiesRoute = () => {
           {categoryEntries.map(([category, color]) => (
             <Badge
               key={category}
-              variant={selectedTags.includes(category) ? (color as BadgeVariant) : "outline"}
+              variant={
+                selectedTags.includes(category)
+                  ? (color as BadgeVariant)
+                  : "outline"
+              }
               className={`cursor-pointer px-3 py-1 ${
                 selectedTags.includes(category)
                   ? ""
@@ -128,15 +128,11 @@ export const ActivitiesRoute = () => {
           <div className="relative w-full">
             <DatePicker
               selected={startDate}
-              onChange={(date: Date | null) =>
-                setStartDate(date || new Date())
-              }
+              onChange={(date: Date | null) => setStartDate(date || new Date())}
               locale="ja"
               dateFormat="yyyy/MM/dd (eee)"
               customInput={
-                <Input
-                  className="h-12 bg-gray-100 border-transparent text-center font-bold cursor-pointer pr-10"
-                />
+                <Input className="h-12 bg-gray-100 border-transparent text-center font-bold cursor-pointer pr-10" />
               }
               wrapperClassName="datepicker-full-width"
               portalId="react-datepicker-portal"
@@ -164,11 +160,7 @@ export const ActivitiesRoute = () => {
         </div>
 
         {!isSearchMode && (
-          <Button
-            onClick={onOpen}
-            size="lg"
-            className="w-full py-7"
-          >
+          <Button onClick={onOpen} size="lg" className="w-full py-7">
             <Plus className="h-4 w-4" />
             やったことを追加する
           </Button>
@@ -185,4 +177,14 @@ export const ActivitiesRoute = () => {
   );
 };
 
-type BadgeVariant = "pink" | "gray" | "blue" | "orange" | "purple" | "green" | "teal" | "red" | "yellow" | "cyan";
+type BadgeVariant =
+  | "pink"
+  | "gray"
+  | "blue"
+  | "orange"
+  | "purple"
+  | "green"
+  | "teal"
+  | "red"
+  | "yellow"
+  | "cyan";
