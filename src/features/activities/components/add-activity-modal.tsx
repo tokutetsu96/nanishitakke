@@ -197,6 +197,7 @@ export const AddActivityModal = ({
                 step="300"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
+                className="text-center"
               />
             </div>
             <div className="space-y-2">
@@ -206,6 +207,7 @@ export const AddActivityModal = ({
                 step="300"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
+                className="text-center"
               />
             </div>
           </div>

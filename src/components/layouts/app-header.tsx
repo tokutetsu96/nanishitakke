@@ -103,7 +103,7 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
           </Link>
           <div className="flex-1" />
           {user && profile && (
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 cursor-pointer bg-transparent border-none">
                   <span className="text-sm font-medium text-gray-700">
