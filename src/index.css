@@ -197,9 +197,12 @@ body {
   z-index: 9999 !important;
 }
 
-/* Time input centering */
+/* Time input centering and sizing */
 input[type="time"] {
   text-align: center;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 input[type="time"]::-webkit-datetime-edit {
