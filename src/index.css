@@ -197,3 +197,18 @@ body {
   z-index: 9999 !important;
 }
 
+/* Time input centering */
+input[type="time"] {
+  text-align: center;
+}
+
+input[type="time"]::-webkit-datetime-edit {
+  display: flex;
+  justify-content: center;
+}
+
+input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
