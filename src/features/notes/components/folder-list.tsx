@@ -1,28 +1,26 @@
-import {
-  Box,
-  Button,
-  Flex,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-  useDisclosure,
-  useToast,
-  VStack,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Spinner,
-} from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { useState } from "react";
+import { Plus, Loader2 } from "lucide-react";
 import { FiMoreVertical, FiFolder } from "react-icons/fi";
-import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { useDisclosure } from "@/hooks/use-disclosure";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { useFolders } from "../api/get-folders";
 import { useDeleteFolder } from "../api/delete-folder";
 import { CreateFolderModal } from "./create-folder-modal";
@@ -38,7 +36,6 @@ export const FolderList = ({
   onSelectFolder,
 }: FolderListProps) => {
   const { user } = useAuth();
-  const toast = useToast();
   const { data: folders, isLoading } = useFolders();
   const deleteMutation = useDeleteFolder();
 
@@ -55,7 +52,6 @@ export const FolderList = ({
 
   const [editingFolder, setEditingFolder] = useState<NoteFolder | null>(null);
   const [deletingFolder, setDeletingFolder] = useState<NoteFolder | null>(null);
-  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const handleEdit = (folder: NoteFolder) => {
     setEditingFolder(folder);
@@ -75,24 +71,12 @@ export const FolderList = ({
         id: deletingFolder.id,
         user_id: user.id,
       });
-      toast({
-        title: "成功",
-        description: "フォルダを削除しました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.success("成功: フォルダを削除しました。");
       if (selectedFolderId === deletingFolder.id) {
         onSelectFolder("");
       }
     } catch (err: unknown) {
-      toast({
-        title: "エラー",
-        description: `削除に失敗しました: ${(err as Error).message}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`エラー: 削除に失敗しました: ${(err as Error).message}`);
     } finally {
       onDeleteClose();
       setDeletingFolder(null);
@@ -106,90 +90,89 @@ export const FolderList = ({
 
   if (isLoading) {
     return (
-      <Flex justify="center" py={8}>
-        <Spinner />
-      </Flex>
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
     );
   }
 
   return (
     <>
-      <VStack spacing={0} align="stretch" h="full">
-        <Flex justify="space-between" align="center" p={3} borderBottomWidth="1px">
-          <Text fontWeight="bold" fontSize="sm">
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center p-3 border-b">
+          <span className="font-bold text-sm">
             フォルダ
-          </Text>
-          <IconButton
-            aria-label="新規フォルダ"
-            icon={<AddIcon />}
-            size="xs"
+          </span>
+          <Button
             variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            aria-label="新規フォルダ"
             onClick={onCreateOpen}
-          />
-        </Flex>
+          >
+            <Plus className="h-3.5 w-3.5" />
+          </Button>
+        </div>
 
-        <VStack spacing={0} align="stretch" overflowY="auto" flex={1}>
+        <div className="flex flex-col overflow-y-auto flex-1">
           {folders?.map((folder) => (
-            <Flex
+            <div
               key={folder.id}
-              align="center"
-              px={3}
-              py={2}
-              cursor="pointer"
-              bg={selectedFolderId === folder.id ? "pink.50" : "transparent"}
-              color={selectedFolderId === folder.id ? "pink.600" : undefined}
-              _hover={{ bg: "pink.50" }}
+              className={`flex items-center px-3 py-2 cursor-pointer hover:bg-pink-50 group ${
+                selectedFolderId === folder.id
+                  ? "bg-pink-50 text-pink-600"
+                  : "bg-transparent"
+              }`}
               onClick={() => onSelectFolder(folder.id)}
-              role="group"
             >
-              <Box as={FiFolder} mr={2} flexShrink={0} />
-              <Text fontSize="sm" noOfLines={1} flex={1}>
+              <FiFolder className="mr-2 shrink-0" />
+              <span className="text-sm line-clamp-1 flex-1">
                 {folder.name}
-              </Text>
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  aria-label="フォルダメニュー"
-                  icon={<FiMoreVertical />}
-                  size="xs"
-                  variant="ghost"
-                  opacity={0}
-                  _groupHover={{ opacity: 1 }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <MenuList>
-                  <MenuItem onClick={() => handleEdit(folder)}>
+              </span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                    aria-label="フォルダメニュー"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <FiMoreVertical />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => handleEdit(folder)}>
                     名前を変更
-                  </MenuItem>
-                  <MenuItem
-                    color="red.500"
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-red-500"
                     onClick={() => handleDeleteClick(folder)}
                   >
                     削除
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </Flex>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ))}
 
           {folders?.length === 0 && (
-            <Box p={4} textAlign="center">
-              <Text fontSize="sm" color="gray.500">
+            <div className="p-4 text-center">
+              <p className="text-sm text-gray-500">
                 フォルダがありません
-              </Text>
+              </p>
               <Button
-                size="sm"
-                colorScheme="pink"
                 variant="ghost"
-                mt={2}
+                size="sm"
+                className="mt-2"
                 onClick={onCreateOpen}
               >
                 フォルダを作成
               </Button>
-            </Box>
+            </div>
           )}
-        </VStack>
-      </VStack>
+        </div>
+      </div>
 
       <CreateFolderModal
         isOpen={isCreateOpen}
@@ -197,36 +180,30 @@ export const FolderList = ({
         editingFolder={editingFolder}
       />
 
-      <AlertDialog
-        isOpen={isDeleteOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onDeleteClose}
-        isCentered
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              フォルダを削除
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              「{deletingFolder?.name}
-              」を削除しますか？フォルダ内のすべてのノートも削除されます。
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onDeleteClose}>
-                キャンセル
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={handleDelete}
-                ml={3}
-                isLoading={deleteMutation.status === "pending"}
-              >
-                削除する
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
+      <AlertDialog open={isDeleteOpen} onOpenChange={(open) => { if (!open) onDeleteClose(); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>フォルダを削除</AlertDialogTitle>
+            <AlertDialogDescription>
+              「{deletingFolder?.name}」を削除しますか？フォルダ内のすべてのノートも削除されます。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={onDeleteClose}>
+              キャンセル
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleteMutation.status === "pending"}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.status === "pending" ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              ) : null}
+              削除する
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
     </>
   );

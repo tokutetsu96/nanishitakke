@@ -1,35 +1,30 @@
-import React, { useState, useRef } from "react";
-import {
-  Box,
-  Text,
-  IconButton,
-  VStack,
-  Spinner,
-  Alert,
-  AlertIcon,
-  Center,
-  useToast,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter,
-  Button,
-  useDisclosure,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-} from "@chakra-ui/react";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import React, { useState } from "react";
+import { Trash2, Pencil, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type { WorkMemo } from "@/features/work-memos/types";
 import { CuteBox } from "@/components/ui/cute-box";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale/ja";
 import { useWorkMemos } from "@/features/work-memos/api/get-work-memos";
 import { useDeleteWorkMemo } from "@/features/work-memos/api/delete-work-memo";
+import { useDisclosure } from "@/hooks/use-disclosure";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 interface WorkMemoListProps {
   onEditMemo: (memo: WorkMemo) => void;
@@ -38,9 +33,6 @@ interface WorkMemoListProps {
 }
 
 export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: WorkMemoListProps) => {
-  // Removed refreshKey
-  const toast = useToast();
-
   // Data Fetching
   const {
     data: memos = [],
@@ -53,7 +45,6 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [memoIdToDelete, setMemoIdToDelete] = useState<string | null>(null);
-  const cancelRef = useRef(null);
 
   const handleClickDelete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -66,25 +57,13 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
 
     try {
       await deleteMutation.mutateAsync(memoIdToDelete);
-      toast({
-        title: "成功",
-        description: "メモを削除しました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.success("メモを削除しました。");
     } catch (err: unknown) {
       let errorMessage = "メモの削除に失敗しました。";
       if (err instanceof Error) {
         errorMessage = `メモの削除に失敗しました: ${err.message}`;
       }
-      toast({
-        title: "エラー",
-        description: errorMessage,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(errorMessage);
     } finally {
       onClose();
       setMemoIdToDelete(null);
@@ -93,9 +72,9 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
 
   if (loading) {
     return (
-      <Center p={10}>
-        <Spinner color="pink.500" />
-      </Center>
+      <div className="flex justify-center items-center p-10">
+        <Loader2 className="h-6 w-6 animate-spin text-pink-500" />
+      </div>
     );
   }
 
@@ -103,147 +82,138 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
     const errorMessage =
       queryError instanceof Error ? queryError.message : String(queryError);
     return (
-      <Alert status="error">
-        <AlertIcon />
+      <div className="rounded-md border border-red-200 bg-red-50 p-4 text-red-700">
         Error: {errorMessage}
-      </Alert>
+      </div>
     );
   }
 
   if (memos.length === 0) {
     return (
-      <Text color="gray.500" textAlign="center" p={10}>
+      <p className="text-gray-500 text-center p-10">
         記録された仕事メモはありません。
-      </Text>
+      </p>
     );
   }
 
   return (
-    <VStack spacing={4} align="stretch">
+    <div className="flex flex-col gap-4">
       {memos.map((memo) => (
-        <CuteBox key={memo.id} p={4} bg="white" borderRadius="xl">
-          <Box
-            mb={2}
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Text fontWeight="bold" fontSize="lg" color="pink.500">
+        <CuteBox key={memo.id} className="p-4 bg-white rounded-xl">
+          <div className="mb-2 flex justify-between items-center">
+            <p className="font-bold text-lg text-pink-500">
               {format(new Date(memo.date), "yyyy年MM月dd日 (eee)", {
                 locale: ja,
               })}
-            </Text>
-            <Box>
-              <IconButton
-                icon={<EditIcon />}
-                aria-label="Edit"
-                size="sm"
-                mr={2}
-                onClick={() => onEditMemo(memo)}
-              />
-              <IconButton
-                icon={<DeleteIcon />}
-                aria-label="Delete"
-                colorScheme="red"
+            </p>
+            <div className="flex items-center">
+              <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
+                className="h-8 w-8 mr-2"
+                aria-label="Edit"
+                onClick={() => onEditMemo(memo)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                aria-label="Delete"
                 onClick={(e) => handleClickDelete(e, memo.id)}
                 isLoading={
                   deleteMutation.status === "pending" &&
                   memoIdToDelete === memo.id
                 }
-              />
-            </Box>
-          </Box>
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
 
-          <Accordion allowToggle>
-            <AccordionItem border="none">
-              <h2>
-                <AccordionButton px={0} _hover={{ bg: "transparent" }}>
-                  <Box flex="1" textAlign="left" fontWeight="bold">
-                    記録詳細
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-              </h2>
-              <AccordionPanel pb={4} px={0}>
-                <VStack align="stretch" spacing={3}>
-                  <Box>
-                    <Text fontWeight="bold" fontSize="sm" color="gray.600">
+          <Accordion type="single" collapsible>
+            <AccordionItem value={`memo-${memo.id}`} className="border-none">
+              <AccordionTrigger className="px-0 hover:no-underline">
+                <span className="font-bold">記録詳細</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-0">
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <p className="font-bold text-sm text-gray-600">
                       やったこと
-                    </Text>
-                    <Text whiteSpace="pre-wrap">{memo.done_text}</Text>
-                  </Box>
+                    </p>
+                    <p className="whitespace-pre-wrap">{memo.done_text}</p>
+                  </div>
                   {memo.good_text && (
-                    <Box>
-                      <Text fontWeight="bold" fontSize="sm" color="gray.600">
+                    <div>
+                      <p className="font-bold text-sm text-gray-600">
                         良かったこと
-                      </Text>
-                      <Text whiteSpace="pre-wrap">{memo.good_text}</Text>
-                    </Box>
+                      </p>
+                      <p className="whitespace-pre-wrap">{memo.good_text}</p>
+                    </div>
                   )}
                   {memo.stuck_text && (
-                    <Box>
-                      <Text fontWeight="bold" fontSize="sm" color="gray.600">
+                    <div>
+                      <p className="font-bold text-sm text-gray-600">
                         詰まったこと
-                      </Text>
-                      <Text whiteSpace="pre-wrap">{memo.stuck_text}</Text>
-                    </Box>
+                      </p>
+                      <p className="whitespace-pre-wrap">{memo.stuck_text}</p>
+                    </div>
                   )}
                   {memo.cause_text && (
-                    <Box>
-                      <Text fontWeight="bold" fontSize="sm" color="gray.600">
+                    <div>
+                      <p className="font-bold text-sm text-gray-600">
                         原因
-                      </Text>
-                      <Text whiteSpace="pre-wrap">{memo.cause_text}</Text>
-                    </Box>
+                      </p>
+                      <p className="whitespace-pre-wrap">{memo.cause_text}</p>
+                    </div>
                   )}
                   {memo.improvement_text && (
-                    <Box>
-                      <Text fontWeight="bold" fontSize="sm" color="gray.600">
+                    <div>
+                      <p className="font-bold text-sm text-gray-600">
                         改善案
-                      </Text>
-                      <Text whiteSpace="pre-wrap">{memo.improvement_text}</Text>
-                    </Box>
+                      </p>
+                      <p className="whitespace-pre-wrap">{memo.improvement_text}</p>
+                    </div>
                   )}
-                </VStack>
-              </AccordionPanel>
+                </div>
+              </AccordionContent>
             </AccordionItem>
           </Accordion>
         </CuteBox>
       ))}
 
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              メモを削除
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
+      <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>メモを削除</AlertDialogTitle>
+            <AlertDialogDescription>
               このメモを本当に削除しますか？この操作は取り消せません。
-            </AlertDialogBody>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
 
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
-                キャンセル
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={confirmDelete}
-                ml={3}
-                isLoading={deleteMutation.status === "pending"}
-              >
-                削除
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={onClose}>
+              キャンセル
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={confirmDelete}
+              disabled={deleteMutation.status === "pending"}
+            >
+              {deleteMutation.status === "pending" ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  削除
+                </>
+              ) : (
+                "削除"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
-    </VStack>
+    </div>
   );
 });

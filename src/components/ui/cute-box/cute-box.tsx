@@ -1,17 +1,18 @@
-import { Box, type BoxProps } from "@chakra-ui/react";
 import styles from "./cute-box.module.scss";
+import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
-interface CuteBoxProps extends BoxProps {
+interface CuteBoxProps extends React.HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
-export const CuteBox = ({ children, ...props }: CuteBoxProps) => {
-  const classNames = `${styles.cuteBorder} ${styles.puffyHover}`;
-
+export const CuteBox = ({ children, className, ...props }: CuteBoxProps) => {
   return (
-    <Box className={classNames} {...props}>
+    <div
+      className={cn(styles.cuteBorder, styles.puffyHover, className)}
+      {...props}
+    >
       {children}
-    </Box>
+    </div>
   );
 };

@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "M PLUS Rounded 1c", sans-serif;
+
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.875rem;
+
+  --color-background: oklch(0.985 0.002 247.839);
+  --color-foreground: oklch(0.278 0.033 256.848);
+
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.278 0.033 256.848);
+
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.278 0.033 256.848);
+
+  --color-primary: oklch(0.592 0.19 0.265);
+  --color-primary-foreground: oklch(1 0 0);
+
+  --color-secondary: oklch(0.929 0.013 255.508);
+  --color-secondary-foreground: oklch(0.278 0.033 256.848);
+
+  --color-muted: oklch(0.929 0.013 255.508);
+  --color-muted-foreground: oklch(0.552 0.027 252.861);
+
+  --color-accent: oklch(0.929 0.013 255.508);
+  --color-accent-foreground: oklch(0.278 0.033 256.848);
+
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(1 0 0);
+
+  --color-border: oklch(0.872 0.01 258.338);
+  --color-input: oklch(0.872 0.01 258.338);
+  --color-ring: oklch(0.592 0.19 0.265);
+
+  --color-pink-50: #fff5f7;
+  --color-pink-100: #fed7e2;
+  --color-pink-200: #fbb6ce;
+  --color-pink-300: #f687b3;
+  --color-pink-400: #ed64a6;
+  --color-pink-500: #d53f8c;
+  --color-pink-600: #b83280;
+
+  --color-gray-50: #f7fafc;
+  --color-gray-100: #edf2f7;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e0;
+  --color-gray-400: #a0aec0;
+  --color-gray-500: #718096;
+  --color-gray-600: #4a5568;
+  --color-gray-700: #2d3748;
+  --color-gray-800: #1a202c;
+
+  --color-purple-500: #805ad5;
+
+  --color-sidebar-background: oklch(1 0 0);
+  --color-sidebar-foreground: oklch(0.278 0.033 256.848);
+  --color-sidebar-primary: oklch(0.592 0.19 0.265);
+  --color-sidebar-primary-foreground: oklch(1 0 0);
+  --color-sidebar-accent: oklch(0.929 0.013 255.508);
+  --color-sidebar-accent-foreground: oklch(0.278 0.033 256.848);
+  --color-sidebar-border: oklch(0.872 0.01 258.338);
+  --color-sidebar-ring: oklch(0.592 0.19 0.265);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  font-family: "M PLUS Rounded 1c", sans-serif;
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-800);
+}

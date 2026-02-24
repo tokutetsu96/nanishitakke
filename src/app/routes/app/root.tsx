@@ -1,15 +1,15 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { Center, Spinner } from "@chakra-ui/react";
+import { Loader2 } from "lucide-react";
 
 export const AppRoot = () => {
   const { session, loading, user } = useAuth();
 
   if (loading) {
     return (
-      <Center p={10}>
-        <Spinner color="pink.500" />
-      </Center>
+      <div className="flex items-center justify-center p-10">
+        <Loader2 className="h-6 w-6 animate-spin text-pink-500" />
+      </div>
     );
   }
 

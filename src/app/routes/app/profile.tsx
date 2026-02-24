@@ -1,23 +1,15 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  VStack,
-  Avatar,
-  useToast,
-  Flex,
-} from "@chakra-ui/react";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export const ProfileRoute = () => {
   const { user } = useAuth();
-  const toast = useToast();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -67,12 +59,8 @@ export const ProfileRoute = () => {
       .upload(fileName, file);
 
     if (uploadError) {
-      toast({
-        title: "アバターのアップロードに失敗しました。",
+      toast.error("アバターのアップロードに失敗しました。", {
         description: uploadError.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
       });
       setUploading(false);
       return;
@@ -87,21 +75,12 @@ export const ProfileRoute = () => {
       .eq("id", user.id);
 
     if (updateProfileError) {
-      toast({
-        title: "アバターの更新に失敗しました。",
+      toast.error("アバターの更新に失敗しました。", {
         description: updateProfileError.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
       });
     } else {
       setAvatarUrl(newAvatarUrl);
-      toast({
-        title: "アバターが更新されました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.success("アバターが更新されました。");
     }
     setUploading(false);
   };
@@ -115,75 +94,70 @@ export const ProfileRoute = () => {
       .eq("id", user.id);
 
     if (error) {
-      toast({
-        title: "プロフィールの更新に失敗しました。",
+      toast.error("プロフィールの更新に失敗しました。", {
         description: error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
       });
     } else {
-      toast({
-        title: "プロフィールが更新されました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.success("プロフィールが更新されました。");
       navigate("/");
     }
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
   if (loading) {
     return (
-      <VStack spacing={8} align="stretch" py={4}>
-        <Heading as="h1">読み込み中...</Heading>
-      </VStack>
+      <div className="flex flex-col gap-8 py-4">
+        <h1 className="text-2xl font-bold">読み込み中...</h1>
+      </div>
     );
   }
 
   return (
-    <VStack spacing={8} align="stretch" py={4}>
-        <Heading as="h1">プロフィール</Heading>
+    <div className="flex flex-col gap-8 py-4">
+      <h1 className="text-2xl font-bold">プロフィール</h1>
 
-        <Box>
-          <Flex direction="column" align="center" gap={4}>
-            <Avatar
-              size="2xl"
-              src={avatarUrl}
-              name={fullName}
-              cursor="pointer"
-              onClick={handleAvatarClick}
-              showBorder
-            />
-            <Input
-              type="file"
-              ref={fileInputRef}
-              display="none"
-              onChange={handleFileChange}
-              accept="image/png, image/jpeg"
-            />
-            <Button onClick={handleAvatarClick} isLoading={uploading}>
-              アバターを変更
-            </Button>
-          </Flex>
-        </Box>
-
-        <FormControl>
-          <FormLabel>氏名</FormLabel>
-          <Input
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="山田 太郎"
+      <div>
+        <div className="flex flex-col items-center gap-4">
+          <Avatar
+            className="h-24 w-24 cursor-pointer border-2"
+            onClick={handleAvatarClick}
+          >
+            <AvatarImage src={avatarUrl} alt={fullName} />
+            <AvatarFallback>{getInitials(fullName)}</AvatarFallback>
+          </Avatar>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleFileChange}
+            accept="image/png, image/jpeg"
           />
-        </FormControl>
+          <Button onClick={handleAvatarClick} isLoading={uploading}>
+            アバターを変更
+          </Button>
+        </div>
+      </div>
 
-        <Button
-          colorScheme="pink"
-          onClick={handleUpdateProfile}
-          isLoading={uploading}
-        >
-          プロフィールを更新
-        </Button>
-    </VStack>
+      <div className="space-y-2">
+        <Label>氏名</Label>
+        <Input
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder="山田 太郎"
+        />
+      </div>
+
+      <Button onClick={handleUpdateProfile} isLoading={uploading}>
+        プロフィールを更新
+      </Button>
+    </div>
   );
 };

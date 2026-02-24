@@ -1,27 +1,19 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
+import { Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import {
-  Box,
-  Flex,
-  Text,
-  IconButton,
-  VStack,
-  Spinner,
-  Alert,
-  AlertIcon,
-  Center,
-  useToast,
   AlertDialog,
-  AlertDialogOverlay,
   AlertDialogContent,
   AlertDialogHeader,
-  AlertDialogBody,
   AlertDialogFooter,
-  Button,
-  useDisclosure,
-  HStack,
-  Tag,
-} from "@chakra-ui/react";
-import { DeleteIcon } from "@chakra-ui/icons";
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useDisclosure } from "@/hooks/use-disclosure";
 import type { Activity } from "@/features/activities/types";
 import { CuteBox } from "@/components/ui/cute-box";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
@@ -41,8 +33,6 @@ const formatTime = (timeString: string | null | undefined): string => {
 
 export const ActivityList = React.memo(
   ({ selectedDate, onEditActivity }: ActivityListProps) => {
-    const toast = useToast();
-
     // Data Fetching
     const {
       data: activities = [],
@@ -57,7 +47,6 @@ export const ActivityList = React.memo(
     const [activityIdToDelete, setActivityIdToDelete] = useState<string | null>(
       null,
     );
-    const cancelRef = useRef(null);
 
     const handleClickDelete = (e: React.MouseEvent, id: string) => {
       e.stopPropagation();
@@ -70,25 +59,13 @@ export const ActivityList = React.memo(
 
       try {
         await deleteMutation.mutateAsync(activityIdToDelete);
-        toast({
-          title: "成功",
-          description: "活動を削除しました。",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+        toast.success("活動を削除しました。");
       } catch (err: unknown) {
         let errorMessage = "活動の削除に失敗しました。";
         if (err instanceof Error) {
           errorMessage = `活動の削除に失敗しました: ${err.message}`;
         }
-        toast({
-          title: "エラー",
-          description: errorMessage,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
+        toast.error(errorMessage);
       } finally {
         onClose();
         setActivityIdToDelete(null);
@@ -97,9 +74,9 @@ export const ActivityList = React.memo(
 
     if (loading) {
       return (
-        <Center p={10}>
-          <Spinner color="pink.500" />
-        </Center>
+        <div className="flex justify-center p-10">
+          <Loader2 className="h-6 w-6 animate-spin text-pink-500" />
+        </div>
       );
     }
 
@@ -107,109 +84,108 @@ export const ActivityList = React.memo(
       const errorMessage =
         queryError instanceof Error ? queryError.message : String(queryError);
       return (
-        <Alert status="error">
-          <AlertIcon />
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
           Error: {errorMessage}
-        </Alert>
+        </div>
       );
     }
 
     if (activities.length === 0) {
       return (
-        <Text color="gray.500" textAlign="center" p={10}>
+        <p className="p-10 text-center text-gray-500">
           指定した日付の記録はありません。
-        </Text>
+        </p>
       );
     }
 
     return (
-      <VStack spacing={4} align="stretch">
+      <div className="flex flex-col gap-4">
         {activities.map((activity) => (
           <CuteBox
             key={activity.id}
-            p={4}
-            bg="white"
-            borderRadius="xl"
+            className="cursor-pointer bg-white p-4"
             onClick={() => onEditActivity(activity)}
-            cursor="pointer"
-            transition="all 0.2s"
-            _hover={{ transform: "scale(1.02)", shadow: "md" }}
           >
-            <Flex align="center">
-              <Box flex="1">
-                <Text fontWeight="bold" color="gray.700">
+            <div className="flex items-center">
+              <div className="flex-1">
+                <p className="font-bold text-gray-700">
                   {formatTime(activity.start_time)} -{" "}
                   {formatTime(activity.end_time)}
-                </Text>
-                <Text color="gray.600" whiteSpace="pre-wrap">
+                </p>
+                <p className="whitespace-pre-wrap text-gray-600">
                   {activity.content}
-                </Text>
+                </p>
                 {activity.tags && activity.tags.length > 0 && (
-                  <HStack spacing={2} mt={2}>
+                  <div className="mt-2 flex gap-2">
                     {activity.tags.map((tag) => (
-                      <Tag
+                      <Badge
                         key={tag}
-                        size="sm"
-                        borderRadius="full"
-                        variant="subtle"
-                        colorScheme={
-                          ACTIVITY_CATEGORIES[
+                        variant={
+                          (ACTIVITY_CATEGORIES[
                             tag as keyof typeof ACTIVITY_CATEGORIES
-                          ] || "gray"
+                          ] as BadgeVariant) || "gray"
                         }
                       >
                         {tag}
-                      </Tag>
+                      </Badge>
                     ))}
-                  </HStack>
+                  </div>
                 )}
-              </Box>
-              <IconButton
-                aria-label="Delete activity"
-                icon={<DeleteIcon />}
+              </div>
+              <Button
                 variant="ghost"
-                colorScheme="red"
+                size="icon"
+                className="text-red-500 hover:text-red-600"
+                aria-label="Delete activity"
                 onClick={(e) => handleClickDelete(e, activity.id)}
                 isLoading={
                   deleteMutation.status === "pending" &&
                   activityIdToDelete === activity.id
                 }
-              />
-            </Flex>
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </CuteBox>
         ))}
-        <AlertDialog
-          isOpen={isOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={onClose}
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                活動を削除
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
+        <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>活動を削除</AlertDialogTitle>
+              <AlertDialogDescription>
                 この活動を本当に削除しますか？この操作は取り消せません。
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  キャンセル
-                </Button>
-                <Button
-                  colorScheme="red"
-                  onClick={confirmDelete}
-                  ml={3}
-                  isLoading={deleteMutation.status === "pending"}
-                >
-                  削除
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={onClose}>
+                キャンセル
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={confirmDelete}
+                disabled={deleteMutation.status === "pending"}
+              >
+                {deleteMutation.status === "pending" && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                削除
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
         </AlertDialog>
-      </VStack>
+      </div>
     );
   },
 );
+
+type BadgeVariant =
+  | "pink"
+  | "gray"
+  | "blue"
+  | "orange"
+  | "purple"
+  | "green"
+  | "teal"
+  | "red"
+  | "yellow"
+  | "cyan";

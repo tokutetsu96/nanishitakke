@@ -1,28 +1,26 @@
-import {
-  Box,
-  Flex,
-  IconButton,
-  Text,
-  useDisclosure,
-  useToast,
-  VStack,
-  Spinner,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Button,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-} from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { useState } from "react";
+import { Plus, Loader2 } from "lucide-react";
 import { FiMoreVertical, FiFileText } from "react-icons/fi";
-import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { useDisclosure } from "@/hooks/use-disclosure";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 import { useNotes } from "../api/get-notes";
 import { useDeleteNote } from "../api/delete-note";
 import { CreateNoteModal } from "./create-note-modal";
@@ -43,7 +41,6 @@ export const NoteList = ({
   onNoteDeleted,
 }: NoteListProps) => {
   const { user } = useAuth();
-  const toast = useToast();
   const { data: notes, isLoading } = useNotes(folderId);
   const deleteMutation = useDeleteNote();
 
@@ -59,7 +56,6 @@ export const NoteList = ({
   } = useDisclosure();
 
   const [deletingNote, setDeletingNote] = useState<Note | null>(null);
-  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const handleDeleteClick = (note: Note) => {
     setDeletingNote(note);
@@ -74,24 +70,12 @@ export const NoteList = ({
         id: deletingNote.id,
         user_id: user.id,
       });
-      toast({
-        title: "成功",
-        description: "ノートを削除しました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.success("成功: ノートを削除しました。");
       if (selectedNoteId === deletingNote.id) {
         onNoteDeleted?.();
       }
     } catch (err: unknown) {
-      toast({
-        title: "エラー",
-        description: `削除に失敗しました: ${(err as Error).message}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`エラー: 削除に失敗しました: ${(err as Error).message}`);
     } finally {
       onDeleteClose();
       setDeletingNote(null);
@@ -104,92 +88,91 @@ export const NoteList = ({
 
   if (isLoading) {
     return (
-      <Flex justify="center" py={8}>
-        <Spinner />
-      </Flex>
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
     );
   }
 
   return (
     <>
-      <VStack spacing={0} align="stretch" h="full">
-        <Flex justify="space-between" align="center" p={3} borderBottomWidth="1px">
-          <Text fontWeight="bold" fontSize="sm">
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center p-3 border-b">
+          <span className="font-bold text-sm">
             ノート
-          </Text>
-          <IconButton
-            aria-label="新規ノート"
-            icon={<AddIcon />}
-            size="xs"
+          </span>
+          <Button
             variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            aria-label="新規ノート"
             onClick={onCreateOpen}
-          />
-        </Flex>
+          >
+            <Plus className="h-3.5 w-3.5" />
+          </Button>
+        </div>
 
-        <VStack spacing={0} align="stretch" overflowY="auto" flex={1}>
+        <div className="flex flex-col overflow-y-auto flex-1">
           {notes?.map((note) => (
-            <Flex
+            <div
               key={note.id}
-              align="center"
-              px={3}
-              py={2}
-              cursor="pointer"
-              bg={selectedNoteId === note.id ? "pink.50" : "transparent"}
-              color={selectedNoteId === note.id ? "pink.600" : undefined}
-              _hover={{ bg: "pink.50" }}
+              className={`flex items-center px-3 py-2 cursor-pointer hover:bg-pink-50 group ${
+                selectedNoteId === note.id
+                  ? "bg-pink-50 text-pink-600"
+                  : "bg-transparent"
+              }`}
               onClick={() => onSelectNote(note.id)}
-              role="group"
             >
-              <Box as={FiFileText} mr={2} flexShrink={0} />
-              <Box flex={1} minW={0}>
-                <Text fontSize="sm" noOfLines={1}>
+              <FiFileText className="mr-2 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm line-clamp-1">
                   {note.title || "無題"}
-                </Text>
-                <Text fontSize="xs" color="gray.500">
+                </p>
+                <p className="text-xs text-gray-500">
                   {format(new Date(note.updated_at), "yyyy/MM/dd HH:mm")}
-                </Text>
-              </Box>
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  aria-label="ノートメニュー"
-                  icon={<FiMoreVertical />}
-                  size="xs"
-                  variant="ghost"
-                  opacity={0}
-                  _groupHover={{ opacity: 1 }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <MenuList>
-                  <MenuItem
-                    color="red.500"
+                </p>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                    aria-label="ノートメニュー"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <FiMoreVertical />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    className="text-red-500"
                     onClick={() => handleDeleteClick(note)}
                   >
                     削除
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </Flex>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ))}
 
           {notes?.length === 0 && (
-            <Box p={4} textAlign="center">
-              <Text fontSize="sm" color="gray.500">
+            <div className="p-4 text-center">
+              <p className="text-sm text-gray-500">
                 ノートがありません
-              </Text>
+              </p>
               <Button
-                size="sm"
-                colorScheme="pink"
                 variant="ghost"
-                mt={2}
+                size="sm"
+                className="mt-2"
                 onClick={onCreateOpen}
               >
                 ノートを作成
               </Button>
-            </Box>
+            </div>
           )}
-        </VStack>
-      </VStack>
+        </div>
+      </div>
 
       <CreateNoteModal
         isOpen={isCreateOpen}
@@ -198,35 +181,30 @@ export const NoteList = ({
         onNoteCreated={handleNoteCreated}
       />
 
-      <AlertDialog
-        isOpen={isDeleteOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onDeleteClose}
-        isCentered
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              ノートを削除
-            </AlertDialogHeader>
-            <AlertDialogBody>
+      <AlertDialog open={isDeleteOpen} onOpenChange={(open) => { if (!open) onDeleteClose(); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>ノートを削除</AlertDialogTitle>
+            <AlertDialogDescription>
               「{deletingNote?.title || "無題"}」を削除しますか？
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onDeleteClose}>
-                キャンセル
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={handleDelete}
-                ml={3}
-                isLoading={deleteMutation.status === "pending"}
-              >
-                削除する
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={onDeleteClose}>
+              キャンセル
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleteMutation.status === "pending"}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.status === "pending" ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              ) : null}
+              削除する
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
     </>
   );
