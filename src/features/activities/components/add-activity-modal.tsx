@@ -146,7 +146,7 @@ export const AddActivityModal = ({
             {initialActivity ? "活動を編集" : "新しい活動を記録"}
           </DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 min-w-0 overflow-hidden">
           <div className="space-y-2">
             <Label>テンプレートから読み込む</Label>
             <select
@@ -187,23 +187,25 @@ export const AddActivityModal = ({
               wrapperClassName="datepicker-full-width"
             />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+            <div className="space-y-2 min-w-0">
               <Label>
                 開始時刻 <span className="text-red-500">*</span>
               </Label>
               <Input
                 type="time"
                 step="300"
+                className="min-w-0"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label>終了時刻</Label>
               <Input
                 type="time"
                 step="300"
+                className="min-w-0"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
