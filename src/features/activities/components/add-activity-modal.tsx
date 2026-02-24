@@ -192,27 +192,21 @@ export const AddActivityModal = ({
               <Label>
                 開始時刻 <span className="text-red-500">*</span>
               </Label>
-              <div className="flex justify-center">
-                <Input
-                  type="time"
-                  step="300"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="w-auto"
-                />
-              </div>
+              <Input
+                type="time"
+                step="300"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label>終了時刻</Label>
-              <div className="flex justify-center">
-                <Input
-                  type="time"
-                  step="300"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="w-auto"
-                />
-              </div>
+              <Input
+                type="time"
+                step="300"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
             </div>
           </div>
           <div className="space-y-2">
