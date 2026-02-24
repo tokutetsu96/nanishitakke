@@ -188,7 +188,7 @@ export const AddActivityModal = ({
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label>
                 開始時刻 <span className="text-red-500">*</span>
               </Label>
@@ -199,7 +199,7 @@ export const AddActivityModal = ({
                 onChange={(e) => setStartTime(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label>終了時刻</Label>
               <Input
                 type="time"
