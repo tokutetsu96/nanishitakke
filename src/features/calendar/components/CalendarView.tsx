@@ -1,26 +1,17 @@
 import { useState, useMemo } from "react";
 import Calendar from "react-calendar";
-import {
-  Box,
-  Card,
-  CardBody,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  Badge,
-  Spinner,
-  Center,
-} from "@chakra-ui/react";
+import { Loader2 } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ja } from "date-fns/locale/ja";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useActivities } from "@/features/activities/api/get-activities";
 import type { Activity } from "@/features/activities/types";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import "react-calendar/dist/Calendar.css";
 import "./calendar.scss";
 
-// Chakra UI colors for categories (matching dashboard)
+// Category colors for calendar tile dots
 const CATEGORY_COLORS: Record<string, string> = {
   blue: "#3182CE",
   orange: "#DD6B20",
@@ -137,9 +128,9 @@ export const CalendarView = () => {
   };
 
   return (
-    <Box>
-      <Card mb={6}>
-        <CardBody>
+    <div>
+      <Card className="mb-6">
+        <CardContent className="p-6">
           <Calendar
             onChange={onDateChange}
             value={selectedDate}
@@ -148,27 +139,27 @@ export const CalendarView = () => {
             onActiveStartDateChange={onActiveDateChange}
             tileContent={tileContent}
           />
-        </CardBody>
+        </CardContent>
       </Card>
 
-      <Heading size="md" mb={4}>
+      <h3 className="text-lg font-semibold mb-4">
         {format(selectedDate, "yyyy年M月d日 (E)", { locale: ja })} の活動
-      </Heading>
+      </h3>
 
       {isLoading ? (
-        <Center py={10}>
-          <Spinner color="pink.500" />
-        </Center>
+        <div className="flex justify-center items-center py-10">
+          <Loader2 className="h-6 w-6 animate-spin text-pink-500" />
+        </div>
       ) : selectedDateActivities.length > 0 ? (
-        <VStack spacing={4} align="stretch">
+        <div className="flex flex-col gap-4">
           {selectedDateActivities.map((activity) => (
-            <Card key={activity.id} variant="outline">
-              <CardBody py={3} px={4}>
-                <HStack justify="space-between" align="start">
-                  <VStack align="start" spacing={1} flex={1}>
-                    <Text fontWeight="bold">{activity.content}</Text>
-                    <HStack spacing={2}>
-                      <Badge variant="subtle" colorScheme="gray">
+            <Card key={activity.id} className="border">
+              <CardContent className="py-3 px-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-1 flex-1">
+                    <p className="font-bold">{activity.content}</p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="gray">
                         {activity.start_time.slice(0, 5)} -{" "}
                         {activity.end_time?.slice(0, 5)}
                       </Badge>
@@ -178,21 +169,36 @@ export const CalendarView = () => {
                             tag as keyof typeof ACTIVITY_CATEGORIES
                           ] || "gray";
                         return (
-                          <Badge key={tag} colorScheme={color}>
+                          <Badge
+                            key={tag}
+                            variant={
+                              color as
+                                | "pink"
+                                | "gray"
+                                | "blue"
+                                | "orange"
+                                | "purple"
+                                | "green"
+                                | "teal"
+                                | "red"
+                                | "yellow"
+                                | "cyan"
+                            }
+                          >
                             {tag}
                           </Badge>
                         );
                       })}
-                    </HStack>
-                  </VStack>
-                </HStack>
-              </CardBody>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
             </Card>
           ))}
-        </VStack>
+        </div>
       ) : (
-        <Text color="gray.500">この日の活動記録はありません。</Text>
+        <p className="text-gray-500">この日の活動記録はありません。</p>
       )}
-    </Box>
+    </div>
   );
 };

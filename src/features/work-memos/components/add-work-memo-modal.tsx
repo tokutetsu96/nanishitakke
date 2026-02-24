@@ -1,20 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  VStack,
-  useToast,
-} from "@chakra-ui/react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import type { WorkMemo } from "@/features/work-memos/types";
@@ -24,6 +9,17 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useCreateWorkMemo } from "@/features/work-memos/api/create-work-memo";
 import { useUpdateWorkMemo } from "@/features/work-memos/api/update-work-memo";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 registerLocale("ja", ja);
 
@@ -41,7 +37,6 @@ export const AddWorkMemoModal = ({
   initialMemo,
 }: AddWorkMemoModalProps) => {
   const { user } = useAuth();
-  const toast = useToast();
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [doneText, setDoneText] = useState("");
   const [goodText, setGoodText] = useState("");
@@ -76,13 +71,7 @@ export const AddWorkMemoModal = ({
 
   const handleSubmit = async () => {
     if (!user || !doneText || !date) {
-      toast({
-        title: "入力エラー",
-        description: "日付とやったことは必須です。",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.error("日付とやったことは必須です。");
       return;
     }
 
@@ -102,13 +91,7 @@ export const AddWorkMemoModal = ({
           .maybeSingle();
 
         if (data) {
-          toast({
-            title: "エラー",
-            description: "この日付のメモは既に存在します。",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
+          toast.error("この日付のメモは既に存在します。");
           return;
         }
       }
@@ -125,20 +108,10 @@ export const AddWorkMemoModal = ({
 
       if (initialMemo) {
         await updateMutation.mutateAsync({ ...memoData, id: initialMemo.id });
-        toast({
-          title: "成功",
-          description: "メモを更新しました。",
-          status: "success",
-        });
+        toast.success("メモを更新しました。");
       } else {
         await createMutation.mutateAsync(memoData);
-        toast({
-          title: "成功",
-          description: "メモを記録しました。",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+        toast.success("メモを記録しました。");
       }
 
       if (onMemoAdded) onMemoAdded();
@@ -152,98 +125,93 @@ export const AddWorkMemoModal = ({
         setImprovementText("");
       }
     } catch (err: unknown) {
-      toast({
-        title: "エラー",
-        description: `記録に失敗しました: ${(err as Error).message}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`記録に失敗しました: ${(err as Error).message}`);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          {initialMemo ? "メモを編集" : "仕事メモを作成"}
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <VStack gap={4}>
-            <FormControl isRequired>
-              <FormLabel>日付</FormLabel>
-              <DatePicker
-                selected={
-                  date
-                    ? new Date(
-                        parseInt(date.split("-")[0]),
-                        parseInt(date.split("-")[1]) - 1,
-                        parseInt(date.split("-")[2])
-                      )
-                    : null
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent className="sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>
+            {initialMemo ? "メモを編集" : "仕事メモを作成"}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="space-y-2">
+            <Label>
+              日付 <span className="text-red-500">*</span>
+            </Label>
+            <DatePicker
+              selected={
+                date
+                  ? new Date(
+                      parseInt(date.split("-")[0]),
+                      parseInt(date.split("-")[1]) - 1,
+                      parseInt(date.split("-")[2])
+                    )
+                  : null
+              }
+              onChange={(d: Date | null) => {
+                if (d) {
+                  setDate(format(d, "yyyy-MM-dd"));
                 }
-                onChange={(d: Date | null) => {
-                  if (d) {
-                    setDate(format(d, "yyyy-MM-dd"));
-                  }
-                }}
-                locale="ja"
-                dateFormat="yyyy/MM/dd(eee)"
-                customInput={<Input />}
-                wrapperClassName="datepicker-full-width"
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>やったこと</FormLabel>
-              <Textarea
-                value={doneText}
-                onChange={(e) => setDoneText(e.target.value)}
-                placeholder="今日やったことを記入してください"
-                minH="100px"
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>良かったこと</FormLabel>
-              <Textarea
-                value={goodText}
-                onChange={(e) => setGoodText(e.target.value)}
-                placeholder="今日あった良かったこと"
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>詰まったこと</FormLabel>
-              <Textarea
-                value={stuckText}
-                onChange={(e) => setStuckText(e.target.value)}
-                placeholder="作業中に詰まったことや問題点"
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>原因</FormLabel>
-              <Textarea
-                value={causeText}
-                onChange={(e) => setCauseText(e.target.value)}
-                placeholder="詰まった原因"
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>原因の改善案</FormLabel>
-              <Textarea
-                value={improvementText}
-                onChange={(e) => setImprovementText(e.target.value)}
-                placeholder="次回どうすれば改善できるか"
-              />
-            </FormControl>
-          </VStack>
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
+              }}
+              locale="ja"
+              dateFormat="yyyy/MM/dd(eee)"
+              customInput={<Input />}
+              wrapperClassName="datepicker-full-width"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>
+              やったこと <span className="text-red-500">*</span>
+            </Label>
+            <Textarea
+              value={doneText}
+              onChange={(e) => setDoneText(e.target.value)}
+              placeholder="今日やったことを記入してください"
+              className="min-h-[100px]"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>良かったこと</Label>
+            <Textarea
+              value={goodText}
+              onChange={(e) => setGoodText(e.target.value)}
+              placeholder="今日あった良かったこと"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>詰まったこと</Label>
+            <Textarea
+              value={stuckText}
+              onChange={(e) => setStuckText(e.target.value)}
+              placeholder="作業中に詰まったことや問題点"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>原因</Label>
+            <Textarea
+              value={causeText}
+              onChange={(e) => setCauseText(e.target.value)}
+              placeholder="詰まった原因"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>原因の改善案</Label>
+            <Textarea
+              value={improvementText}
+              onChange={(e) => setImprovementText(e.target.value)}
+              placeholder="次回どうすれば改善できるか"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>
             キャンセル
           </Button>
           <Button
-            colorScheme="pink"
             onClick={handleSubmit}
             isLoading={
               createMutation.status === "pending" ||
@@ -252,8 +220,8 @@ export const AddWorkMemoModal = ({
           >
             {initialMemo ? "更新する" : "記録する"}
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -1,5 +1,5 @@
-import { Box, Flex, IconButton, Spinner, Text, Button } from "@chakra-ui/react";
-import { ArrowBackIcon, EditIcon } from "@chakra-ui/icons";
+import { ArrowLeft, Pencil, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import MDEditor from "@uiw/react-md-editor";
 import { useNote } from "../api/get-notes";
 
@@ -18,52 +18,53 @@ export const NoteDetailView = ({
 
   if (isLoading) {
     return (
-      <Flex justify="center" align="center" h="full">
-        <Spinner />
-      </Flex>
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
     );
   }
 
   if (!note) {
     return (
-      <Flex justify="center" align="center" h="full">
-        <Text color="gray.500">ノートが見つかりません</Text>
-      </Flex>
+      <div className="flex justify-center items-center h-full">
+        <p className="text-gray-500">ノートが見つかりません</p>
+      </div>
     );
   }
 
   return (
-    <Flex direction="column" h="full">
-      <Flex align="center" p={3} borderBottomWidth="1px" gap={2}>
+    <div className="flex flex-col h-full">
+      <div className="flex items-center p-3 border-b gap-2">
         {onBack && (
-          <IconButton
-            aria-label="一覧に戻る"
-            icon={<ArrowBackIcon />}
-            size="sm"
+          <Button
             variant="ghost"
+            size="sm"
+            aria-label="一覧に戻る"
             onClick={onBack}
-            flexShrink={0}
-          />
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
         )}
-        <Text fontWeight="bold" fontSize="lg" flex={1} noOfLines={1}>
+        <span className="font-bold text-lg flex-1 line-clamp-1">
           {note.title}
-        </Text>
+        </span>
         {onEdit && (
           <Button
-            leftIcon={<EditIcon />}
-            size="sm"
             variant="ghost"
+            size="sm"
             onClick={onEdit}
-            flexShrink={0}
+            className="shrink-0"
           >
+            <Pencil className="h-4 w-4 mr-1" />
             編集
           </Button>
         )}
-      </Flex>
+      </div>
 
-      <Box flex={1} overflow="auto" p={4} data-color-mode="light">
+      <div className="flex-1 overflow-auto p-4" data-color-mode="light">
         <MDEditor.Markdown source={note.content} />
-      </Box>
-    </Flex>
+      </div>
+    </div>
   );
 };

@@ -1,11 +1,10 @@
-import { Heading, VStack } from "@chakra-ui/react";
 import { CalendarView } from "@/features/calendar/components/CalendarView";
 
 export const CalendarRoute = () => {
   return (
-    <VStack spacing={8} align="stretch" py={4}>
-      <Heading size="lg">カレンダー</Heading>
+    <div className="flex flex-col gap-8 py-4">
+      <h2 className="text-2xl font-bold">カレンダー</h2>
       <CalendarView />
-    </VStack>
+    </div>
   );
 };

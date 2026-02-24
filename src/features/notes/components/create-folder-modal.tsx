@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  useToast,
-} from "@chakra-ui/react";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useCreateFolder } from "../api/create-folder";
 import { useUpdateFolder } from "../api/update-folder";
 import type { NoteFolder } from "../types";
@@ -30,7 +28,6 @@ export const CreateFolderModal = ({
   editingFolder,
 }: CreateFolderModalProps) => {
   const { user } = useAuth();
-  const toast = useToast();
   const [name, setName] = useState("");
 
   const createMutation = useCreateFolder();
@@ -45,13 +42,7 @@ export const CreateFolderModal = ({
 
   const handleSubmit = async () => {
     if (!user || !name.trim()) {
-      toast({
-        title: "入力エラー",
-        description: "フォルダ名を入力してください。",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.error("入力エラー: フォルダ名を入力してください。");
       return;
     }
 
@@ -62,50 +53,35 @@ export const CreateFolderModal = ({
           user_id: user.id,
           name: name.trim(),
         });
-        toast({
-          title: "成功",
-          description: "フォルダ名を更新しました。",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+        toast.success("成功: フォルダ名を更新しました。");
       } else {
         await createMutation.mutateAsync({
           user_id: user.id,
           name: name.trim(),
         });
-        toast({
-          title: "成功",
-          description: "フォルダを作成しました。",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+        toast.success("成功: フォルダを作成しました。");
       }
       onClose();
     } catch (err: unknown) {
-      toast({
-        title: "エラー",
-        description: `操作に失敗しました: ${(err as Error).message}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`エラー: 操作に失敗しました: ${(err as Error).message}`);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          {editingFolder ? "フォルダ名を変更" : "新しいフォルダ"}
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <FormControl isRequired>
-            <FormLabel>フォルダ名</FormLabel>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {editingFolder ? "フォルダ名を変更" : "新しいフォルダ"}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          <div className="space-y-2">
+            <Label htmlFor="folder-name">
+              フォルダ名 <span className="text-red-500">*</span>
+            </Label>
             <Input
+              id="folder-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="フォルダ名を入力"
@@ -113,24 +89,27 @@ export const CreateFolderModal = ({
                 if (e.key === "Enter") handleSubmit();
               }}
             />
-          </FormControl>
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>
             キャンセル
           </Button>
           <Button
-            colorScheme="pink"
             onClick={handleSubmit}
-            isLoading={
+            disabled={
               createMutation.status === "pending" ||
               updateMutation.status === "pending"
             }
           >
+            {(createMutation.status === "pending" ||
+              updateMutation.status === "pending") ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+            ) : null}
             {editingFolder ? "更新する" : "作成する"}
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -1,15 +1,15 @@
-import { Button, Center, Heading, VStack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export const NotFoundRoute = () => {
   return (
-    <Center h="100vh">
-      <VStack spacing={4}>
-        <Heading>404 - ページが見つかりません</Heading>
-        <Button as={Link} to="/login" colorScheme="pink">
-          ログインページへ戻る
+    <div className="flex items-center justify-center h-screen">
+      <div className="flex flex-col items-center gap-4">
+        <h1 className="text-2xl font-bold">404 - ページが見つかりません</h1>
+        <Button asChild>
+          <Link to="/login">ログインページへ戻る</Link>
         </Button>
-      </VStack>
-    </Center>
+      </div>
+    </div>
   );
 };

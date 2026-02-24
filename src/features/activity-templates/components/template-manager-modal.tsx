@@ -1,36 +1,30 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  VStack,
-  HStack,
-  useToast,
-  Select,
-  Box,
-  Text,
-  IconButton,
-  Card,
-  CardBody,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogOverlay,
-  useDisclosure,
-  Badge,
-} from "@chakra-ui/react";
-import { DeleteIcon } from "@chakra-ui/icons";
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import { useDisclosure } from "@/hooks/use-disclosure";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import { useAuth } from "@/lib/auth";
 import { useActivityTemplates } from "@/features/activity-templates/api/get-activity-templates";
@@ -47,7 +41,6 @@ export const TemplateManagerModal = ({
   onClose,
 }: TemplateManagerModalProps) => {
   const { user } = useAuth();
-  const toast = useToast();
   const [templateName, setTemplateName] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -62,7 +55,6 @@ export const TemplateManagerModal = ({
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
   } = useDisclosure();
-  const cancelRef = useRef(null);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = e.target.value;
@@ -75,13 +67,7 @@ export const TemplateManagerModal = ({
 
   const handleSaveTemplate = async () => {
     if (!user || !content || !templateName) {
-      toast({
-        title: "入力エラー",
-        description: "テンプレート名と内容は必須です。",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.error("テンプレート名と内容は必須です。");
       return;
     }
 
@@ -92,24 +78,12 @@ export const TemplateManagerModal = ({
         content: content,
         tags: tags,
       });
-      toast({
-        title: "成功",
-        description: "テンプレートを保存しました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.success("テンプレートを保存しました。");
       setTemplateName("");
       setContent("");
       setTags([]);
     } catch (error) {
-      toast({
-        title: "エラー",
-        description: `保存に失敗しました: ${(error as Error).message}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`保存に失敗しました: ${(error as Error).message}`);
     }
   };
 
@@ -123,21 +97,9 @@ export const TemplateManagerModal = ({
 
     try {
       await deleteMutation.mutateAsync(deleteTargetId);
-      toast({
-        title: "成功",
-        description: "テンプレートを削除しました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.success("テンプレートを削除しました。");
     } catch (error) {
-      toast({
-        title: "エラー",
-        description: `削除に失敗しました: ${(error as Error).message}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`削除に失敗しました: ${(error as Error).message}`);
     } finally {
       setDeleteTargetId(null);
       onDeleteClose();
@@ -146,156 +108,142 @@ export const TemplateManagerModal = ({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size="lg">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>テンプレート管理</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack gap={6} align="stretch">
-              {/* 新規テンプレート作成セクション */}
-              <Box>
-                <Text fontWeight="bold" mb={3}>
-                  新規テンプレート作成
-                </Text>
-                <VStack gap={3}>
-                  <FormControl isRequired>
-                    <FormLabel>テンプレート名</FormLabel>
-                    <Input
-                      value={templateName}
-                      onChange={(e) => setTemplateName(e.target.value)}
-                      placeholder="例: 朝のルーティン"
-                    />
-                  </FormControl>
-                  <FormControl isRequired>
-                    <FormLabel>内容</FormLabel>
-                    <Textarea
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      placeholder="活動の内容を入力"
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel>タグ</FormLabel>
-                    <Select
-                      placeholder="カテゴリを選択"
-                      value={tags[0] || ""}
-                      onChange={handleCategoryChange}
-                    >
-                      {Object.keys(ACTIVITY_CATEGORIES).map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <Button
-                    colorScheme="pink"
-                    onClick={handleSaveTemplate}
-                    isLoading={createMutation.status === "pending"}
-                    w="full"
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>テンプレート管理</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-6">
+            {/* 新規テンプレート作成セクション */}
+            <div>
+              <p className="font-bold mb-3">新規テンプレート作成</p>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <Label>
+                    テンプレート名 <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    value={templateName}
+                    onChange={(e) => setTemplateName(e.target.value)}
+                    placeholder="例: 朝のルーティン"
+                  />
+                </div>
+                <div>
+                  <Label>
+                    内容 <span className="text-destructive">*</span>
+                  </Label>
+                  <Textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="活動の内容を入力"
+                  />
+                </div>
+                <div>
+                  <Label>タグ</Label>
+                  <select
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    value={tags[0] || ""}
+                    onChange={handleCategoryChange}
                   >
-                    テンプレートを保存
-                  </Button>
-                </VStack>
-              </Box>
-
-              {/* 既存テンプレート一覧セクション */}
-              <Box>
-                <Text fontWeight="bold" mb={3}>
-                  保存済みテンプレート ({templates.length}件)
-                </Text>
-                {templates.length === 0 ? (
-                  <Text color="gray.500" fontSize="sm">
-                    テンプレートがありません
-                  </Text>
-                ) : (
-                  <VStack gap={2} align="stretch" maxH="300px" overflowY="auto">
-                    {templates.map((template) => (
-                      <Card key={template.id} size="sm" variant="outline">
-                        <CardBody>
-                          <HStack justify="space-between">
-                            <Box flex={1}>
-                              <Text fontWeight="semibold" fontSize="sm">
-                                {template.template_name}
-                              </Text>
-                              <Text
-                                fontSize="xs"
-                                color="gray.600"
-                                noOfLines={1}
-                              >
-                                {template.content}
-                              </Text>
-                              {template.tags && template.tags.length > 0 && (
-                                <HStack mt={1} gap={1}>
-                                  {template.tags.map((tag) => (
-                                    <Badge
-                                      key={tag}
-                                      size="sm"
-                                      colorScheme="pink"
-                                    >
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                </HStack>
-                              )}
-                            </Box>
-                            <IconButton
-                              aria-label="削除"
-                              icon={<DeleteIcon />}
-                              size="sm"
-                              colorScheme="red"
-                              variant="ghost"
-                              onClick={() => handleDeleteClick(template.id)}
-                            />
-                          </HStack>
-                        </CardBody>
-                      </Card>
+                    <option value="">カテゴリを選択</option>
+                    {Object.keys(ACTIVITY_CATEGORIES).map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
                     ))}
-                  </VStack>
-                )}
-              </Box>
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
+                  </select>
+                </div>
+                <Button
+                  onClick={handleSaveTemplate}
+                  isLoading={createMutation.status === "pending"}
+                  className="w-full"
+                >
+                  テンプレートを保存
+                </Button>
+              </div>
+            </div>
+
+            {/* 既存テンプレート一覧セクション */}
+            <div>
+              <p className="font-bold mb-3">
+                保存済みテンプレート ({templates.length}件)
+              </p>
+              {templates.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  テンプレートがありません
+                </p>
+              ) : (
+                <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
+                  {templates.map((template) => (
+                    <Card key={template.id} className="shadow-sm">
+                      <CardContent className="p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className="font-semibold text-sm">
+                              {template.template_name}
+                            </p>
+                            <p className="text-xs text-muted-foreground line-clamp-1">
+                              {template.content}
+                            </p>
+                            {template.tags && template.tags.length > 0 && (
+                              <div className="flex items-center mt-1 gap-1">
+                                {template.tags.map((tag) => (
+                                  <Badge key={tag} variant="pink">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="削除"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => handleDeleteClick(template.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
             <Button variant="ghost" onClick={onClose}>
               閉じる
             </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* 削除確認ダイアログ */}
       <AlertDialog
-        isOpen={isDeleteOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onDeleteClose}
+        open={isDeleteOpen}
+        onOpenChange={(open) => !open && onDeleteClose()}
       >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              テンプレートを削除
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>テンプレートを削除</AlertDialogTitle>
+            <AlertDialogDescription>
               このテンプレートを削除してもよろしいですか？
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onDeleteClose}>
-                キャンセル
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={handleDeleteConfirm}
-                ml={3}
-                isLoading={deleteMutation.status === "pending"}
-              >
-                削除
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={onDeleteClose}>
+              キャンセル
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.status === "pending" ? "削除中..." : "削除"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
     </>
   );

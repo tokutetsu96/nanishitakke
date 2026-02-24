@@ -1,17 +1,3 @@
-import {
-  Box,
-  Flex,
-  Icon,
-  Link,
-  Text,
-  VStack,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerOverlay,
-  CloseButton,
-  useColorModeValue,
-} from "@chakra-ui/react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import {
   FiHome,
@@ -21,6 +7,13 @@ import {
   FiCalendar,
   FiBookOpen,
 } from "react-icons/fi";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -29,49 +22,22 @@ interface NavItemProps {
   onClick?: () => void;
 }
 
-const NavItem = ({ icon, children, to, onClick }: NavItemProps) => {
+const NavItem = ({ icon: Icon, children, to, onClick }: NavItemProps) => {
   return (
-    <Link
-      as={RouterNavLink}
+    <RouterNavLink
       to={to}
       onClick={onClick}
-      style={{ textDecoration: "none" }}
-      _focus={{ boxShadow: "none" }}
-      w="full"
-      _activeLink={{
-        bg: "pink.50",
-        color: "pink.600",
-        fontWeight: "bold",
-        borderRight: "4px solid",
-        borderColor: "pink.600",
-      }}
+      className={({ isActive }) =>
+        cn(
+          "flex items-center p-4 cursor-pointer transition-all duration-200 hover:bg-pink-50 hover:text-pink-600 no-underline text-gray-700",
+          isActive &&
+            "bg-pink-50 text-pink-600 font-bold border-r-4 border-pink-600",
+        )
+      }
     >
-      <Flex
-        align="center"
-        p="4"
-        mx="0"
-        borderRadius="0"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: "pink.50",
-          color: "pink.600",
-        }}
-        transition="all 0.2s"
-      >
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="16"
-            as={icon}
-            _groupHover={{
-              color: "pink.600",
-            }}
-          />
-        )}
-        <Text fontSize="md">{children}</Text>
-      </Flex>
-    </Link>
+      <Icon className="mr-4 text-base" />
+      <span className="text-base">{children}</span>
+    </RouterNavLink>
   );
 };
 
@@ -81,7 +47,7 @@ interface SidebarContentProps {
 
 const SidebarContent = ({ onClose }: SidebarContentProps) => {
   return (
-    <VStack spacing={1} align="stretch" w="full">
+    <div className="flex flex-col gap-0.5 w-full">
       <NavItem icon={FiBarChart2} to="/" onClick={onClose}>
         統計レポート
       </NavItem>
@@ -100,7 +66,7 @@ const SidebarContent = ({ onClose }: SidebarContentProps) => {
       <NavItem icon={FiArchive} to="/reports" onClick={onClose}>
         レポートアーカイブ
       </NavItem>
-    </VStack>
+    </div>
   );
 };
 
@@ -115,42 +81,22 @@ export const AppSidebar = ({
   onClose,
   mobileOnly,
 }: AppSidebarProps) => {
-  const bg = useColorModeValue("white", "gray.800");
-
   if (mobileOnly) {
     return (
-      <Drawer
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="xs"
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <Flex
-            alignItems="center"
-            h="20"
-            px="4"
-            justifyContent="space-between"
-          >
-            <Text fontSize="xl" fontWeight="bold">
-              メニュー
-            </Text>
-            <CloseButton onClick={onClose} />
-          </Flex>
-          <DrawerBody p="0">
-            <SidebarContent onClose={onClose} />
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+      <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <SheetContent side="left" className="p-0 w-[280px]">
+          <SheetHeader className="p-4">
+            <SheetTitle>メニュー</SheetTitle>
+          </SheetHeader>
+          <SidebarContent onClose={onClose} />
+        </SheetContent>
+      </Sheet>
     );
   }
 
   return (
-    <Box bg={bg} w="full" pt={4}>
+    <div className="bg-white w-full pt-4">
       <SidebarContent />
-    </Box>
+    </div>
   );
 };

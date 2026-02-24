@@ -1,15 +1,7 @@
 import { useState, forwardRef } from "react";
-import {
-  Box,
-  Button,
-  VStack,
-  useDisclosure,
-  Heading,
-  IconButton,
-  HStack,
-  Text,
-} from "@chakra-ui/react";
-import { AddIcon, ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { useDisclosure } from "@/hooks/use-disclosure";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { WorkMemoList } from "@/features/work-memos/components/work-memo-list";
 import { AddWorkMemoModal } from "@/features/work-memos/components/add-work-memo-modal";
 import type { WorkMemo } from "@/features/work-memos/types";
@@ -33,16 +25,7 @@ const MonthPickerButton = forwardRef<
   <button
     ref={ref}
     onClick={onClick}
-    style={{
-      fontWeight: "bold",
-      fontSize: "1.125rem",
-      minWidth: "140px",
-      textAlign: "center",
-      cursor: "pointer",
-      background: "none",
-      border: "none",
-      padding: 0,
-    }}
+    className="font-bold text-lg min-w-[140px] text-center cursor-pointer bg-transparent border-none p-0"
   >
     {value}
   </button>
@@ -71,24 +54,23 @@ export const WorkMemosRoute = () => {
 
   return (
     <>
-      <VStack spacing={8} align="stretch" py={4}>
-        <Box>
-          <Heading as="h2" size="lg" mb={2}>
-            仕事メモ
-          </Heading>
-          <Text color="gray.600">日々の仕事の振り返りを記録します</Text>
-        </Box>
+      <div className="flex flex-col gap-8 py-4">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">仕事メモ</h2>
+          <p className="text-gray-600">日々の仕事の振り返りを記録します</p>
+        </div>
 
-        <HStack justify="space-between">
-          <HStack spacing={2}>
-            <IconButton
-              aria-label="前の月"
-              icon={<ChevronLeftIcon boxSize={5} />}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
               variant="ghost"
-              size="sm"
+              size="icon"
+              aria-label="前の月"
               onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
-            />
-            <Box>
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <div>
               <DatePicker
                 selected={currentMonth}
                 onChange={(date: Date | null) => date && setCurrentMonth(date)}
@@ -98,33 +80,30 @@ export const WorkMemosRoute = () => {
                 customInput={<MonthPickerButton />}
                 portalId="react-datepicker-portal"
               />
-            </Box>
-            <IconButton
-              aria-label="次の月"
-              icon={<ChevronRightIcon boxSize={5} />}
+            </div>
+            <Button
               variant="ghost"
-              size="sm"
+              size="icon"
+              aria-label="次の月"
               onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
-            />
-          </HStack>
-          <Button
-            onClick={onOpen}
-            leftIcon={<AddIcon />}
-            colorScheme="pink"
-            size="sm"
-          >
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
+          <Button onClick={onOpen} size="sm">
+            <Plus className="h-4 w-4" />
             記録する
           </Button>
-        </HStack>
+        </div>
 
-        <Box w="full">
+        <div className="w-full">
           <WorkMemoList
             onEditMemo={handleEditMemo}
             startDate={startDate}
             endDate={endDate}
           />
-        </Box>
-      </VStack>
+        </div>
+      </div>
 
       <AddWorkMemoModal
         isOpen={isOpen}

@@ -1,21 +1,16 @@
 import { useState, useEffect } from "react";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  VStack,
-  useToast,
-  Select,
-} from "@chakra-ui/react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import { useAuth } from "@/lib/auth";
 import type { Activity } from "@/features/activities/types";
@@ -23,9 +18,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale/ja";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import "./add-activity-modal.css"; // We might need some css, but dashboard uses global? dashboard.tsx imports ./activities.scss. I'll assume global or default styles for now. Or just inline.
-// dashboard.tsx imported activities.scss. I won't import css file if it doesn't exist.
-// dashboard.tsx imported "react-datepicker/dist/react-datepicker.css"; -> I included this.
+import "./add-activity-modal.css";
 
 import { useCreateActivity } from "@/features/activities/api/create-activity";
 import { useUpdateActivity } from "@/features/activities/api/update-activity";
@@ -47,7 +40,6 @@ export const AddActivityModal = ({
   initialActivity,
 }: AddActivityModalProps) => {
   const { user } = useAuth();
-  const toast = useToast();
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -80,13 +72,7 @@ export const AddActivityModal = ({
 
   const handleSubmit = async () => {
     if (!user || !content || !startTime || !date) {
-      toast({
-        title: "入力エラー",
-        description: "日付、開始時刻、内容は必須です。",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.error("日付、開始時刻、内容は必須です。");
       return;
     }
 
@@ -97,7 +83,6 @@ export const AddActivityModal = ({
 
     try {
       if (initialActivity) {
-        // Update existing activity
         await updateMutation.mutateAsync({
           id: initialActivity.id,
           user_id: user.id,
@@ -108,15 +93,8 @@ export const AddActivityModal = ({
           tags: tags,
         });
 
-        toast({
-          title: "成功",
-          description: "活動を更新しました。",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+        toast.success("活動を更新しました。");
       } else {
-        // Insert new activity
         await createMutation.mutateAsync({
           user_id: user.id,
           date: date,
@@ -126,13 +104,7 @@ export const AddActivityModal = ({
           tags: tags,
         });
 
-        toast({
-          title: "成功",
-          description: "新しい活動を記録しました。",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+        toast.success("新しい活動を記録しました。");
       }
 
       onActivityAdded();
@@ -145,13 +117,7 @@ export const AddActivityModal = ({
         setContent("");
       }
     } catch (err: unknown) {
-      toast({
-        title: "エラー",
-        description: `記録に失敗しました: ${(err as Error).message}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`記録に失敗しました: ${(err as Error).message}`);
     }
   };
 
@@ -174,111 +140,115 @@ export const AddActivityModal = ({
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
             {initialActivity ? "活動を編集" : "新しい活動を記録"}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack gap={4}>
-              <FormControl>
-                <FormLabel>テンプレートから読み込む</FormLabel>
-                <Select
-                  placeholder="テンプレートを選択"
-                  onChange={handleTemplateChange}
-                >
-                  {templates.map((template) => (
-                    <option key={template.id} value={template.id}>
-                      {template.template_name}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel>日付</FormLabel>
-                <DatePicker
-                  selected={
-                    date
-                      ? new Date(
-                          parseInt(date.split("-")[0]),
-                          parseInt(date.split("-")[1]) - 1,
-                          parseInt(date.split("-")[2]),
-                        )
-                      : null
-                  }
-                  onChange={(d: Date | null) => {
-                    if (d) {
-                      setDate(format(d, "yyyy-MM-dd"));
-                    }
-                  }}
-                  locale="ja"
-                  dateFormat="yyyy/MM/dd(eee)"
-                  customInput={<Input />}
-                  wrapperClassName="datepicker-full-width"
-                />
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel>開始時刻</FormLabel>
-                <Input
-                  type="time"
-                  step="300"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>終了時刻</FormLabel>
-                <Input
-                  type="time"
-                  step="300"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                />
-              </FormControl>
-              <FormControl isRequired>
-                <FormLabel>内容</FormLabel>
-                <Textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="何をした？"
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>タグ</FormLabel>
-                <Select
-                  placeholder="カテゴリを選択"
-                  value={tags[0] || ""}
-                  onChange={handleCategoryChange}
-                >
-                  {Object.keys(ACTIVITY_CATEGORIES).map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onClose}>
-              キャンセル
-            </Button>
-            <Button
-              colorScheme="pink"
-              onClick={handleSubmit}
-              isLoading={
-                createMutation.status === "pending" ||
-                updateMutation.status === "pending"
-              }
+          </DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="space-y-2">
+            <Label>テンプレートから読み込む</Label>
+            <select
+              className="flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 focus-visible:ring-offset-0"
+              onChange={handleTemplateChange}
+              defaultValue=""
             >
-              {initialActivity ? "更新する" : "記録する"}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+              <option value="">テンプレートを選択</option>
+              {templates.map((template) => (
+                <option key={template.id} value={template.id}>
+                  {template.template_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label>
+              日付 <span className="text-red-500">*</span>
+            </Label>
+            <DatePicker
+              selected={
+                date
+                  ? new Date(
+                      parseInt(date.split("-")[0]),
+                      parseInt(date.split("-")[1]) - 1,
+                      parseInt(date.split("-")[2]),
+                    )
+                  : null
+              }
+              onChange={(d: Date | null) => {
+                if (d) {
+                  setDate(format(d, "yyyy-MM-dd"));
+                }
+              }}
+              locale="ja"
+              dateFormat="yyyy/MM/dd(eee)"
+              customInput={<Input />}
+              wrapperClassName="datepicker-full-width"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>
+              開始時刻 <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              type="time"
+              step="300"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>終了時刻</Label>
+            <Input
+              type="time"
+              step="300"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>
+              内容 <span className="text-red-500">*</span>
+            </Label>
+            <Textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="何をした？"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>タグ</Label>
+            <select
+              className="flex h-10 w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 focus-visible:ring-offset-0"
+              value={tags[0] || ""}
+              onChange={handleCategoryChange}
+            >
+              <option value="">カテゴリを選択</option>
+              {Object.keys(ACTIVITY_CATEGORIES).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>
+            キャンセル
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            isLoading={
+              createMutation.status === "pending" ||
+              updateMutation.status === "pending"
+            }
+          >
+            {initialActivity ? "更新する" : "記録する"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

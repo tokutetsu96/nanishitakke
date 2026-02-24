@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  useToast,
-} from "@chakra-ui/react";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useCreateNote } from "../api/create-note";
 import type { Note } from "../types";
 
@@ -31,7 +29,6 @@ export const CreateNoteModal = ({
   onNoteCreated,
 }: CreateNoteModalProps) => {
   const { user } = useAuth();
-  const toast = useToast();
   const [title, setTitle] = useState("");
 
   const createMutation = useCreateNote();
@@ -45,13 +42,7 @@ export const CreateNoteModal = ({
 
   const handleSubmit = async () => {
     if (!user || !title.trim()) {
-      toast({
-        title: "入力エラー",
-        description: "タイトルを入力してください。",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.error("入力エラー: タイトルを入力してください。");
       return;
     }
 
@@ -61,36 +52,27 @@ export const CreateNoteModal = ({
         folder_id: folderId,
         title: title.trim(),
       });
-      toast({
-        title: "成功",
-        description: "ノートを作成しました。",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      toast.success("成功: ノートを作成しました。");
       onNoteCreated?.(note);
       onClose();
     } catch (err: unknown) {
-      toast({
-        title: "エラー",
-        description: `作成に失敗しました: ${(err as Error).message}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`エラー: 作成に失敗しました: ${(err as Error).message}`);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>新しいノート</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <FormControl isRequired>
-            <FormLabel>タイトル</FormLabel>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>新しいノート</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          <div className="space-y-2">
+            <Label htmlFor="note-title">
+              タイトル <span className="text-red-500">*</span>
+            </Label>
             <Input
+              id="note-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="ノートのタイトルを入力"
@@ -98,21 +80,23 @@ export const CreateNoteModal = ({
                 if (e.key === "Enter") handleSubmit();
               }}
             />
-          </FormControl>
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>
             キャンセル
           </Button>
           <Button
-            colorScheme="pink"
             onClick={handleSubmit}
-            isLoading={createMutation.status === "pending"}
+            disabled={createMutation.status === "pending"}
           >
+            {createMutation.status === "pending" ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+            ) : null}
             作成する
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

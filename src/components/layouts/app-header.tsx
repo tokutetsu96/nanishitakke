@@ -1,27 +1,23 @@
-import {
-  Box,
-  Container,
-  Flex,
-  Heading,
-  Spacer,
-  Image,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Avatar,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
 import { TemplateManagerModal } from "@/features/activity-templates/components/template-manager-modal";
 import NanishitakkeLogo from "@/assets/nanishitakke.png";
-
-import { IconButton } from "@chakra-ui/react";
-import { FiMenu } from "react-icons/fi";
+import { Button } from "@/components/ui/button";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Menu } from "lucide-react";
+import { useDisclosure } from "@/hooks/use-disclosure";
 
 interface AppHeaderProps {
   onOpen: () => void;
@@ -39,10 +35,6 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
     full_name: string | null;
     avatar_url: string | null;
   } | null>(null);
-
-  const headerBg = "white";
-  const headingColor = "gray.700";
-  const textColor = "gray.700";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -87,67 +79,63 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
   };
 
   return (
-    <Box
-      as="header"
-      bg={headerBg}
-      shadow="sm"
-      position="fixed"
-      top="0"
-      w="full"
-      zIndex="sticky"
-    >
-      <Container maxW="container.lg" py={4}>
-        <Flex align="center">
-          <IconButton
-            display={{ base: "flex", md: "none" }}
-            onClick={onOpen}
+    <header className="bg-white shadow-sm fixed top-0 w-full z-40">
+      <div className="mx-auto max-w-5xl px-4 py-4">
+        <div className="flex items-center">
+          <Button
             variant="outline"
+            size="icon"
+            className="flex md:hidden mr-4"
+            onClick={onOpen}
             aria-label="open menu"
-            icon={<FiMenu />}
-            mr="4"
-          />
-          <Link to="/">
-            <Flex align="center" cursor="pointer">
-              <Heading as="h1" size="md" color={headingColor}>
-                なにしたっけ
-              </Heading>
-              <Image src={NanishitakkeLogo} alt="なにしたっけ Logo" h="40px" />
-            </Flex>
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          <Link to="/" className="flex items-center cursor-pointer no-underline">
+            <h1 className="text-lg font-semibold text-gray-700">
+              なにしたっけ
+            </h1>
+            <img
+              src={NanishitakkeLogo}
+              alt="なにしたっけ Logo"
+              className="h-10"
+            />
           </Link>
-          <Spacer />
+          <div className="flex-1" />
           {user && profile && (
-            <Menu>
-              <MenuButton>
-                <Flex alignItems="center" gap={2}>
-                  <Text fontSize="sm" fontWeight="medium" color={textColor}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 cursor-pointer bg-transparent border-none">
+                  <span className="text-sm font-medium text-gray-700">
                     {profile.full_name}
-                  </Text>
-                  <Avatar
-                    size="sm"
-                    src={profile.avatar_url || ""}
-                    name={profile.full_name || ""}
-                  />
-                </Flex>
-              </MenuButton>
-              <MenuList>
-                <MenuItem as={Link} to="/profile">
+                  </span>
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={profile.avatar_url || ""} />
+                    <AvatarFallback>
+                      {profile.full_name?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
                   プロフィール
-                </MenuItem>
-                <MenuItem onClick={onOpenTemplate}>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onOpenTemplate}>
                   テンプレート管理
-                </MenuItem>
-                <MenuItem onClick={handleLogout} as="button">
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   ログアウト
-                </MenuItem>
-              </MenuList>
-            </Menu>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
-        </Flex>
-      </Container>
+        </div>
+      </div>
       <TemplateManagerModal
         isOpen={isTemplateOpen}
         onClose={onCloseTemplate}
       />
-    </Box>
+    </header>
   );
 };

@@ -1,12 +1,7 @@
 import { useState } from "react";
-import {
-  Box,
-  Flex,
-  Text,
-  IconButton,
-  useBreakpointValue,
-} from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowLeft } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 import { FolderList } from "./folder-list";
 import { NoteList } from "./note-list";
 import { NoteDetailView } from "./note-detail-view";
@@ -20,7 +15,7 @@ export const NotesPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [mobileView, setMobileView] = useState<MobileView>("folders");
 
-  const isMobile = useBreakpointValue({ base: true, lg: false });
+  const isMobile = useIsMobile(1024);
 
   const handleSelectFolder = (folderId: string) => {
     setSelectedFolderId(folderId || null);
@@ -79,7 +74,7 @@ export const NotesPage = () => {
   // Mobile layout
   if (isMobile) {
     return (
-      <Box h="calc(100vh - 80px)">
+      <div className="h-[calc(100vh-80px)]">
         {mobileView === "folders" && (
           <FolderList
             selectedFolderId={selectedFolderId}
@@ -88,51 +83,53 @@ export const NotesPage = () => {
         )}
 
         {mobileView === "notes" && selectedFolderId && (
-          <Box h="full">
-            <Flex align="center" p={2} borderBottomWidth="1px">
-              <IconButton
-                aria-label="戻る"
-                icon={<ArrowBackIcon />}
-                size="sm"
+          <div className="h-full">
+            <div className="flex items-center p-2 border-b">
+              <Button
                 variant="ghost"
+                size="sm"
+                aria-label="戻る"
                 onClick={handleBackToFolders}
-              />
-              <Text fontWeight="bold" fontSize="sm" ml={1}>
+                className="shrink-0"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <span className="font-bold text-sm ml-1">
                 ノート一覧
-              </Text>
-            </Flex>
+              </span>
+            </div>
             <NoteList
               folderId={selectedFolderId}
               selectedNoteId={selectedNoteId}
               onSelectNote={handleSelectNote}
               onNoteDeleted={handleNoteDeleted}
             />
-          </Box>
+          </div>
         )}
 
         {mobileView === "detail" && selectedNoteId && (
-          <Box h="full">
+          <div className="h-full">
             <NoteDetailView
               noteId={selectedNoteId}
               onBack={handleBackToNotes}
               onEdit={handleEdit}
             />
-          </Box>
+          </div>
         )}
 
         {mobileView === "editor" && selectedNoteId && (
-          <Box h="full">
+          <div className="h-full">
             <NoteEditor noteId={selectedNoteId} onBack={handleBackToDetail} />
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
     );
   }
 
   // Desktop: full-screen view when a note is selected
   if (selectedNoteId) {
     return (
-      <Box h="calc(100vh - 80px)" borderWidth="1px" borderRadius="md" overflow="hidden">
+      <div className="h-[calc(100vh-80px)] border rounded-md overflow-hidden">
         {isEditing ? (
           <NoteEditor noteId={selectedNoteId} onBack={handleBackToDetail} />
         ) : (
@@ -142,23 +139,23 @@ export const NotesPage = () => {
             onEdit={handleEdit}
           />
         )}
-      </Box>
+      </div>
     );
   }
 
   // Desktop: 2-column layout for folder/note browsing
   return (
-    <Flex h="calc(100vh - 80px)" borderWidth="1px" borderRadius="md" overflow="hidden">
+    <div className="flex h-[calc(100vh-80px)] border rounded-md overflow-hidden">
       {/* Folder column */}
-      <Box w="250px" borderRightWidth="1px" flexShrink={0}>
+      <div className="w-[250px] border-r shrink-0">
         <FolderList
           selectedFolderId={selectedFolderId}
           onSelectFolder={handleSelectFolder}
         />
-      </Box>
+      </div>
 
       {/* Note list column */}
-      <Box flex={1} minW={0}>
+      <div className="flex-1 min-w-0">
         {selectedFolderId ? (
           <NoteList
             folderId={selectedFolderId}
@@ -167,13 +164,13 @@ export const NotesPage = () => {
             onNoteDeleted={handleNoteDeleted}
           />
         ) : (
-          <Flex justify="center" align="center" h="full">
-            <Text color="gray.500" fontSize="sm">
+          <div className="flex justify-center items-center h-full">
+            <p className="text-gray-500 text-sm">
               フォルダを選択してください
-            </Text>
-          </Flex>
+            </p>
+          </div>
         )}
-      </Box>
-    </Flex>
+      </div>
+    </div>
   );
 };

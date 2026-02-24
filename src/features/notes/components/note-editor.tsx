@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Box, Flex, IconButton, Input, Spinner, Text } from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import MDEditor from "@uiw/react-md-editor";
 import { useAuth } from "@/lib/auth";
 import { useNote } from "../api/get-notes";
@@ -86,48 +87,46 @@ export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
 
   if (isLoading) {
     return (
-      <Flex justify="center" align="center" h="full">
-        <Spinner />
-      </Flex>
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
     );
   }
 
   if (!note) {
     return (
-      <Flex justify="center" align="center" h="full">
-        <Text color="gray.500">ノートが見つかりません</Text>
-      </Flex>
+      <div className="flex justify-center items-center h-full">
+        <p className="text-gray-500">ノートが見つかりません</p>
+      </div>
     );
   }
 
   return (
-    <Flex direction="column" h="full">
-      <Flex align="center" p={3} borderBottomWidth="1px" gap={2}>
+    <div className="flex flex-col h-full">
+      <div className="flex items-center p-3 border-b gap-2">
         {onBack && (
-          <IconButton
-            aria-label="一覧に戻る"
-            icon={<ArrowBackIcon />}
-            size="sm"
+          <Button
             variant="ghost"
+            size="sm"
+            aria-label="一覧に戻る"
             onClick={onBack}
-            flexShrink={0}
-          />
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
         )}
         <Input
           value={title}
           onChange={handleTitleChange}
           placeholder="タイトル"
-          variant="unstyled"
-          fontWeight="bold"
-          fontSize="lg"
-          flex={1}
+          className="border-0 shadow-none focus-visible:ring-0 font-bold text-lg flex-1"
         />
-        <Text fontSize="xs" color="gray.400" flexShrink={0}>
+        <span className="text-xs text-gray-400 shrink-0">
           {isSaving ? "保存中..." : "保存済み"}
-        </Text>
-      </Flex>
+        </span>
+      </div>
 
-      <Box flex={1} overflow="auto" data-color-mode="light">
+      <div className="flex-1 overflow-auto" data-color-mode="light">
         <MDEditor
           value={content}
           onChange={handleContentChange}
@@ -135,7 +134,7 @@ export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
           preview="live"
           visibleDragbar={false}
         />
-      </Box>
-    </Flex>
+      </div>
+    </div>
   );
 };
