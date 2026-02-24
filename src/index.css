@@ -197,11 +197,3 @@ body {
   z-index: 9999 !important;
 }
 
-/* Fix text-center for time inputs */
-input[type="time"]::-webkit-date-and-time-value {
-  text-align: center;
-}
-
-input[type="time"]::-webkit-datetime-edit {
-  text-align: center;
-}
