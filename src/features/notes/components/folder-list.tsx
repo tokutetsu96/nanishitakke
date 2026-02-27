@@ -134,7 +134,7 @@ export const FolderList = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                    className="h-6 w-6 opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label="フォルダメニュー"
                     onClick={(e) => e.stopPropagation()}
                   >

@@ -113,6 +113,7 @@ export const NotesPage = () => {
               noteId={selectedNoteId}
               onBack={handleBackToNotes}
               onEdit={handleEdit}
+              onDelete={handleNoteDeleted}
             />
           </div>
         )}
@@ -137,6 +138,7 @@ export const NotesPage = () => {
             noteId={selectedNoteId}
             onBack={handleBackToNotes}
             onEdit={handleEdit}
+            onDelete={handleNoteDeleted}
           />
         )}
       </div>
