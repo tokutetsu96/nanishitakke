@@ -137,17 +137,18 @@ export const FolderList = ({
                     className="h-6 w-6 opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label="フォルダメニュー"
                     onClick={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
                   >
                     <FiMoreVertical />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleEdit(folder)}>
+                <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEdit(folder); }}>
                     名前を変更
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-red-500"
-                    onClick={() => handleDeleteClick(folder)}
+                    onClick={(e) => { e.stopPropagation(); handleDeleteClick(folder); }}
                   >
                     削除
                   </DropdownMenuItem>
