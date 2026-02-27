@@ -140,14 +140,15 @@ export const NoteList = ({
                     className="h-6 w-6 opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                     aria-label="ノートメニュー"
                     onClick={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
                   >
                     <FiMoreVertical />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
                   <DropdownMenuItem
                     className="text-red-500"
-                    onClick={() => handleDeleteClick(note)}
+                    onClick={(e) => { e.stopPropagation(); handleDeleteClick(note); }}
                   >
                     削除
                   </DropdownMenuItem>
