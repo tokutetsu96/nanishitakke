@@ -3,6 +3,18 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 
 export const deleteFolder = async (data: { id: string; user_id: string }) => {
+  // フォルダ内のノートを先に削除
+  const { error: notesError } = await supabase
+    .from("notes")
+    .delete()
+    .eq("folder_id", data.id)
+    .eq("user_id", data.user_id);
+
+  if (notesError) {
+    throw notesError;
+  }
+
+  // フォルダを削除
   const { error } = await supabase
     .from("note_folders")
     .delete()
