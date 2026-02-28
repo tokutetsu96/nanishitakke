@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { TimeSelect } from "@/components/ui/time-select";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
@@ -192,20 +193,16 @@ export const AddActivityModal = ({
               <Label>
                 開始時刻 <span className="text-red-500">*</span>
               </Label>
-              <Input
-                type="time"
-                step="300"
+              <TimeSelect
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(v) => setStartTime(v)}
               />
             </div>
             <div className="space-y-2">
               <Label>終了時刻</Label>
-              <Input
-                type="time"
-                step="300"
+              <TimeSelect
                 value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
+                onChange={(v) => setEndTime(v)}
               />
             </div>
           </div>
