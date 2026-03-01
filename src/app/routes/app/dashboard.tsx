@@ -33,6 +33,7 @@ import { generateContent } from "@/lib/gemini";
 import { useCreateReport } from "@/features/reports/api/create-report";
 import { useAuth } from "@/lib/auth";
 import { Calendar } from "lucide-react";
+import MDEditor from "@uiw/react-md-editor";
 
 // Chart.jsの登録
 ChartJS.register(
@@ -313,8 +314,8 @@ ${workMemos
           </Button>
         </div>
         {report && (
-          <div className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap text-sm">
-            {report}
+          <div className="bg-gray-50 p-4 rounded-md text-sm" data-color-mode="light">
+            <MDEditor.Markdown source={report} />
           </div>
         )}
         {!report && !isGenerating && (

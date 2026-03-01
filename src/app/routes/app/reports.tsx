@@ -23,6 +23,7 @@ import { useState, forwardRef } from "react";
 import type { WeeklyReport } from "@/features/reports/types";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import MDEditor from "@uiw/react-md-editor";
 
 registerLocale("ja", ja);
 
@@ -152,8 +153,10 @@ export const ReportsRoute = () => {
                 `${format(parseISO(selectedReport.start_date), "MM/dd")} - ${format(parseISO(selectedReport.end_date), "MM/dd")} のレポート`}
             </DialogTitle>
           </DialogHeader>
-          <div className="whitespace-pre-wrap text-sm">
-            {selectedReport?.content}
+          <div className="text-sm" data-color-mode="light">
+            {selectedReport?.content && (
+              <MDEditor.Markdown source={selectedReport.content} />
+            )}
           </div>
           <DialogFooter>
             <Button className="mr-3" onClick={onClose}>
