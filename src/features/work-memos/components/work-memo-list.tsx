@@ -82,7 +82,7 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
     const errorMessage =
       queryError instanceof Error ? queryError.message : String(queryError);
     return (
-      <div className="rounded-md border border-red-200 bg-red-50 p-4 text-red-700">
+      <div className="rounded-md border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-500/10 p-4 text-red-700 dark:text-red-400">
         Error: {errorMessage}
       </div>
     );
@@ -90,7 +90,7 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
 
   if (memos.length === 0) {
     return (
-      <p className="text-gray-500 text-center p-10">
+      <p className="text-gray-500 dark:text-gray-400 text-center p-10">
         記録された仕事メモはありません。
       </p>
     );
@@ -119,7 +119,7 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
                 aria-label="Delete"
                 onClick={(e) => handleClickDelete(e, memo.id)}
                 isLoading={

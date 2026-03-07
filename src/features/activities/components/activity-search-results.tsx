@@ -116,7 +116,7 @@ export const ActivitySearchResults = React.memo(
 
     if (activities.length === 0) {
       return (
-        <p className="p-10 text-center text-gray-500">
+        <p className="p-10 text-center text-gray-500 dark:text-gray-400">
           検索条件に一致する活動はありません。
         </p>
       );
@@ -126,7 +126,7 @@ export const ActivitySearchResults = React.memo(
 
     return (
       <div className="flex flex-col gap-4">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {activities.length}件の活動が見つかりました
         </p>
         {Array.from(grouped.entries()).map(([date, dateActivities]) => (

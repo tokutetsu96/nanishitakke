@@ -293,7 +293,7 @@ ${workMemos
             portalId="react-datepicker-portal"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-            <Calendar className="h-4 w-4 text-gray-500" />
+            <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
           </div>
         </div>
       </div>
@@ -321,7 +321,7 @@ ${workMemos
           </div>
         )}
         {!report && !isGenerating && (
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400 dark:text-gray-500 text-sm">
             「レポートを生成」ボタンを押すと、表示中の期間のデータをもとにAIが振り返りを作成します。
           </p>
         )}
@@ -379,13 +379,13 @@ ${workMemos
                       maintainAspectRatio: false,
                       plugins: {
                         legend: {
-                          labels: { color: "#718096" },
+                          labels: { color: resolvedTheme === "dark" ? "#CBD5E0" : "#718096" },
                         },
                       },
                     }}
                   />
                 ) : (
-                  <p className="text-gray-400">データがありません</p>
+                  <p className="text-gray-400 dark:text-gray-500">データがありません</p>
                 )}
               </div>
             </div>
@@ -407,14 +407,14 @@ ${workMemos
                         title: {
                           display: true,
                           text: "時間",
-                          color: "#718096",
+                          color: resolvedTheme === "dark" ? "#CBD5E0" : "#718096",
                         },
-                        grid: { color: "#E2E8F0" },
-                        ticks: { color: "#718096" },
+                        grid: { color: resolvedTheme === "dark" ? "#4A5568" : "#E2E8F0" },
+                        ticks: { color: resolvedTheme === "dark" ? "#CBD5E0" : "#718096" },
                       },
                       x: {
-                        grid: { color: "#E2E8F0" },
-                        ticks: { color: "#718096" },
+                        grid: { color: resolvedTheme === "dark" ? "#4A5568" : "#E2E8F0" },
+                        ticks: { color: resolvedTheme === "dark" ? "#CBD5E0" : "#718096" },
                       },
                     },
                   }}

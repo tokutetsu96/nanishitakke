@@ -92,7 +92,7 @@ export const ActivityList = React.memo(
 
     if (activities.length === 0) {
       return (
-        <p className="p-10 text-center text-gray-500">
+        <p className="p-10 text-center text-gray-500 dark:text-gray-400">
           指定した日付の記録はありません。
         </p>
       );

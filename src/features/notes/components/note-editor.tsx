@@ -98,7 +98,7 @@ export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
   if (!note) {
     return (
       <div className="flex justify-center items-center h-full">
-        <p className="text-gray-500">ノートが見つかりません</p>
+        <p className="text-gray-500 dark:text-gray-400">ノートが見つかりません</p>
       </div>
     );
   }
@@ -123,7 +123,7 @@ export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
           placeholder="タイトル"
           className="border-0 shadow-none focus-visible:ring-0 font-bold text-lg flex-1"
         />
-        <span className="text-xs text-gray-400 shrink-0">
+        <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">
           {isSaving ? "保存中..." : "保存済み"}
         </span>
       </div>

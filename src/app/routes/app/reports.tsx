@@ -108,7 +108,7 @@ export const ReportsRoute = () => {
       {/* report list or empty state */}
       {reports.length === 0 ? (
         <div className="flex justify-center items-center p-10 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-          <p className="text-gray-500">この月のレポートはありません</p>
+          <p className="text-gray-500 dark:text-gray-400">この月のレポートはありません</p>
         </div>
       ) : (
         <Card>
@@ -130,7 +130,7 @@ export const ReportsRoute = () => {
                   <p className="text-sm line-clamp-2">
                     {report.content.split("\n")[0]}...
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                     作成日:{" "}
                     {format(parseISO(report.created_at), "yyyy/MM/dd HH:mm")}
                   </p>

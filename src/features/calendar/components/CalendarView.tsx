@@ -196,7 +196,7 @@ export const CalendarView = () => {
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">この日の活動記録はありません。</p>
+        <p className="text-gray-500 dark:text-gray-400">この日の活動記録はありません。</p>
       )}
     </div>
   );

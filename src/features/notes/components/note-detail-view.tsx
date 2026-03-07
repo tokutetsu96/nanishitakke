@@ -64,7 +64,7 @@ export const NoteDetailView = ({
   if (!note) {
     return (
       <div className="flex justify-center items-center h-full">
-        <p className="text-gray-500">ノートが見つかりません</p>
+        <p className="text-gray-500 dark:text-gray-400">ノートが見つかりません</p>
       </div>
     );
   }

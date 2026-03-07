@@ -167,7 +167,7 @@ export const NotesPage = () => {
           />
         ) : (
           <div className="flex justify-center items-center h-full">
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               フォルダを選択してください
             </p>
           </div>

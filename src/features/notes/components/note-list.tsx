@@ -128,7 +128,7 @@ export const NoteList = ({
                 <p className="text-sm line-clamp-1">
                   {note.title || "無題"}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {format(new Date(note.updated_at), "yyyy/MM/dd HH:mm")}
                 </p>
               </div>
@@ -159,7 +159,7 @@ export const NoteList = ({
 
           {notes?.length === 0 && (
             <div className="p-4 text-center">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 ノートがありません
               </p>
               <Button
