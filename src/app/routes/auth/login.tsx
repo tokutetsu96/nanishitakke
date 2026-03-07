@@ -35,19 +35,19 @@ export const LoginRoute = () => {
   if (loading || session) return null;
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-50">
+    <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center gap-8">
         <div className="flex flex-col items-center gap-2">
-          <h1 className="text-4xl font-bold text-gray-700">
+          <h1 className="text-4xl font-bold text-gray-700 dark:text-gray-200">
             なにしたっけ？
           </h1>
-          <p className="text-lg text-gray-500">
+          <p className="text-lg text-gray-500 dark:text-gray-400">
             今日やったことを記録しよう
           </p>
         </div>
-        <div className="p-8 bg-white rounded-2xl shadow-lg text-center w-80">
+        <div className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg text-center w-80">
           <div className="flex flex-col items-center gap-6">
-            <h2 className="text-md font-semibold text-gray-600">
+            <h2 className="text-md font-semibold text-gray-600 dark:text-gray-300">
               ログイン
             </h2>
             <Button

@@ -3,6 +3,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MDEditor from "@uiw/react-md-editor";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth";
 import { useNote } from "../api/get-notes";
 import { useUpdateNote } from "../api/update-note";
@@ -14,6 +15,7 @@ interface NoteEditorProps {
 
 export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
   const { user } = useAuth();
+  const { resolvedTheme } = useTheme();
   const { data: note, isLoading } = useNote(noteId);
   const updateMutation = useUpdateNote();
 
@@ -126,7 +128,7 @@ export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
         </span>
       </div>
 
-      <div className="flex-1 overflow-auto" data-color-mode="light">
+      <div className="flex-1 overflow-auto" data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}>
         <MDEditor
           value={content}
           onChange={handleContentChange}

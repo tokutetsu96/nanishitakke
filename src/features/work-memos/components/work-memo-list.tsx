@@ -99,7 +99,7 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
   return (
     <div className="flex flex-col gap-4">
       {memos.map((memo) => (
-        <CuteBox key={memo.id} className="p-4 bg-white rounded-xl">
+        <CuteBox key={memo.id} className="p-4 bg-white dark:bg-gray-800 rounded-xl">
           <div className="mb-2 flex justify-between items-center">
             <p className="font-bold text-lg text-pink-500">
               {format(new Date(memo.date), "yyyy年MM月dd日 (eee)", {
@@ -140,14 +140,14 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
               <AccordionContent className="px-0">
                 <div className="flex flex-col gap-3">
                   <div>
-                    <p className="font-bold text-sm text-gray-600">
+                    <p className="font-bold text-sm text-gray-600 dark:text-gray-400">
                       やったこと
                     </p>
                     <p className="whitespace-pre-wrap">{memo.done_text}</p>
                   </div>
                   {memo.good_text && (
                     <div>
-                      <p className="font-bold text-sm text-gray-600">
+                      <p className="font-bold text-sm text-gray-600 dark:text-gray-400">
                         良かったこと
                       </p>
                       <p className="whitespace-pre-wrap">{memo.good_text}</p>
@@ -155,7 +155,7 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
                   )}
                   {memo.stuck_text && (
                     <div>
-                      <p className="font-bold text-sm text-gray-600">
+                      <p className="font-bold text-sm text-gray-600 dark:text-gray-400">
                         詰まったこと
                       </p>
                       <p className="whitespace-pre-wrap">{memo.stuck_text}</p>
@@ -163,7 +163,7 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
                   )}
                   {memo.cause_text && (
                     <div>
-                      <p className="font-bold text-sm text-gray-600">
+                      <p className="font-bold text-sm text-gray-600 dark:text-gray-400">
                         原因
                       </p>
                       <p className="whitespace-pre-wrap">{memo.cause_text}</p>
@@ -171,7 +171,7 @@ export const WorkMemoList = React.memo(({ onEditMemo, startDate, endDate }: Work
                   )}
                   {memo.improvement_text && (
                     <div>
-                      <p className="font-bold text-sm text-gray-600">
+                      <p className="font-bold text-sm text-gray-600 dark:text-gray-400">
                         改善案
                       </p>
                       <p className="whitespace-pre-wrap">{memo.improvement_text}</p>

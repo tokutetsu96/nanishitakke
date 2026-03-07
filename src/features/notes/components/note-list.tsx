@@ -116,9 +116,9 @@ export const NoteList = ({
           {notes?.map((note) => (
             <div
               key={note.id}
-              className={`flex items-center px-3 py-2 cursor-pointer hover:bg-pink-50 group ${
+              className={`flex items-center px-3 py-2 cursor-pointer hover:bg-pink-50 dark:hover:bg-pink-50/10 group ${
                 selectedNoteId === note.id
-                  ? "bg-pink-50 text-pink-600"
+                  ? "bg-pink-50 text-pink-600 dark:bg-pink-50/10 dark:text-pink-400"
                   : "bg-transparent"
               }`}
               onClick={() => onSelectNote(note.id)}

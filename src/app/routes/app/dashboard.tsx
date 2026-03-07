@@ -34,6 +34,7 @@ import { useCreateReport } from "@/features/reports/api/create-report";
 import { useAuth } from "@/lib/auth";
 import { Calendar } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
+import { useTheme } from "next-themes";
 
 // Chart.jsの登録
 ChartJS.register(
@@ -50,6 +51,7 @@ registerLocale("ja", ja);
 
 export const DashboardRoute = () => {
   const { user } = useAuth();
+  const { resolvedTheme } = useTheme();
   const createReport = useCreateReport();
 
   const [report, setReport] = useState("");
@@ -270,7 +272,7 @@ ${workMemos
           variant={isTodaySelected ? "default" : "outline"}
           className={
             !isTodaySelected
-              ? "bg-white border-gray-200 hover:bg-gray-100 w-full md:w-auto"
+              ? "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 w-full md:w-auto"
               : "w-full md:w-auto"
           }
         >
@@ -285,7 +287,7 @@ ${workMemos
             locale="ja"
             dateFormat="yyyy/MM/dd"
             customInput={
-              <Input className="bg-white border-gray-200 text-center cursor-pointer pr-10" />
+              <Input className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-center cursor-pointer pr-10" />
             }
             wrapperClassName="datepicker-full-width"
             portalId="react-datepicker-portal"
@@ -297,7 +299,7 @@ ${workMemos
       </div>
 
       {/* Report Section */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Bot className="h-5 w-5 text-purple-500" />
@@ -314,7 +316,7 @@ ${workMemos
           </Button>
         </div>
         {report && (
-          <div className="bg-gray-50 p-4 rounded-md text-sm" data-color-mode="light">
+          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-md text-sm" data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}>
             <MDEditor.Markdown source={report} />
           </div>
         )}
@@ -332,7 +334,7 @@ ${workMemos
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-white">
+            <Card className="bg-white dark:bg-gray-800">
               <CardContent className="pt-6">
                 <div>
                   <p className="text-sm text-muted-foreground">記録数</p>
@@ -343,7 +345,7 @@ ${workMemos
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white">
+            <Card className="bg-white dark:bg-gray-800">
               <CardContent className="pt-6">
                 <div>
                   <p className="text-sm text-muted-foreground">総活動時間</p>
@@ -352,7 +354,7 @@ ${workMemos
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white">
+            <Card className="bg-white dark:bg-gray-800">
               <CardContent className="pt-6">
                 <div>
                   <p className="text-sm text-muted-foreground">平均活動時間</p>
@@ -365,7 +367,7 @@ ${workMemos
 
           {/* Charts ... */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold mb-4 text-center">
                 カテゴリ別割合
               </h3>
@@ -387,7 +389,7 @@ ${workMemos
                 )}
               </div>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold mb-4 text-center">
                 日別活動時間
               </h3>
