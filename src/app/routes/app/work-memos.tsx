@@ -57,7 +57,7 @@ export const WorkMemosRoute = () => {
       <div className="flex flex-col gap-8 py-4">
         <div>
           <h2 className="text-2xl font-bold mb-2">仕事メモ</h2>
-          <p className="text-gray-600 dark:text-gray-400">日々の仕事の振り返りを記録します</p>
+          <p className="text-gray-600">日々の仕事の振り返りを記録します</p>
         </div>
 
         <div className="flex items-center justify-between">

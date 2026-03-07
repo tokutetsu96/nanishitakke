@@ -7,7 +7,7 @@ export const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50">
       <AppHeader onOpen={() => setSidebarOpen(true)} />
       <div className="pt-20">
         <div className="mx-auto max-w-5xl px-4">
@@ -18,7 +18,7 @@ export const AppLayout = () => {
                 onClose={() => setSidebarOpen(false)}
               />
             </div>
-            <div className="flex-1 min-w-0 p-4 bg-white dark:bg-gray-800 min-h-[calc(100vh-5rem)] overflow-x-hidden">
+            <div className="flex-1 min-w-0 p-4 bg-white min-h-[calc(100vh-5rem)] overflow-x-hidden">
               <Outlet />
             </div>
           </div>

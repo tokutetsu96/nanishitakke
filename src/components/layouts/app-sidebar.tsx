@@ -29,9 +29,9 @@ const NavItem = ({ icon: Icon, children, to, onClick }: NavItemProps) => {
       onClick={onClick}
       className={({ isActive }) =>
         cn(
-          "flex items-center p-4 cursor-pointer transition-all duration-200 hover:bg-pink-50 hover:text-pink-600 dark:hover:bg-pink-50/10 dark:hover:text-pink-400 no-underline text-gray-700 dark:text-gray-300",
+          "flex items-center p-4 cursor-pointer transition-all duration-200 hover:bg-pink-50 hover:text-pink-600 no-underline text-gray-700",
           isActive &&
-            "bg-pink-50 text-pink-600 dark:bg-pink-50/10 dark:text-pink-400 font-bold border-r-4 border-pink-600 dark:border-pink-400",
+            "bg-pink-50 text-pink-600 font-bold border-r-4 border-pink-600",
         )
       }
     >
@@ -95,7 +95,7 @@ export const AppSidebar = ({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 w-full pt-4">
+    <div className="bg-white w-full pt-4">
       <SidebarContent />
     </div>
   );

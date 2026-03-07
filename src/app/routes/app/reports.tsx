@@ -24,7 +24,6 @@ import type { WeeklyReport } from "@/features/reports/types";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import MDEditor from "@uiw/react-md-editor";
-import { useTheme } from "next-themes";
 
 registerLocale("ja", ja);
 
@@ -42,7 +41,6 @@ const MonthPickerButton = forwardRef<
 ));
 
 export const ReportsRoute = () => {
-  const { resolvedTheme } = useTheme();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const startDate = format(startOfMonth(currentMonth), "yyyy-MM-dd");
   const endDate = format(endOfMonth(currentMonth), "yyyy-MM-dd");
@@ -71,7 +69,7 @@ export const ReportsRoute = () => {
       {/* header section */}
       <div>
         <h2 className="text-2xl font-bold mb-2">レポートアーカイブ</h2>
-        <p className="text-gray-600 dark:text-gray-400">過去の週間レポートを振り返ります</p>
+        <p className="text-gray-600">過去の週間レポートを振り返ります</p>
       </div>
 
       {/* month navigation */}
@@ -107,7 +105,7 @@ export const ReportsRoute = () => {
 
       {/* report list or empty state */}
       {reports.length === 0 ? (
-        <div className="flex justify-center items-center p-10 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+        <div className="flex justify-center items-center p-10 bg-white rounded-lg shadow-sm">
           <p className="text-gray-500">この月のレポートはありません</p>
         </div>
       ) : (
@@ -120,7 +118,7 @@ export const ReportsRoute = () => {
               {reports.map((report) => (
                 <div
                   key={report.id}
-                  className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 hover:cursor-pointer hover:rounded-md"
+                  className="p-2 hover:bg-gray-50 hover:cursor-pointer hover:rounded-md"
                   onClick={() => handleOpenReport(report)}
                 >
                   <h4 className="text-xs font-bold uppercase mb-1 text-pink-500">
@@ -155,7 +153,7 @@ export const ReportsRoute = () => {
                 `${format(parseISO(selectedReport.start_date), "MM/dd")} - ${format(parseISO(selectedReport.end_date), "MM/dd")} のレポート`}
             </DialogTitle>
           </DialogHeader>
-          <div className="text-sm" data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}>
+          <div className="text-sm" data-color-mode="light">
             {selectedReport?.content && (
               <MDEditor.Markdown source={selectedReport.content} />
             )}

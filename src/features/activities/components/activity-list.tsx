@@ -103,16 +103,16 @@ export const ActivityList = React.memo(
         {activities.map((activity) => (
           <CuteBox
             key={activity.id}
-            className="cursor-pointer bg-white dark:bg-gray-800 p-4"
+            className="cursor-pointer bg-white p-4"
             onClick={() => onEditActivity(activity)}
           >
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="font-bold text-gray-700 dark:text-gray-200">
+                <p className="font-bold text-gray-700">
                   {formatTime(activity.start_time)} -{" "}
                   {formatTime(activity.end_time)}
                 </p>
-                <p className="whitespace-pre-wrap text-gray-600 dark:text-gray-300">
+                <p className="whitespace-pre-wrap text-gray-600">
                   {activity.content}
                 </p>
                 {activity.tags && activity.tags.length > 0 && (

@@ -14,7 +14,6 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import MDEditor from "@uiw/react-md-editor";
-import { useTheme } from "next-themes";
 import { useNote } from "../api/get-notes";
 import { useDeleteNote } from "../api/delete-note";
 
@@ -32,7 +31,6 @@ export const NoteDetailView = ({
   onDelete,
 }: NoteDetailViewProps) => {
   const { user } = useAuth();
-  const { resolvedTheme } = useTheme();
   const { data: note, isLoading } = useNote(noteId);
   const deleteMutation = useDeleteNote();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -111,7 +109,7 @@ export const NoteDetailView = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-4" data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}>
+      <div className="flex-1 overflow-auto p-4" data-color-mode="light">
         <MDEditor.Markdown source={note.content} />
       </div>
 

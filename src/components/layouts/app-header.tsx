@@ -16,8 +16,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { Menu, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Menu } from "lucide-react";
 import { useDisclosure } from "@/hooks/use-disclosure";
 
 interface AppHeaderProps {
@@ -27,7 +26,6 @@ interface AppHeaderProps {
 export const AppHeader = ({ onOpen }: AppHeaderProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
   const {
     isOpen: isTemplateOpen,
     onOpen: onOpenTemplate,
@@ -81,7 +79,7 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm dark:shadow-gray-950/50 fixed top-0 w-full z-40">
+    <header className="bg-white shadow-sm fixed top-0 w-full z-40">
       <div className="mx-auto max-w-5xl px-4 py-4">
         <div className="flex items-center">
           <Button
@@ -94,7 +92,7 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
             <Menu className="h-5 w-5" />
           </Button>
           <Link to="/" className="flex items-center cursor-pointer no-underline">
-            <h1 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+            <h1 className="text-lg font-semibold text-gray-700">
               なにしたっけ
             </h1>
             <img
@@ -104,21 +102,11 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
             />
           </Link>
           <div className="flex-1" />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="テーマ切り替え"
-            className="mr-2"
-          >
-            <Sun className="h-5 w-5 dark:hidden" />
-            <Moon className="h-5 w-5 hidden dark:block" />
-          </Button>
           {user && profile && (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 cursor-pointer bg-transparent border-none">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  <span className="text-sm font-medium text-gray-700">
                     {profile.full_name}
                   </span>
                   <Avatar className="h-8 w-8">

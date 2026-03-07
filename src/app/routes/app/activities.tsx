@@ -78,7 +78,7 @@ export const ActivitiesRoute = () => {
             placeholder="キーワードで検索..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="h-12 bg-gray-100 dark:bg-gray-700 border-transparent pr-10"
+            className="h-12 bg-gray-100 border-transparent pr-10"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
             {searchInput ? (
@@ -132,7 +132,7 @@ export const ActivitiesRoute = () => {
               locale="ja"
               dateFormat="yyyy/MM/dd (eee)"
               customInput={
-                <Input className="h-12 bg-gray-100 dark:bg-gray-700 border-transparent text-center font-bold cursor-pointer pr-10" />
+                <Input className="h-12 bg-gray-100 border-transparent text-center font-bold cursor-pointer pr-10" />
               }
               wrapperClassName="datepicker-full-width"
               portalId="react-datepicker-portal"
