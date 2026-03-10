@@ -28,11 +28,17 @@ export const getActivities = async (
     }
     query = query.order("date", { ascending: false }).order("start_time", { ascending: true });
   } else if (params.date) {
+    // 日付跨ぎ対応: 選択日に開始または終了する活動を取得
+    // date <= 選択日 かつ end_date >= 選択日
     query = query
-      .eq("date", params.date)
+      .lte("date", params.date)
+      .gte("end_date", params.date)
       .order("start_time", { ascending: true });
   } else if (params.startDate && params.endDate) {
-    query = query.gte("date", params.startDate).lte("date", params.endDate);
+    // 月表示用: 開始日が範囲内、または終了日が範囲内の活動を取得
+    query = query
+      .lte("date", params.endDate)
+      .gte("end_date", params.startDate);
   }
 
   const { data, error } = await query;
