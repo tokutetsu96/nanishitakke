@@ -109,8 +109,18 @@ export const ActivityList = React.memo(
             <div className="flex items-center">
               <div className="flex-1">
                 <p className="font-bold text-gray-700">
+                  {activity.date !== selectedDate && (
+                    <span className="mr-1 text-xs font-normal text-blue-500">
+                      前日から
+                    </span>
+                  )}
                   {formatTime(activity.start_time)} -{" "}
                   {formatTime(activity.end_time)}
+                  {activity.end_date !== selectedDate && (
+                    <span className="ml-1 text-xs font-normal text-blue-500">
+                      翌日へ
+                    </span>
+                  )}
                 </p>
                 <p className="whitespace-pre-wrap text-gray-600">
                   {activity.content}

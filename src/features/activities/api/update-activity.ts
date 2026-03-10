@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
+import { computeEndDate } from "../utils";
 
 type UpdateActivityData = {
   id: string;
@@ -14,9 +15,10 @@ type UpdateActivityData = {
 
 export const updateActivity = async (data: UpdateActivityData) => {
   const { id, ...updateData } = data;
+  const end_date = computeEndDate(updateData.date, updateData.start_time, updateData.end_time);
   const { error } = await supabase
     .from("activities")
-    .update(updateData)
+    .update({ ...updateData, end_date })
     .eq("id", id)
     .eq("user_id", updateData.user_id);
 

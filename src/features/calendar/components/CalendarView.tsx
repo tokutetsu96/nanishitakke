@@ -48,14 +48,22 @@ export const CalendarView = () => {
   });
 
   // Group activities by date for easy lookup
+  // 日付跨ぎ活動は start date と end_date の両方にグループ化する
   const activitiesByDate = useMemo(() => {
     const grouped: Record<string, Activity[]> = {};
     activities.forEach((activity) => {
-      // activity.date is typically YYYY-MM-DD
       if (!grouped[activity.date]) {
         grouped[activity.date] = [];
       }
       grouped[activity.date].push(activity);
+
+      // end_date が date と異なる場合（日付跨ぎ）は終了日にも追加
+      if (activity.end_date && activity.end_date !== activity.date) {
+        if (!grouped[activity.end_date]) {
+          grouped[activity.end_date] = [];
+        }
+        grouped[activity.end_date].push(activity);
+      }
     });
     return grouped;
   }, [activities]);
