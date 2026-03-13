@@ -11,8 +11,9 @@ export const computeEndDate = (
 
   // "HH:MM" 文字列の比較: end_time < start_time なら翌日に跨ぐ
   if (endTime < startTime) {
-    const d = new Date(`${date}T00:00:00`);
-    d.setDate(d.getDate() + 1);
+    // タイムゾーン問題を避けるため UTC で計算する
+    const [year, month, day] = date.split("-").map(Number);
+    const d = new Date(Date.UTC(year, month - 1, day + 1));
     return d.toISOString().slice(0, 10);
   }
 
