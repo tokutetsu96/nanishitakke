@@ -76,6 +76,16 @@ body {
   font-family: "M PLUS Rounded 1c", sans-serif;
   background-color: var(--color-gray-50);
   color: var(--color-gray-800);
+  overscroll-behavior-y: none;
+}
+
+/* Prevent iOS auto-zoom on input focus (triggered when font-size < 16px) */
+@media screen and (max-width: 1024px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
 }
 
 /* React Calendar Custom Styles */
