@@ -32,8 +32,7 @@ export const getActivities = async (
     // date <= 選択日 かつ end_date >= 選択日
     query = query
       .lte("date", params.date)
-      .gte("end_date", params.date)
-      .order("start_time", { ascending: true });
+      .gte("end_date", params.date);
   } else if (params.startDate && params.endDate) {
     // 月表示用: 開始日が範囲内、または終了日が範囲内の活動を取得
     query = query
@@ -45,6 +44,17 @@ export const getActivities = async (
 
   if (error) {
     throw error;
+  }
+
+  // 日付別表示の場合、前日から跨いだ活動を正しい順番にソート
+  // 前日開始の活動（date < 選択日）は、その日の 00:00 開始とみなす
+  if (!isSearchMode && params.date && data) {
+    const selectedDate = params.date;
+    return data.sort((a, b) => {
+      const aTime = a.date < selectedDate ? "00:00" : a.start_time;
+      const bTime = b.date < selectedDate ? "00:00" : b.start_time;
+      return aTime.localeCompare(bTime);
+    });
   }
 
   return data || [];
