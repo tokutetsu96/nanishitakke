@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Calendar from "react-calendar";
 import { Loader2 } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
@@ -7,22 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useActivities } from "@/features/activities/api/get-activities";
 import type { Activity } from "@/features/activities/types";
-import { ACTIVITY_CATEGORIES } from "@/config/constants";
+import { ACTIVITY_CATEGORIES, CATEGORY_COLOR_CODES } from "@/config/constants";
 import "react-calendar/dist/Calendar.css";
-
-// Category colors for calendar tile dots
-const CATEGORY_COLORS: Record<string, string> = {
-  blue: "#3182CE",
-  orange: "#DD6B20",
-  purple: "#805AD5",
-  green: "#38A169",
-  gray: "#718096",
-  teal: "#319795",
-  pink: "#D53F8C",
-  red: "#E53E3E",
-  yellow: "#D69E2E",
-  cyan: "#00B5D8",
-};
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -32,14 +18,8 @@ export const CalendarView = () => {
   const [activeStartDate, setActiveStartDate] = useState<Date>(new Date());
 
   // Calculate start and end of the currently viewed month
-  const startDate = useMemo(
-    () => format(startOfMonth(activeStartDate), "yyyy-MM-dd"),
-    [activeStartDate],
-  );
-  const endDate = useMemo(
-    () => format(endOfMonth(activeStartDate), "yyyy-MM-dd"),
-    [activeStartDate],
-  );
+  const startDate = format(startOfMonth(activeStartDate), "yyyy-MM-dd");
+  const endDate = format(endOfMonth(activeStartDate), "yyyy-MM-dd");
 
   // Fetch activities for the current month
   const { data: activities = [], isLoading } = useActivities({
@@ -92,7 +72,7 @@ export const CalendarView = () => {
     }
   };
 
-  const tileContent = ({ date, view }: { date: Date; view: string }) => {
+  const tileContent = useCallback(({ date, view }: { date: Date; view: string }) => {
     if (view === "month") {
       const dateKey = format(date, "yyyy-MM-dd");
       const dayActivities = activitiesByDate[dateKey];
@@ -110,7 +90,7 @@ export const CalendarView = () => {
                     category as keyof typeof ACTIVITY_CATEGORIES
                   ];
                 if (colorName) {
-                  color = CATEGORY_COLORS[colorName] || color;
+                  color = CATEGORY_COLOR_CODES[colorName] || color;
                 }
               }
               return (
@@ -132,7 +112,7 @@ export const CalendarView = () => {
       }
     }
     return null;
-  };
+  }, [activitiesByDate]);
 
   return (
     <div>

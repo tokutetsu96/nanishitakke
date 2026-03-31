@@ -1,24 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { Trash2, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useDisclosure } from "@/hooks/use-disclosure";
 import type { Activity } from "@/features/activities/types";
 import { CuteBox } from "@/components/ui/cute-box";
 import { ACTIVITY_CATEGORIES } from "@/config/constants";
 import { useActivities } from "@/features/activities/api/get-activities";
-import { useDeleteActivity } from "@/features/activities/api/delete-activity";
+import {
+  useDeleteActivityDialog,
+  DeleteActivityDialog,
+} from "@/features/activities/hooks/use-delete-activity-dialog";
 
 interface ActivityListProps {
   selectedDate: string;
@@ -41,36 +32,14 @@ export const ActivityList = React.memo(
     } = useActivities({ date: selectedDate });
 
     // Mutation
-    const deleteMutation = useDeleteActivity();
-
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [activityIdToDelete, setActivityIdToDelete] = useState<string | null>(
-      null,
-    );
-
-    const handleClickDelete = (e: React.MouseEvent, id: string) => {
-      e.stopPropagation();
-      setActivityIdToDelete(id);
-      onOpen();
-    };
-
-    const confirmDelete = async () => {
-      if (!activityIdToDelete) return;
-
-      try {
-        await deleteMutation.mutateAsync(activityIdToDelete);
-        toast.success("活動を削除しました。");
-      } catch (err: unknown) {
-        let errorMessage = "活動の削除に失敗しました。";
-        if (err instanceof Error) {
-          errorMessage = `活動の削除に失敗しました: ${err.message}`;
-        }
-        toast.error(errorMessage);
-      } finally {
-        onClose();
-        setActivityIdToDelete(null);
-      }
-    };
+    const {
+      deleteMutation,
+      activityIdToDelete,
+      handleClickDelete,
+      confirmDelete,
+      isOpen,
+      onClose,
+    } = useDeleteActivityDialog();
 
     if (loading) {
       return (
@@ -158,31 +127,12 @@ export const ActivityList = React.memo(
             </div>
           </CuteBox>
         ))}
-        <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>活動を削除</AlertDialogTitle>
-              <AlertDialogDescription>
-                この活動を本当に削除しますか？この操作は取り消せません。
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={onClose}>
-                キャンセル
-              </AlertDialogCancel>
-              <AlertDialogAction
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                onClick={confirmDelete}
-                disabled={deleteMutation.status === "pending"}
-              >
-                {deleteMutation.status === "pending" && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                削除
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <DeleteActivityDialog
+          isOpen={isOpen}
+          onClose={onClose}
+          onConfirm={confirmDelete}
+          isPending={deleteMutation.status === "pending"}
+        />
       </div>
     );
   },

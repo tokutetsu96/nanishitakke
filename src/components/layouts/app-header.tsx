@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
-import { useState, useEffect } from "react";
 import { TemplateManagerModal } from "@/features/activity-templates/components/template-manager-modal";
 import NanishitakkeLogo from "@/assets/nanishitakke.png";
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
 import { useDisclosure } from "@/hooks/use-disclosure";
+import { useProfile } from "@/lib/use-profile";
 
 interface AppHeaderProps {
   onOpen: () => void;
@@ -31,30 +31,7 @@ export const AppHeader = ({ onOpen }: AppHeaderProps) => {
     onOpen: onOpenTemplate,
     onClose: onCloseTemplate,
   } = useDisclosure();
-  const [profile, setProfile] = useState<{
-    full_name: string | null;
-    avatar_url: string | null;
-  } | null>(null);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("full_name, avatar_url")
-        .eq("id", user.id)
-        .single();
-
-      if (error) {
-        console.error("プロフィール取得エラー:", error);
-      } else if (data) {
-        setProfile(data);
-      }
-    };
-
-    fetchProfile();
-  }, [user]);
+  const { data: profile } = useProfile();
 
   const handleLogout = async () => {
     const {

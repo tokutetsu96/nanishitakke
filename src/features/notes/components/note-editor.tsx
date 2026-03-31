@@ -22,6 +22,8 @@ export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initializedRef = useRef<string | null>(null);
+  const updateMutationRef = useRef(updateMutation);
+  updateMutationRef.current = updateMutation;
 
   useEffect(() => {
     if (note && initializedRef.current !== note.id) {
@@ -36,7 +38,7 @@ export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
       if (!user || !noteId) return;
 
       setIsSaving(true);
-      updateMutation.mutate(
+      updateMutationRef.current.mutate(
         {
           id: noteId,
           user_id: user.id,
@@ -50,7 +52,7 @@ export const NoteEditor = ({ noteId, onBack }: NoteEditorProps) => {
         }
       );
     },
-    [user, noteId, updateMutation]
+    [user, noteId]
   );
 
   const debouncedSave = useCallback(

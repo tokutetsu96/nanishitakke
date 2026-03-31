@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { ACTIVITY_CATEGORIES } from "@/config/constants";
+import { ACTIVITY_CATEGORIES, CATEGORY_COLOR_CODES } from "@/config/constants";
 import { useActivities } from "@/features/activities/api/get-activities";
 import { useWorkMemos } from "@/features/work-memos/api/get-work-memos";
 import { generateContent } from "@/lib/gemini";
@@ -120,20 +120,7 @@ export const DashboardRoute = () => {
     const bgColors = labels.map((label) => {
       const colorName =
         ACTIVITY_CATEGORIES[label as keyof typeof ACTIVITY_CATEGORIES];
-      // Chakra UIの色名から実際の色コードへの簡易マッピング
-      const colorMap: Record<string, string> = {
-        blue: "#3182CE",
-        orange: "#DD6B20",
-        purple: "#805AD5",
-        green: "#38A169",
-        gray: "#718096",
-        teal: "#319795",
-        pink: "#D53F8C",
-        red: "#E53E3E",
-        yellow: "#D69E2E",
-        cyan: "#00B5D8",
-      };
-      return colorMap[colorName] || "#CBD5E0";
+      return CATEGORY_COLOR_CODES[colorName] || "#CBD5E0";
     });
 
     // 棒グラフ用データ (日付順)

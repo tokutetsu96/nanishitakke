@@ -14,3 +14,16 @@ export const ACTIVITY_CATEGORIES = {
 } as const;
 
 export type ActivityCategory = keyof typeof ACTIVITY_CATEGORIES;
+
+export const CATEGORY_COLOR_CODES: Record<string, string> = {
+  blue: "#3182CE",
+  orange: "#DD6B20",
+  purple: "#805AD5",
+  green: "#38A169",
+  gray: "#718096",
+  teal: "#319795",
+  pink: "#D53F8C",
+  red: "#E53E3E",
+  yellow: "#D69E2E",
+  cyan: "#00B5D8",
+};
