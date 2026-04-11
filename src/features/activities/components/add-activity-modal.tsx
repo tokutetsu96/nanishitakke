@@ -31,6 +31,7 @@ interface AddActivityModalProps {
   onClose: () => void;
   onActivityAdded: () => void;
   initialActivity?: Activity | null;
+  defaultDate?: string;
 }
 
 export const AddActivityModal = ({
@@ -38,6 +39,7 @@ export const AddActivityModal = ({
   onClose,
   onActivityAdded,
   initialActivity,
+  defaultDate,
 }: AddActivityModalProps) => {
   const { user } = useAuth();
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -58,7 +60,7 @@ export const AddActivityModal = ({
         setContent(initialActivity.content);
         setTags(initialActivity.tags || []);
       } else {
-        setDate(new Date().toISOString().slice(0, 10));
+        setDate(defaultDate ?? new Date().toISOString().slice(0, 10));
         setStartTime("");
         setEndTime("");
         setContent("");
@@ -111,7 +113,7 @@ export const AddActivityModal = ({
       onClose();
 
       if (!initialActivity) {
-        setDate(new Date().toISOString().slice(0, 10));
+        setDate(defaultDate ?? new Date().toISOString().slice(0, 10));
         setStartTime("");
         setEndTime("");
         setContent("");

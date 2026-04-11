@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Trash2, Loader2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ja } from "date-fns/locale/ja";
@@ -66,6 +66,8 @@ export const ActivitySearchResults = React.memo(
       onClose,
     } = useDeleteActivityDialog();
 
+    const grouped = useMemo(() => groupByDate(activities), [activities]);
+
     if (isLoading) {
       return (
         <div className="flex justify-center p-10">
@@ -91,8 +93,6 @@ export const ActivitySearchResults = React.memo(
         </p>
       );
     }
-
-    const grouped = groupByDate(activities);
 
     return (
       <div className="flex flex-col gap-4">

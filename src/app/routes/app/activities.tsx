@@ -172,6 +172,7 @@ export const ActivitiesRoute = () => {
         onClose={handleCloseModal}
         onActivityAdded={handleActivityAdded}
         initialActivity={editingActivity}
+        defaultDate={selectedDateString}
       />
     </>
   );

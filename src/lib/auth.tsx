@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Session, User } from "@supabase/supabase-js";
@@ -47,11 +47,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const value = {
-    session,
-    user,
-    loading,
-  };
+  const value = useMemo(
+    () => ({ session, user, loading }),
+    [session, user, loading],
+  );
 
   return (
     <AuthContext.Provider value={value}>
